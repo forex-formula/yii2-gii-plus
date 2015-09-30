@@ -12,16 +12,16 @@ use yii\gii\plus\helpers\Helper,
 class Generator extends YiiGiiModelGenerator
 {
 
-    public $ns = 'app\models\base';
+    public $ns = null; // app\models\base
     public $tableName = null;
     public $modelClass = null;
-    public $baseClass = 'yii\boost\db\ActiveRecord';
+    public $baseClass = null; // yii\boost\db\ActiveRecord
     public $generateRelations = true;
     public $generateLabelsFromComments = true;
     public $generateQuery = true;
-    public $queryNs = 'app\models\query\base';
+    public $queryNs = null; // app\models\query\base
     public $queryClass = null;
-    public $queryBaseClass = 'yii\boost\db\ActiveQuery';
+    public $queryBaseClass = null; // yii\boost\db\ActiveQuery
 
     protected $fileUseMap = [];
     protected $use = ['Yii'];
@@ -36,6 +36,28 @@ class Generator extends YiiGiiModelGenerator
         return 'This generator generates a base ActiveRecord class for the specified database table.';
     }
 
+    public function rules()
+    {
+        $rules = [];
+        foreach (parent::rules() as $rule) {
+            if (!is_array($rule[0])) {
+                $rule[0] = [$rule[0]];
+            }
+            if ($rule[1] == 'required') {
+                $rule[0] = array_diff($rule[0], ['ns', 'baseClass', 'queryNs', 'queryBaseClass']);
+            }
+            if (count($rule[0])) {
+                $rules[] = $rule;
+            }
+        }
+        return $rules;
+    }
+
+    public function requiredTemplates()
+    {
+        return ['model.php', 'query.php'];
+    }
+
     public function defaultTemplate()
     {
         $class = new ReflectionClass('yii\gii\generators\model\Generator');
@@ -44,13 +66,27 @@ class Generator extends YiiGiiModelGenerator
 
     public function beforeValidate()
     {
+        if (is_null($this->ns)) {
+            $this->ns = 'app\models\base';
+        }
+        if (is_null($this->baseClass)) {
+            $this->baseClass = 'yii\boost\db\ActiveRecord';
+        }
+        if (is_null($this->queryNs)) {
+            $appNs = preg_match('~^([^\\\\]+)\\\\models~', $this->ns, $match) ? $match[1] : 'app';
+            $this->queryNs = $appNs . '\models\query\base';
+        }
+        if (is_null($this->queryBaseClass)) {
+            $this->queryBaseClass = 'yii\boost\db\ActiveQuery';
+        }
+
         if (is_null($this->modelClass) || ($this->generateQuery && is_null($this->queryClass))) {
-            $className = Inflector::classify($this->tableName);
+            $baseName = Inflector::classify($this->tableName);
             if (is_null($this->modelClass)) {
-                $this->modelClass = $className . 'Base';
+                $this->modelClass = $baseName . 'Base';
             }
             if (is_null($this->queryClass)) {
-                $this->queryClass = $className . 'QueryBase';
+                $this->queryClass = $baseName . 'QueryBase';
             }
         }
         $nsModelClass = $this->ns . '\\' . $this->modelClass;
