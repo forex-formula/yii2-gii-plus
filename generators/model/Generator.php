@@ -36,7 +36,7 @@ class Generator extends YiiGiiCrudGenerator
     public function rules()
     {
         $attributes = $this->attributes();
-        $rules = [[['newModelClass', 'newQueryClass'], 'required']];
+        $rules = [];
         foreach (parent::rules() as $rule) {
             if (!is_array($rule[0])) {
                 $rule[0] = [$rule[0]];
@@ -64,12 +64,13 @@ class Generator extends YiiGiiCrudGenerator
         if (is_null($this->newModelClass) || is_null($this->newQueryClass)) {
             /* @var $modelClass \yii\db\ActiveRecord */
             $modelClass = $this->getModelClass();
-            $className = Inflector::classify($modelClass::tableName());
+            $baseName = Inflector::classify($modelClass::tableName());
+            $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $modelClass, $match) ? $match[1] : 'app';
             if (is_null($this->newModelClass)) {
-                $this->newModelClass = 'app\models\\' . $className;
+                $this->newModelClass = $appNs . '\models\\' . $baseName;
             }
             if (is_null($this->newQueryClass)) {
-                $this->newQueryClass = 'app\models\query\\' . $className . 'Query';
+                $this->newQueryClass = $appNs . '\models\query\\' . $baseName . 'Query';
             }
         }
         return parent::beforeValidate();
