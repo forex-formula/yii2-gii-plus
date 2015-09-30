@@ -75,12 +75,16 @@ class Generator extends YiiGiiModelGenerator
                 $this->queryClass = $baseName . 'QueryBase';
             }
         }
-
         if (is_null($this->ns)) {
             $this->ns = 'app\models\base';
         }
         if (is_null($this->baseClass)) {
-            $this->baseClass = 'yii\boost\db\ActiveRecord';
+            $nsModelClass = $this->ns . '\\' . $this->modelClass;
+            if (class_exists($nsModelClass)) {
+                $this->baseClass = get_parent_class($nsModelClass);
+            } else {
+                $this->baseClass = 'yii\boost\db\ActiveRecord';
+            }
         }
         if (is_null($this->queryNs)) {
             $appNs = preg_match('~^([^\\\\]+)\\\\models~', $this->ns, $match) ? $match[1] : 'app';
@@ -97,7 +101,6 @@ class Generator extends YiiGiiModelGenerator
 
         $nsModelClass = $this->ns . '\\' . $this->modelClass;
         if (class_exists($nsModelClass)) {
-            $this->baseClass = get_parent_class($nsModelClass);
             // use
             $modelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($nsModelClass, '\\') . '.php'));
             if (is_file($modelPath) && preg_match('~use([^;]+);~', file_get_contents($modelPath), $match)) {
