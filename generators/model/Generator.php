@@ -58,7 +58,14 @@ class Generator extends YiiGiiCrudGenerator
         return ['model.php', 'query.php'];
     }
 
-    public function beforeValidate()
+    public function validateNewClass($attribute, $params)
+    {
+        if (strlen($this->$attribute)) {
+            parent::validateNewClass($attribute, $params);
+        }
+    }
+
+    public function generate()
     {
         if (!strlen($this->newModelClass) || !strlen($this->newQueryClass)) {
             /* @var $modelClass \yii\db\ActiveRecord */
@@ -72,11 +79,6 @@ class Generator extends YiiGiiCrudGenerator
                 $this->newQueryClass = $appNs . '\models\query\\' . $baseName . 'Query';
             }
         }
-        return parent::beforeValidate();
-    }
-
-    public function generate()
-    {
         $newModelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->newModelClass, '\\') . '.php'));
         $newQueryPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->newQueryClass, '\\') . '.php'));
         return [

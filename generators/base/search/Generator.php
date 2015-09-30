@@ -54,7 +54,14 @@ class Generator extends YiiGiiCrudGenerator
         return dirname($class->getFileName()) . '/default';
     }
 
-    public function beforeValidate()
+    public function validateNewClass($attribute, $params)
+    {
+        if (strlen($this->$attribute)) {
+            parent::validateNewClass($attribute, $params);
+        }
+    }
+
+    public function generate()
     {
         if (!strlen($this->searchModelClass)) {
             /* @var $modelClass \yii\db\ActiveRecord */
@@ -63,11 +70,6 @@ class Generator extends YiiGiiCrudGenerator
             $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $modelClass, $match) ? $match[1] : 'app';
             $this->searchModelClass = $appNs . '\models\search\base\\' . $baseName . 'SearchBase';
         }
-        return parent::beforeValidate();
-    }
-
-    public function generate()
-    {
         $searchModelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->searchModelClass, '\\') . '.php'));
         return [new CodeFile($searchModelPath, $this->render('search.php'))];
     }
