@@ -117,12 +117,12 @@ class Generator extends YiiGiiModelGenerator
             foreach ($allRelations[$this->tableName] as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
                 if ($className == $this->modelClass) { // itself
-                    $className2 = Inflector::classify($this->tableName);
-                    $code = str_replace('(' . $className . '::className()', '(\'app\models\\' . $className2 . '\'', $code);
+                    $baseName = Inflector::classify($this->tableName);
+                    $code = str_replace('(' . $className . '::className()', '(\'app\models\\' . $baseName . '\'', $code);
                     if ($hasMany) {
                         $relationName = Inflector::camelize(Inflector::pluralize($this->tableName));
                     } elseif ($relationName == $className) {
-                        $relationName = $className2;
+                        $relationName = $baseName;
                     }
                 } else {
                     if (array_key_exists($className, $this->fileUseMap)) {
