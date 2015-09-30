@@ -13,9 +13,8 @@ use yii\gii\CodeFile,
 class Generator extends YiiGiiCrudGenerator
 {
 
-    public $modelClass = null;
-    public $newModelClass = null;
-    public $newQueryClass = null;
+    public $newModelClass = '';
+    public $newQueryClass = '';
 
     public function getName()
     {
@@ -59,25 +58,27 @@ class Generator extends YiiGiiCrudGenerator
         return ['model.php', 'query.php'];
     }
 
-    public function beforeValidate()
+    public function validateNewClass($attribute, $params)
     {
-        if (is_null($this->newModelClass) || is_null($this->newQueryClass)) {
-            /* @var $modelClass \yii\db\ActiveRecord */
-            $modelClass = $this->getModelClass();
-            $baseName = Inflector::classify($modelClass::tableName());
-            $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $modelClass, $match) ? $match[1] : 'app';
-            if (is_null($this->newModelClass)) {
-                $this->newModelClass = $appNs . '\models\\' . $baseName;
-            }
-            if (is_null($this->newQueryClass)) {
-                $this->newQueryClass = $appNs . '\models\query\\' . $baseName . 'Query';
-            }
+        if (strlen($this->$attribute)) {
+            parent::validateNewClass($attribute, $params);
         }
-        return parent::beforeValidate();
     }
 
     public function generate()
     {
+        if (!strlen($this->newModelClass) || !strlen($this->newQueryClass)) {
+            /* @var $modelClass \yii\db\ActiveRecord */
+            $modelClass = $this->getModelClass();
+            $baseName = Inflector::classify($modelClass::tableName());
+            $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $modelClass, $match) ? $match[1] : 'app';
+            if (!strlen($this->newModelClass)) {
+                $this->newModelClass = $appNs . '\models\\' . $baseName;
+            }
+            if (!strlen($this->newQueryClass)) {
+                $this->newQueryClass = $appNs . '\models\query\\' . $baseName . 'Query';
+            }
+        }
         $newModelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->newModelClass, '\\') . '.php'));
         $newQueryPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->newQueryClass, '\\') . '.php'));
         return [

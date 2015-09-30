@@ -13,8 +13,7 @@ use yii\gii\CodeFile,
 class Generator extends YiiGiiCrudGenerator
 {
 
-    public $modelClass = null;
-    public $newModelClass = null;
+    public $newModelClass = '';
 
     public function getName()
     {
@@ -57,20 +56,22 @@ class Generator extends YiiGiiCrudGenerator
         return ['search.php'];
     }
 
-    public function beforeValidate()
+    public function validateNewClass($attribute, $params)
     {
-        if (is_null($this->newModelClass)) {
+        if (strlen($this->$attribute)) {
+            parent::validateNewClass($attribute, $params);
+        }
+    }
+
+    public function generate()
+    {
+        if (!strlen($this->newModelClass)) {
             /* @var $modelClass \yii\db\ActiveRecord */
             $modelClass = $this->getModelClass();
             $baseName = Inflector::classify($modelClass::tableName());
             $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $modelClass, $match) ? $match[1] : 'app';
             $this->newModelClass = $appNs . '\models\search\\' . $baseName . 'Search';
         }
-        return parent::beforeValidate();
-    }
-
-    public function generate()
-    {
         $newModelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->newModelClass, '\\') . '.php'));
         return [new CodeFile($newModelPath, $this->render('search.php'))];
     }

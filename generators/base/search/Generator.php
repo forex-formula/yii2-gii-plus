@@ -12,9 +12,6 @@ use yii\gii\CodeFile,
 class Generator extends YiiGiiCrudGenerator
 {
 
-    public $modelClass = null;
-    public $searchModelClass = null;
-
     public function getName()
     {
         return 'Base Search Model Generator';
@@ -57,20 +54,22 @@ class Generator extends YiiGiiCrudGenerator
         return dirname($class->getFileName()) . '/default';
     }
 
-    public function beforeValidate()
+    public function validateNewClass($attribute, $params)
     {
-        if (is_null($this->searchModelClass)) {
+        if (strlen($this->$attribute)) {
+            parent::validateNewClass($attribute, $params);
+        }
+    }
+
+    public function generate()
+    {
+        if (!strlen($this->searchModelClass)) {
             /* @var $modelClass \yii\db\ActiveRecord */
             $modelClass = $this->modelClass;
             $baseName = Inflector::classify($modelClass::tableName());
             $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $modelClass, $match) ? $match[1] : 'app';
             $this->searchModelClass = $appNs . '\models\search\base\\' . $baseName . 'SearchBase';
         }
-        return parent::beforeValidate();
-    }
-
-    public function generate()
-    {
         $searchModelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->searchModelClass, '\\') . '.php'));
         return [new CodeFile($searchModelPath, $this->render('search.php'))];
     }
