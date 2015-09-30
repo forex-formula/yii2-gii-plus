@@ -13,8 +13,7 @@ use yii\gii\CodeFile,
 class Generator extends YiiGiiCrudGenerator
 {
 
-    public $modelClass = null;
-    public $newModelClass = null;
+    public $newModelClass = '';
 
     public function getName()
     {
@@ -59,7 +58,7 @@ class Generator extends YiiGiiCrudGenerator
 
     public function beforeValidate()
     {
-        if (is_null($this->newModelClass)) {
+        if (!strlen($this->newModelClass)) {
             /* @var $modelClass \yii\db\ActiveRecord */
             $modelClass = $this->getModelClass();
             $baseName = Inflector::classify($modelClass::tableName());

@@ -12,9 +12,6 @@ use yii\gii\CodeFile,
 class Generator extends YiiGiiCrudGenerator
 {
 
-    public $modelClass = null;
-    public $searchModelClass = null;
-
     public function getName()
     {
         return 'Base Search Model Generator';
@@ -59,7 +56,7 @@ class Generator extends YiiGiiCrudGenerator
 
     public function beforeValidate()
     {
-        if (is_null($this->searchModelClass)) {
+        if (!strlen($this->searchModelClass)) {
             /* @var $modelClass \yii\db\ActiveRecord */
             $modelClass = $this->modelClass;
             $baseName = Inflector::classify($modelClass::tableName());

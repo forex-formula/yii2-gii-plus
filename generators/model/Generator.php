@@ -13,9 +13,8 @@ use yii\gii\CodeFile,
 class Generator extends YiiGiiCrudGenerator
 {
 
-    public $modelClass = null;
-    public $newModelClass = null;
-    public $newQueryClass = null;
+    public $newModelClass = '';
+    public $newQueryClass = '';
 
     public function getName()
     {
@@ -61,15 +60,15 @@ class Generator extends YiiGiiCrudGenerator
 
     public function beforeValidate()
     {
-        if (is_null($this->newModelClass) || is_null($this->newQueryClass)) {
+        if (!strlen($this->newModelClass) || !strlen($this->newQueryClass)) {
             /* @var $modelClass \yii\db\ActiveRecord */
             $modelClass = $this->getModelClass();
             $baseName = Inflector::classify($modelClass::tableName());
             $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $modelClass, $match) ? $match[1] : 'app';
-            if (is_null($this->newModelClass)) {
+            if (!strlen($this->newModelClass)) {
                 $this->newModelClass = $appNs . '\models\\' . $baseName;
             }
-            if (is_null($this->newQueryClass)) {
+            if (!strlen($this->newQueryClass)) {
                 $this->newQueryClass = $appNs . '\models\query\\' . $baseName . 'Query';
             }
         }
