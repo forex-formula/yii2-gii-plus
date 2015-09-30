@@ -69,7 +69,7 @@ class Generator extends YiiGiiCrudGenerator
     {
         if (!strlen($this->newModelClass) || !strlen($this->newQueryClass)) {
             /* @var $modelClass \yii\db\ActiveRecord */
-            $modelClass = $this->getModelClass();
+            $modelClass = $this->modelClass;
             $baseName = Inflector::classify($modelClass::tableName());
             $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $modelClass, $match) ? $match[1] : 'app';
             if (!strlen($this->newModelClass)) {
