@@ -82,6 +82,14 @@ class Generator extends YiiGiiModelGenerator
             $nsModelClass = $this->ns . '\\' . $this->modelClass;
             if (class_exists($nsModelClass)) {
                 $this->baseClass = get_parent_class($nsModelClass);
+                // use
+                $modelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($nsModelClass, '\\') . '.php'));
+                if (is_file($modelPath) && preg_match('~use([^;]+);~', file_get_contents($modelPath), $match)) {
+                    $use = array_filter(array_map('trim', explode(',', $match[1])), 'strlen');
+                    foreach ($use as $value) {
+                        $this->fileUseMap[preg_replace('~^.+[\\\\ ]([^\\\\ ]+)$~', '$1', $value)] = $value;
+                    }
+                }
             } else {
                 $this->baseClass = 'yii\boost\db\ActiveRecord';
             }
@@ -96,18 +104,6 @@ class Generator extends YiiGiiModelGenerator
                 $this->queryBaseClass = get_parent_class($queryNsQueryClass);
             } else {
                 $this->queryBaseClass = 'yii\boost\db\ActiveQuery';
-            }
-        }
-
-        $nsModelClass = $this->ns . '\\' . $this->modelClass;
-        if (class_exists($nsModelClass)) {
-            // use
-            $modelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($nsModelClass, '\\') . '.php'));
-            if (is_file($modelPath) && preg_match('~use([^;]+);~', file_get_contents($modelPath), $match)) {
-                $use = array_filter(array_map('trim', explode(',', $match[1])), 'strlen');
-                foreach ($use as $value) {
-                    $this->fileUseMap[preg_replace('~^.+[\\\\ ]([^\\\\ ]+)$~', '$1', $value)] = $value;
-                }
             }
         }
         return parent::beforeValidate();
