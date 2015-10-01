@@ -69,10 +69,10 @@ class Generator extends YiiGiiCrudGenerator
     {
         $this->_newModelClass = $this->newModelClass;
         if (!strlen($this->_newModelClass)) {
+            $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $this->modelClass, $match) ? $match[1] : 'app';
             /* @var $modelClass \yii\db\ActiveRecord */
             $modelClass = $this->modelClass;
             $baseName = Inflector::classify($modelClass::tableName());
-            $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $modelClass, $match) ? $match[1] : 'app';
             $this->_newModelClass = $appNs . '\models\search\\' . $baseName . 'Search';
         }
         $newModelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->_newModelClass, '\\') . '.php'));
