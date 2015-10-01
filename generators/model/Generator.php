@@ -65,22 +65,27 @@ class Generator extends YiiGiiCrudGenerator
         }
     }
 
+    private $_newModelClass = '';
+    private $_newQueryClass = '';
+
     public function generate()
     {
-        if (!strlen($this->newModelClass) || !strlen($this->newQueryClass)) {
+        $this->_newModelClass = $this->newModelClass;
+        $this->_newQueryClass = $this->newQueryClass;
+        if (!strlen($this->_newModelClass) || !strlen($this->_newQueryClass)) {
+            $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $this->modelClass, $match) ? $match[1] : 'app';
             /* @var $modelClass \yii\db\ActiveRecord */
-            $modelClass = $this->getModelClass();
+            $modelClass = $this->modelClass;
             $baseName = Inflector::classify($modelClass::tableName());
-            $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $modelClass, $match) ? $match[1] : 'app';
-            if (!strlen($this->newModelClass)) {
-                $this->newModelClass = $appNs . '\models\\' . $baseName;
+            if (!strlen($this->_newModelClass)) {
+                $this->_newModelClass = $appNs . '\models\\' . $baseName;
             }
-            if (!strlen($this->newQueryClass)) {
-                $this->newQueryClass = $appNs . '\models\query\\' . $baseName . 'Query';
+            if (!strlen($this->_newQueryClass)) {
+                $this->_newQueryClass = $appNs . '\models\query\\' . $baseName . 'Query';
             }
         }
-        $newModelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->newModelClass, '\\') . '.php'));
-        $newQueryPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->newQueryClass, '\\') . '.php'));
+        $newModelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->_newModelClass, '\\') . '.php'));
+        $newQueryPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->_newQueryClass, '\\') . '.php'));
         return [
             new CodeFile($newModelPath, $this->render('model.php')),
             new CodeFile($newQueryPath, $this->render('query.php'))
@@ -139,7 +144,7 @@ class Generator extends YiiGiiCrudGenerator
 
     public function getNewModelClass()
     {
-        return $this->newModelClass;
+        return $this->_newModelClass;
     }
 
     public function getNewModelNamespace()
@@ -154,7 +159,7 @@ class Generator extends YiiGiiCrudGenerator
 
     public function getNewQueryClass()
     {
-        return $this->newQueryClass;
+        return $this->_newQueryClass;
     }
 
     public function getNewQueryNamespace()

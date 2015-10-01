@@ -63,16 +63,19 @@ class Generator extends YiiGiiCrudGenerator
         }
     }
 
+    private $_newModelClass = '';
+
     public function generate()
     {
-        if (!strlen($this->newModelClass)) {
+        $this->_newModelClass = $this->newModelClass;
+        if (!strlen($this->_newModelClass)) {
+            $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $this->modelClass, $match) ? $match[1] : 'app';
             /* @var $modelClass \yii\db\ActiveRecord */
-            $modelClass = $this->getModelClass();
+            $modelClass = $this->modelClass;
             $baseName = Inflector::classify($modelClass::tableName());
-            $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $modelClass, $match) ? $match[1] : 'app';
-            $this->newModelClass = $appNs . '\models\search\\' . $baseName . 'Search';
+            $this->_newModelClass = $appNs . '\models\search\\' . $baseName . 'Search';
         }
-        $newModelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->newModelClass, '\\') . '.php'));
+        $newModelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->_newModelClass, '\\') . '.php'));
         return [new CodeFile($newModelPath, $this->render('search.php'))];
     }
 
@@ -102,7 +105,7 @@ class Generator extends YiiGiiCrudGenerator
 
     public function getNewModelClass()
     {
-        return $this->newModelClass;
+        return $this->_newModelClass;
     }
 
     public function getNewModelNamespace()
