@@ -12,7 +12,7 @@ use yii\gii\plus\helpers\Helper,
 class Generator extends YiiGiiModelGenerator
 {
 
-    public $ns = ''; // app\models\base
+    /*public $ns = ''; // app\models\base
     public $modelClass = '';
     public $baseClass = ''; // yii\boost\db\ActiveRecord
     public $generateLabelsFromComments = true;
@@ -22,7 +22,7 @@ class Generator extends YiiGiiModelGenerator
     public $queryBaseClass = ''; // yii\boost\db\ActiveQuery
 
     protected $fileUseMap = [];
-    protected $use = [];
+    protected $use = [];*/
 
     public function getName()
     {
@@ -34,7 +34,7 @@ class Generator extends YiiGiiModelGenerator
         return 'This generator generates a base ActiveRecord class for the specified database table.';
     }
 
-    public function rules()
+    /*public function rules()
     {
         $rules = [];
         foreach (parent::rules() as $rule) {
@@ -49,7 +49,7 @@ class Generator extends YiiGiiModelGenerator
             }
         }
         return $rules;
-    }
+    }*/
 
     public function requiredTemplates()
     {
@@ -58,13 +58,13 @@ class Generator extends YiiGiiModelGenerator
 
     public function defaultTemplate()
     {
-        $class = new ReflectionClass('yii\gii\generators\model\Generator');
+        $class = new ReflectionClass(get_parent_class(__CLASS__));
         return dirname($class->getFileName()) . '/default';
     }
 
     public function beforeValidate()
     {
-        if (!strlen($this->modelClass) || !strlen($this->queryClass)) {
+        /*if (!strlen($this->modelClass) || !strlen($this->queryClass)) {
             $baseName = Inflector::classify($this->tableName);
             if (!strlen($this->modelClass)) {
                 $this->modelClass = $baseName . 'Base';
@@ -72,11 +72,11 @@ class Generator extends YiiGiiModelGenerator
             if (!strlen($this->queryClass)) {
                 $this->queryClass = $baseName . 'QueryBase';
             }
-        }
-        if (!strlen($this->ns)) {
+        }*/
+        /*if (!strlen($this->ns)) {
             $this->ns = 'app\models\base';
-        }
-        if (!strlen($this->baseClass)) {
+        }*/
+        /*if (!strlen($this->baseClass)) {
             $nsModelClass = $this->ns . '\\' . $this->modelClass;
             if (class_exists($nsModelClass)) {
                 $this->baseClass = get_parent_class($nsModelClass);
@@ -91,28 +91,23 @@ class Generator extends YiiGiiModelGenerator
             } else {
                 $this->baseClass = 'yii\boost\db\ActiveRecord';
             }
-        }
-        if (!strlen($this->queryNs)) {
+        }*/
+        /*if (!strlen($this->queryNs)) {
             $appNs = preg_match('~^([^\\\\]+)\\\\models~', $this->ns, $match) ? $match[1] : 'app';
             $this->queryNs = $appNs . '\models\query\base';
-        }
-        if (!strlen($this->queryBaseClass)) {
+        }*/
+        /*if (!strlen($this->queryBaseClass)) {
             $queryNsQueryClass = $this->queryNs . '\\' . $this->queryClass;
             if (class_exists($queryNsQueryClass)) {
                 $this->queryBaseClass = get_parent_class($queryNsQueryClass);
             } else {
                 $this->queryBaseClass = 'yii\boost\db\ActiveQuery';
             }
-        }
+        }*/
         return parent::beforeValidate();
     }
 
-    public function validateModelClass()
-    {
-        parent::validateModelClass();
-    }
-
-    protected function generateRelations()
+    /*protected function generateRelations()
     {
         $this->use = ['Yii'];
         $allRelations = parent::generateRelations();
@@ -140,10 +135,10 @@ class Generator extends YiiGiiModelGenerator
             $allRelations[$this->tableName] = $relations;
         }
         return $allRelations;
-    }
+    }*/
 
-    public function render($template, $params = [])
+    /*public function render($template, $params = [])
     {
         return str_replace('use Yii;', Helper::getUseDirective($this->use), parent::render($template, $params));
-    }
+    }*/
 }
