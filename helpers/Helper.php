@@ -2,8 +2,7 @@
 
 namespace yii\gii\plus\helpers;
 
-use PDO,
-    Yii;
+use Yii;
 
 
 class Helper
@@ -13,16 +12,26 @@ class Helper
     {
         $db = Yii::$app->getDb();
         if (!$db->getIsActive()) {
-            $db->open();
+            //$db->open();
         }
-        switch ($db->pdo->getAttribute(PDO::ATTR_DRIVER_NAME)) {
-            case 'mysql':
-                return $db->createCommand('SHOW TABLES;')->queryColumn();
-            case 'pgsql':
-                return $db->createCommand('SELECT table_name FROM information_schema.tables WHERE table_schema = :table_schema;', [':table_schema' => 'public'])->queryColumn();
-            default:
-                return [];
+        $schema = $db->getSchema();
+        $tableNames = ['*'];
+        $schemaNames = $schema->getSchemaNames(true);
+        if (count($schemaNames)) {
+            foreach ($schemaNames as $schemaName) {
+                $tableNames[] = $schemaName . '.*';
+            }
+            foreach ($schemaNames as $schemaName) {
+                foreach ($schema->getTableNames($schemaName, true) as $tableName) {
+                    $tableNames[] = $schemaName . '.' . $tableName;
+                }
+            }
+        } else {
+            foreach ($schema->getTableNames('', true) as $tableName) {
+                $tableNames[] = $tableName;
+            }
         }
+        return $tableNames;
     }
 
     public static function getBaseModelClasses()
