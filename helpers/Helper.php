@@ -10,11 +10,7 @@ class Helper
 
     public static function getTableNames()
     {
-        $db = Yii::$app->getDb();
-        if (!$db->getIsActive()) {
-            //$db->open();
-        }
-        $schema = $db->getSchema();
+        $schema = Yii::$app->getDb()->getSchema();
         $tableNames = ['*'];
         $schemaNames = $schema->getSchemaNames(true);
         if (count($schemaNames)) {
