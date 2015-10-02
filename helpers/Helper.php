@@ -8,7 +8,7 @@ use Yii;
 class Helper
 {
 
-    public static function getTableNames()
+    public static function getTableNameAutoComplete()
     {
         $schema = Yii::$app->getDb()->getSchema();
         $tableNames = ['*'];
