@@ -3,6 +3,7 @@
 namespace yii\gii\plus\helpers;
 
 use yii\db\Connection as DbConnection,
+    yii\base\NotSupportedException,
     Yii;
 
 
@@ -13,7 +14,11 @@ class Helper
     {
         $tableNames = ['*'];
         $schema = Yii::$app->getDb()->getSchema();
-        $schemaNames = $schema->getSchemaNames(true);
+        try {
+            $schemaNames = $schema->getSchemaNames(true);
+        } catch (NotSupportedException $e) {
+            $schemaNames = [];
+        }
         if (count($schemaNames)) {
             foreach ($schemaNames as $schemaName) {
                 $tableNames[] = $schemaName . '.*';
@@ -51,7 +56,11 @@ class Helper
             if ($component instanceof DbConnection) {
                 $tableNames[$id] = ['*'];
                 $schema = $component->getSchema();
-                $schemaNames = $schema->getSchemaNames(true);
+                try {
+                    $schemaNames = $schema->getSchemaNames(true);
+                } catch (NotSupportedException $e) {
+                    $schemaNames = [];
+                }
                 if (count($schemaNames)) {
                     foreach ($schemaNames as $schemaName) {
                         $tableNames[$id] = $schemaName . '.*';
