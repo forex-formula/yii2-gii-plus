@@ -36,13 +36,13 @@ class Helper
         return $tableNames;
     }
 
-    public static function getDbConnectionDsnMap()
+    public static function getDbConnections()
     {
         $dbConnections = [];
         foreach (Yii::$app->getComponents() as $id => $definition) {
             $component = Yii::$app->get($id);
             if ($component instanceof DbConnection) {
-                $dbConnections[$id] = $component->dsn;
+                $dbConnections[$id] = $id;
             }
         }
         return $dbConnections;
