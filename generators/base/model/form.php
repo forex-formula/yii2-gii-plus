@@ -8,7 +8,7 @@ use yii\gii\plus\widgets\AutoComplete,
 /* @var $generator yii\gii\plus\generators\base\model\Generator */
 /* @var $form yii\widgets\ActiveForm */
 
-echo $form->field($generator, 'tableName')->widget(AutoComplete::classname(), ['source' => new JsExpression('function (request, response) { response([1, 2, 3]); }')]);
+echo $form->field($generator, 'tableName')->widget(AutoComplete::classname(), ['source' => new JsExpression('function (request, response) { response([\'one\', \'two\']); }')]);
 echo $form->field($generator, 'modelClass');
 echo $form->field($generator, 'ns');
 echo $form->field($generator, 'baseClass');
