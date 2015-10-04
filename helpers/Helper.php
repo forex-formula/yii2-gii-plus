@@ -42,6 +42,34 @@ class Helper
         return $source;
     }
 
+    public static function getTableNameAutoComplete2()
+    {
+        $source = [];
+        foreach (Yii::$app->getComponents() as $id => $definition) {
+            $component = Yii::$app->get($id);
+            if ($component instanceof DbConnection) {
+                $source[$id] = ['*'];
+                $schema = $component->getSchema();
+                $schemaNames = $schema->getSchemaNames(true);
+                if (count($schemaNames)) {
+                    foreach ($schemaNames as $schemaName) {
+                        $source[$id] = $schemaName . '.*';
+                    }
+                    foreach ($schemaNames as $schemaName) {
+                        foreach ($schema->getTableNames($schemaName, true) as $tableName) {
+                            $source[$id] = $schemaName . '.' . $tableName;
+                        }
+                    }
+                } else {
+                    foreach ($schema->getTableNames('', true) as $tableName) {
+                        $source[$id] = $tableName;
+                    }
+                }
+            }
+        }
+        return $source;
+    }
+
     public static function getBaseModelClasses()
     {
         $baseModelClasses = [];
