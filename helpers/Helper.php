@@ -31,18 +31,19 @@ class Helper
         return $tableNames;
     }
 
-    public static function getDbConnections()
+    public static function getDbConnectionDsnMap()
     {
         $dbConnections = [];
         foreach (Yii::$app->getComponents() as $id => $definition) {
-            if (Yii::$app->get($id) instanceof DbConnection) {
-                $dbConnections[] = $id;
+            $component = Yii::$app->get($id);
+            if ($component instanceof DbConnection) {
+                $dbConnections[$id] = $component->dsn;
             }
         }
         return $dbConnections;
     }
 
-    public static function getTableNames2()
+    public static function getDbConnectionTableNamesMap()
     {
         $tableNames = [];
         foreach (Yii::$app->getComponents() as $id => $definition) {
