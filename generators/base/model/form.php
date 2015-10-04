@@ -1,13 +1,14 @@
 <?php
 
 use yii\gii\plus\widgets\AutoComplete,
-    yii\gii\plus\helpers\Helper;
+    yii\gii\plus\helpers\Helper,
+    yii\web\JsExpression;
 
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\base\model\Generator */
 /* @var $form yii\widgets\ActiveForm */
 
-echo $form->field($generator, 'tableName')->widget(AutoComplete::classname(), ['source' => Helper::getTableNames()]);
+echo $form->field($generator, 'tableName')->widget(AutoComplete::classname(), ['source' => new JsExpression('function (request, response) { response([1, 2, 3]); }')]);
 echo $form->field($generator, 'modelClass');
 echo $form->field($generator, 'ns');
 echo $form->field($generator, 'baseClass');
