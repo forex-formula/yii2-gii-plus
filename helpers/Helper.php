@@ -8,6 +8,19 @@ use Yii;
 class Helper
 {
 
+    public static function getDbAutoComplete()
+    {
+        $source = [];
+        foreach (Yii::$app->getComponents() as $id => $definition) {
+            if (is_array($definition) && is_subclass_of($definition['class'], 'yii\db\Connection')) {
+                $source[] = $id;
+            } elseif (is_string($definition) && is_subclass_of($definition, 'yii\db\Connection')) {
+                $source[] = $id;
+            }
+        }
+        return $source;
+    }
+
     public static function getTableNameAutoComplete()
     {
         $schema = Yii::$app->getDb()->getSchema();
