@@ -11,7 +11,8 @@ echo $form->field($generator, 'tableName')->widget(AutoComplete::classname(), ['
 echo $form->field($generator, 'modelClass');
 echo $form->field($generator, 'ns');
 echo $form->field($generator, 'baseClass');
-echo $form->field($generator, 'db')->widget(AutoComplete::classname(), ['source' => Helper::getDbAutoComplete()]);
+$dbConnections = Helper::getDbConnections();
+echo $form->field($generator, 'db')->listBox(array_combine($dbConnections, $dbConnections));
 echo $form->field($generator, 'useTablePrefix')->checkbox();
 echo $form->field($generator, 'generateRelations')->checkbox();
 echo $form->field($generator, 'generateLabelsFromComments')->checkbox();

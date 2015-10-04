@@ -31,15 +31,15 @@ class Helper
         return $source;
     }
 
-    public static function getDbAutoComplete()
+    public static function getDbConnections()
     {
-        $source = [];
+        $dbConnections = [];
         foreach (Yii::$app->getComponents() as $id => $definition) {
             if (Yii::$app->get($id) instanceof DbConnection) {
-                $source[] = $id;
+                $dbConnections[] = $id;
             }
         }
-        return $source;
+        return $dbConnections;
     }
 
     public static function getTableNameAutoComplete2()
