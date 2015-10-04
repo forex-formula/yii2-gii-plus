@@ -63,16 +63,16 @@ class Helper
                 }
                 if (count($schemaNames)) {
                     foreach ($schemaNames as $schemaName) {
-                        $tableNames[$id] = $schemaName . '.*';
+                        $tableNames[$id][] = $schemaName . '.*';
                     }
                     foreach ($schemaNames as $schemaName) {
                         foreach ($schema->getTableNames($schemaName, true) as $tableName) {
-                            $tableNames[$id] = $schemaName . '.' . $tableName;
+                            $tableNames[$id][] = $schemaName . '.' . $tableName;
                         }
                     }
                 } else {
                     foreach ($schema->getTableNames('', true) as $tableName) {
-                        $tableNames[$id] = $tableName;
+                        $tableNames[$id][] = $tableName;
                     }
                 }
             }
