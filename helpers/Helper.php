@@ -11,24 +11,24 @@ class Helper
 
     public static function getTableNameAutoComplete()
     {
+        $source = ['*'];
         $schema = Yii::$app->getDb()->getSchema();
-        $tableNames = ['*'];
         $schemaNames = $schema->getSchemaNames(true);
         if (count($schemaNames)) {
             foreach ($schemaNames as $schemaName) {
-                $tableNames[] = $schemaName . '.*';
+                $source[] = $schemaName . '.*';
             }
             foreach ($schemaNames as $schemaName) {
                 foreach ($schema->getTableNames($schemaName, true) as $tableName) {
-                    $tableNames[] = $schemaName . '.' . $tableName;
+                    $source[] = $schemaName . '.' . $tableName;
                 }
             }
         } else {
             foreach ($schema->getTableNames('', true) as $tableName) {
-                $tableNames[] = $tableName;
+                $source[] = $tableName;
             }
         }
-        return $tableNames;
+        return $source;
     }
 
     public static function getDbAutoComplete()
