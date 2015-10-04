@@ -9,7 +9,7 @@ use yii\db\Connection as DbConnection,
 class Helper
 {
 
-    public static function getTableNameAutoComplete()
+    public static function getTableNames()
     {
         $source = ['*'];
         $schema = Yii::$app->getDb()->getSchema();

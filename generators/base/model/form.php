@@ -7,7 +7,7 @@ use yii\gii\plus\widgets\AutoComplete,
 /* @var $generator yii\gii\plus\generators\base\model\Generator */
 /* @var $form yii\widgets\ActiveForm */
 
-echo $form->field($generator, 'tableName')->widget(AutoComplete::classname(), ['source' => Helper::getTableNameAutoComplete()]);
+echo $form->field($generator, 'tableName')->widget(AutoComplete::classname(), ['source' => Helper::getTableNames()]);
 echo $form->field($generator, 'modelClass');
 echo $form->field($generator, 'ns');
 echo $form->field($generator, 'baseClass');
