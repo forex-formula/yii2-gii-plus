@@ -2,7 +2,8 @@
 
 namespace yii\gii\plus\helpers;
 
-use Yii;
+use yii\db\Connection as DbConnection,
+    Yii;
 
 
 class Helper
@@ -12,9 +13,7 @@ class Helper
     {
         $source = [];
         foreach (Yii::$app->getComponents() as $id => $definition) {
-            if (is_array($definition) && is_subclass_of($definition['class'], 'yii\db\Connection')) {
-                $source[] = $id;
-            } elseif (is_string($definition) && is_subclass_of($definition, 'yii\db\Connection')) {
+            if (Yii::$app->get($id) instanceof DbConnection) {
                 $source[] = $id;
             }
         }
