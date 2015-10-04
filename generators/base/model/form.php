@@ -10,7 +10,7 @@ use yii\gii\plus\widgets\AutoComplete,
 /* @var $generator yii\gii\plus\generators\base\model\Generator */
 /* @var $form yii\widgets\ActiveForm */
 
-echo $form->field($generator, 'tableName')->widget(AutoComplete::classname(), ['source' => new JsExpression('function (request, response) { var data = ' . Json::htmlEncode(Helper::getDbConnectionTableNamesMap()) . '; response(data[jQuery(\'#' . Html::getInputId($generator, 'db') . '\').val()]); }')]);
+echo $form->field($generator, 'tableName')->widget(AutoComplete::classname(), ['source' => new JsExpression('function (request, response) { var data = ' . Json::htmlEncode(Helper::getDbConnectionTableNames()) . '; response(data[jQuery(\'#' . Html::getInputId($generator, 'db') . '\').val()]); }')]);
 echo $form->field($generator, 'modelClass');
 echo $form->field($generator, 'ns');
 echo $form->field($generator, 'baseClass');

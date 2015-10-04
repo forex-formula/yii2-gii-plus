@@ -48,7 +48,7 @@ class Helper
         return $dbConnections;
     }
 
-    public static function getDbConnectionTableNamesMap()
+    public static function getDbConnectionTableNames()
     {
         $tableNames = [];
         foreach (Yii::$app->getComponents() as $id => $definition) {
