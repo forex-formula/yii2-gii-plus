@@ -9,17 +9,6 @@ use yii\db\Connection as DbConnection,
 class Helper
 {
 
-    public static function getDbAutoComplete()
-    {
-        $source = [];
-        foreach (Yii::$app->getComponents() as $id => $definition) {
-            if (Yii::$app->get($id) instanceof DbConnection) {
-                $source[] = $id;
-            }
-        }
-        return $source;
-    }
-
     public static function getTableNameAutoComplete()
     {
         $schema = Yii::$app->getDb()->getSchema();
@@ -40,6 +29,17 @@ class Helper
             }
         }
         return $tableNames;
+    }
+
+    public static function getDbAutoComplete()
+    {
+        $source = [];
+        foreach (Yii::$app->getComponents() as $id => $definition) {
+            if (Yii::$app->get($id) instanceof DbConnection) {
+                $source[] = $id;
+            }
+        }
+        return $source;
     }
 
     public static function getBaseModelClasses()
