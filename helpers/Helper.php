@@ -11,24 +11,24 @@ class Helper
 
     public static function getTableNames()
     {
-        $source = ['*'];
+        $tableNames = ['*'];
         $schema = Yii::$app->getDb()->getSchema();
         $schemaNames = $schema->getSchemaNames(true);
         if (count($schemaNames)) {
             foreach ($schemaNames as $schemaName) {
-                $source[] = $schemaName . '.*';
+                $tableNames[] = $schemaName . '.*';
             }
             foreach ($schemaNames as $schemaName) {
                 foreach ($schema->getTableNames($schemaName, true) as $tableName) {
-                    $source[] = $schemaName . '.' . $tableName;
+                    $tableNames[] = $schemaName . '.' . $tableName;
                 }
             }
         } else {
             foreach ($schema->getTableNames('', true) as $tableName) {
-                $source[] = $tableName;
+                $tableNames[] = $tableName;
             }
         }
-        return $source;
+        return $tableNames;
     }
 
     public static function getDbConnections()
