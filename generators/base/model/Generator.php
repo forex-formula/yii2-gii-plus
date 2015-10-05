@@ -12,16 +12,17 @@ use yii\gii\plus\helpers\Helper,
 class Generator extends YiiGiiModelGenerator
 {
 
-    /*public $ns = ''; // app\models\base
+    public $ns = 'app\models\base';
     public $modelClass = '';
-    public $baseClass = ''; // yii\boost\db\ActiveRecord
+    public $baseClass = 'yii\boost\db\ActiveRecord';
     public $generateLabelsFromComments = true;
+    public $useSchemaName = false;
     public $generateQuery = true;
-    public $queryNs = ''; // app\models\query\base
+    public $queryNs = 'app\models\query\base';
     public $queryClass = '';
-    public $queryBaseClass = ''; // yii\boost\db\ActiveQuery
+    public $queryBaseClass = 'yii\boost\db\ActiveQuery';
 
-    protected $fileUseMap = [];
+    /*protected $fileUseMap = [];
     protected $use = [];*/
 
     public function getName()
