@@ -15,9 +15,7 @@ class Generator extends YiiGiiModelGenerator
     public $ns = 'app\models\base';
     public $modelClass = '';
     public $baseClass = 'yii\boost\db\ActiveRecord';
-    public $generateRelations = true;
     public $generateLabelsFromComments = true;
-    public $useTablePrefix = false;
     public $useSchemaName = false;
     public $generateQuery = true;
     public $queryNs = 'app\models\query\base';
