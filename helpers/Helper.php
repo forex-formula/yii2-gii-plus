@@ -2,7 +2,8 @@
 
 namespace yii\gii\plus\helpers;
 
-use PDO,
+use yii\db\Connection as DbConnection,
+    yii\base\NotSupportedException,
     Yii;
 
 
@@ -11,18 +12,72 @@ class Helper
 
     public static function getTableNames()
     {
-        $db = Yii::$app->getDb();
-        if (!$db->getIsActive()) {
-            $db->open();
+        $tableNames = ['*'];
+        $schema = Yii::$app->getDb()->getSchema();
+        try {
+            $schemaNames = $schema->getSchemaNames(true);
+        } catch (NotSupportedException $e) {
+            $schemaNames = [];
         }
-        switch ($db->pdo->getAttribute(PDO::ATTR_DRIVER_NAME)) {
-            case 'mysql':
-                return $db->createCommand('SHOW TABLES;')->queryColumn();
-            case 'pgsql':
-                return $db->createCommand('SELECT table_name FROM information_schema.tables WHERE table_schema = :table_schema;', [':table_schema' => 'public'])->queryColumn();
-            default:
-                return [];
+        if (count($schemaNames)) {
+            foreach ($schemaNames as $schemaName) {
+                $tableNames[] = $schemaName . '.*';
+            }
+            foreach ($schemaNames as $schemaName) {
+                foreach ($schema->getTableNames($schemaName, true) as $tableName) {
+                    $tableNames[] = $schemaName . '.' . $tableName;
+                }
+            }
+        } else {
+            foreach ($schema->getTableNames('', true) as $tableName) {
+                $tableNames[] = $tableName;
+            }
         }
+        return $tableNames;
+    }
+
+    public static function getDbConnections()
+    {
+        $dbConnections = [];
+        foreach (Yii::$app->getComponents() as $id => $definition) {
+            $component = Yii::$app->get($id);
+            if ($component instanceof DbConnection) {
+                $dbConnections[$id] = $id;
+            }
+        }
+        return $dbConnections;
+    }
+
+    public static function getDbConnectionTableNames()
+    {
+        $tableNames = [];
+        foreach (Yii::$app->getComponents() as $id => $definition) {
+            $component = Yii::$app->get($id);
+            if ($component instanceof DbConnection) {
+                $tableNames[$id] = ['*'];
+                $schema = $component->getSchema();
+                try {
+                    $schemaNames = $schema->getSchemaNames(true);
+                } catch (NotSupportedException $e) {
+                    $schemaNames = [];
+                }
+                if (count($schemaNames)) {
+                    foreach ($schemaNames as $schemaName) {
+                        $tableNames[$id][] = $schemaName . '.*';
+                    }
+                    foreach ($schemaNames as $schemaName) {
+                        foreach ($schema->getTableNames($schemaName, true) as $tableName) {
+                            $tableNames[$id][] = $schemaName . '.' . $tableName;
+                        }
+                    }
+                } else {
+                    foreach ($schema->getTableNames('', true) as $tableName) {
+                        $tableNames[$id][] = $tableName;
+                    }
+                }
+            }
+        }
+        return $tableNames;
     }
 
     public static function getBaseModelClasses()

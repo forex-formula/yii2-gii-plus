@@ -50,7 +50,7 @@ class Generator extends YiiGiiCrudGenerator
 
     public function defaultTemplate()
     {
-        $class = new ReflectionClass('yii\gii\generators\crud\Generator');
+        $class = new ReflectionClass(get_parent_class(__CLASS__));
         return dirname($class->getFileName()) . '/default';
     }
 
