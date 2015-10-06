@@ -22,9 +22,6 @@ class Generator extends YiiGiiModelGenerator
     public $queryClass = '';
     public $queryBaseClass = 'yii\boost\db\ActiveQuery';
 
-    /*protected $fileUseMap = [];
-    protected $use = [];*/
-
     public function getName()
     {
         return 'Base Model Generator';
@@ -54,21 +51,14 @@ class Generator extends YiiGiiModelGenerator
         if (preg_match('~models\\\\([^\\\\]+)\\\\base$~', $this->ns, $match)) {
             $this->queryNs = preg_replace('~models\\\\([^\\\\]+)\\\\base$~', 'models\\' . $match[1] . '\base$', $this->queryNs);
         }
-        /*
-                // use
-                $modelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($nsModelClass, '\\') . '.php'));
-                if (is_file($modelPath) && preg_match('~use([^;]+);~', file_get_contents($modelPath), $match)) {
-                    $use = array_filter(array_map('trim', explode(',', $match[1])), 'strlen');
-                    foreach ($use as $value) {
-                        $this->fileUseMap[preg_replace('~^.+[\\\\ ]([^\\\\ ]+)$~', '$1', $value)] = $value;
-                    }
-                }
-        */
         return parent::beforeValidate();
     }
 
     private $_baseClass = '';
     private $_queryBaseClass = '';
+
+    private $_fileUseMap = [];
+    //private $_use = [];
 
     public function generate()
     {
@@ -83,6 +73,15 @@ class Generator extends YiiGiiModelGenerator
         $nsClassName = $this->ns . '\\' . $className;
         if (class_exists($nsClassName)) {
             $this->baseClass = get_parent_class($nsClassName);
+            // use
+            $this->_fileUseMap[$className] = [];
+            $path = Yii::getAlias('@' . str_replace('\\', '/', ltrim($nsClassName, '\\') . '.php'));
+            if (is_file($path) && preg_match('~use([^;]+);~', file_get_contents($path), $match)) {
+                $use = array_filter(array_map('trim', explode(',', $match[1])), 'strlen');
+                foreach ($use as $value) {
+                    $this->_fileUseMap[$className][preg_replace('~^.+[\\\\ ]([^\\\\ ]+)$~', '$1', $value)] = $value;
+                }
+            }
         } else {
             $this->baseClass = $this->_baseClass;
         }
