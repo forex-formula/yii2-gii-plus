@@ -93,6 +93,8 @@ class Generator extends YiiGiiModelGenerator
         $nsClassName = $this->ns . '\\' . $className;
         if (class_exists($nsClassName)) {
             $this->baseClass = get_parent_class($nsClassName);
+        } else {
+            $this->baseClass = 'yii\boost\db\ActiveRecord';
         }
         return $className;
     }
@@ -103,6 +105,8 @@ class Generator extends YiiGiiModelGenerator
         $queryNsQueryClassName = $this->queryNs . '\\' . $queryClassName;
         if (class_exists($queryNsQueryClassName)) {
             $this->queryBaseClass = get_parent_class($queryNsQueryClassName);
+        } else {
+            $this->queryBaseClass = 'yii\boost\db\ActiveQuery';
         }
         return $queryClassName;
     }
