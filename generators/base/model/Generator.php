@@ -51,6 +51,9 @@ class Generator extends YiiGiiModelGenerator
         if (preg_match('~^([^\\\\]+)\\\\models~', $this->ns, $match)) {
             $this->queryNs = preg_replace('~^([^\\\\]+)\\\\models~', $match[1] . '\models', $this->queryNs);
         }
+        if (preg_match('~models\\\\([^\\\\]+)\\\\base$~', $this->ns, $match)) {
+            $this->queryNs = preg_replace('~models\\\\([^\\\\]+)\\\\base$~', 'models\\' . $match[1] . '\base$', $this->queryNs);
+        }
         /*
                 // use
                 $modelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($nsModelClass, '\\') . '.php'));
