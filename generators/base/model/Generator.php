@@ -89,12 +89,14 @@ class Generator extends YiiGiiModelGenerator
 
     protected function generateClassName($tableName, $useSchemaName = null)
     {
-        return parent::generateClassName($tableName, $useSchemaName) . 'Base';
+        $className = parent::generateClassName($tableName, $useSchemaName) . 'Base';
+        return $className;
     }
 
     protected function generateQueryClassName($modelClassName)
     {
-        return parent::generateQueryClassName(preg_replace('~Base$~', '', $modelClassName)) . 'Base';
+        $queryClassName = parent::generateQueryClassName(preg_replace('~Base$~', '', $modelClassName)) . 'Base';
+        return $queryClassName;
     }
 
     /*protected function generateRelations()
