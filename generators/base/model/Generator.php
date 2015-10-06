@@ -90,12 +90,20 @@ class Generator extends YiiGiiModelGenerator
     protected function generateClassName($tableName, $useSchemaName = null)
     {
         $className = parent::generateClassName($tableName, $useSchemaName) . 'Base';
+        $nsClassName = $this->ns . '\\' . $className;
+        if (class_exists($nsClassName)) {
+            $this->baseClass = get_parent_class($nsClassName);
+        }
         return $className;
     }
 
     protected function generateQueryClassName($modelClassName)
     {
         $queryClassName = parent::generateQueryClassName(preg_replace('~Base$~', '', $modelClassName)) . 'Base';
+        $queryNsQueryClassName = $this->queryNs . '\\' . $queryClassName;
+        if (class_exists($queryNsQueryClassName)) {
+            $this->queryBaseClass = get_parent_class($queryNsQueryClassName);
+        }
         return $queryClassName;
     }
 
