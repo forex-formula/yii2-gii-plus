@@ -51,19 +51,7 @@ class Generator extends YiiGiiModelGenerator
         if (preg_match('~^([^\\\\]+)\\\\models~', $this->ns, $match)) {
             $this->queryNs = preg_replace('~^([^\\\\]+)\\\\models~', $match[1] . '\models', $this->queryNs);
         }
-        /*if (!strlen($this->modelClass) || !strlen($this->queryClass)) {
-            $baseName = Inflector::classify($this->tableName);
-            if (!strlen($this->modelClass)) {
-                $this->modelClass = $baseName . 'Base';
-            }
-            if (!strlen($this->queryClass)) {
-                $this->queryClass = $baseName . 'QueryBase';
-            }
-        }*/
-        /*if (!strlen($this->baseClass)) {
-            $nsModelClass = $this->ns . '\\' . $this->modelClass;
-            if (class_exists($nsModelClass)) {
-                $this->baseClass = get_parent_class($nsModelClass);
+        /*
                 // use
                 $modelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($nsModelClass, '\\') . '.php'));
                 if (is_file($modelPath) && preg_match('~use([^;]+);~', file_get_contents($modelPath), $match)) {
@@ -72,19 +60,18 @@ class Generator extends YiiGiiModelGenerator
                         $this->fileUseMap[preg_replace('~^.+[\\\\ ]([^\\\\ ]+)$~', '$1', $value)] = $value;
                     }
                 }
-            } else {
-                $this->baseClass = 'yii\boost\db\ActiveRecord';
-            }
-        }*/
-        /*if (!strlen($this->queryBaseClass)) {
-            $queryNsQueryClass = $this->queryNs . '\\' . $this->queryClass;
-            if (class_exists($queryNsQueryClass)) {
-                $this->queryBaseClass = get_parent_class($queryNsQueryClass);
-            } else {
-                $this->queryBaseClass = 'yii\boost\db\ActiveQuery';
-            }
-        }*/
+        */
         return parent::beforeValidate();
+    }
+
+    private $_baseClass = '';
+    private $_queryBaseClass = '';
+
+    public function generate()
+    {
+        $this->_baseClass = $this->baseClass;
+        $this->_queryBaseClass = $this->queryBaseClass;
+        return parent::generate();
     }
 
     protected function generateClassName($tableName, $useSchemaName = null)
@@ -94,7 +81,7 @@ class Generator extends YiiGiiModelGenerator
         if (class_exists($nsClassName)) {
             $this->baseClass = get_parent_class($nsClassName);
         } else {
-            $this->baseClass = 'yii\boost\db\ActiveRecord';
+            $this->baseClass = $this->_baseClass;
         }
         return $className;
     }
@@ -106,7 +93,7 @@ class Generator extends YiiGiiModelGenerator
         if (class_exists($queryNsQueryClassName)) {
             $this->queryBaseClass = get_parent_class($queryNsQueryClassName);
         } else {
-            $this->queryBaseClass = 'yii\boost\db\ActiveQuery';
+            $this->queryBaseClass = $this->_queryBaseClass;
         }
         return $queryClassName;
     }
