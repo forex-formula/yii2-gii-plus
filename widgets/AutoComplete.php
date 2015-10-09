@@ -9,12 +9,14 @@ class AutoComplete extends YiiJuiAutoComplete
 {
 
     /**
-     * @var array
+     * @var array|string|\yii\web\JsExpression
+     * @see http://api.jqueryui.com/autocomplete/#option-source
      */
     public $source = [];
 
     /**
      * @var int
+     * @see http://api.jqueryui.com/autocomplete/#option-minLength
      */
     public $minLength = 0;
 
