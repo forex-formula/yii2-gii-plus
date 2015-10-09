@@ -2,6 +2,7 @@
 
 namespace yii\gii\plus\widgets;
 
+use yii\helpers\Html;
 use yii\jui\AutoComplete as YiiJuiAutoComplete;
 
 class AutoComplete extends YiiJuiAutoComplete
@@ -18,12 +19,14 @@ class AutoComplete extends YiiJuiAutoComplete
     public $minLength = 0;
 
     /**
-     * @var array
+     * @inheritdoc
      */
-    public $options = [
-        'class' => 'form-control',
-        'onfocus' => 'jQuery(this).autocomplete(\'search\');'
-    ];
+    public function init()
+    {
+        $this->options['onfocus'] = 'jQuery(this).autocomplete(\'search\');';
+        Html::addCssClass($this->options, 'form-control');
+        parent::init();
+    }
 
     /**
      * @inheritdoc
