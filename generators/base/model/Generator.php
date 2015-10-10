@@ -2,7 +2,6 @@
 
 namespace yii\gii\plus\generators\base\model;
 
-use yii\gii\plus\helpers\Helper;
 use yii\helpers\Inflector;
 use ReflectionClass;
 use Yii;
@@ -99,15 +98,6 @@ class Generator extends YiiGiiModelGenerator
         $nsClassName = $this->ns . '\\' . $className;
         if (class_exists($nsClassName)) {
             $this->baseClass = get_parent_class($nsClassName);
-            // use
-            /*$this->_fileUseMap[$className] = [];
-            $path = Yii::getAlias('@' . str_replace('\\', '/', ltrim($nsClassName, '\\') . '.php'));
-            if (is_file($path) && preg_match('~use([^;]+);~', file_get_contents($path), $match)) {
-                $use = array_filter(array_map('trim', explode(',', $match[1])), 'strlen');
-                foreach ($use as $value) {
-                    $this->_fileUseMap[$className][preg_replace('~^.+[\\\\ ]([^\\\\ ]+)$~', '$1', $value)] = $value;
-                }
-            }*/
         } elseif (!is_null($this->_userBaseClass)) {
             $this->baseClass = $this->_userBaseClass;
         }
@@ -129,38 +119,31 @@ class Generator extends YiiGiiModelGenerator
         return $queryClassName;
     }
 
-    /*protected function generateRelations()
+    /**
+     * @inheritdoc
+     */
+    protected function generateRelations()
     {
-        $this->use = ['Yii'];
-        $allRelations = parent::generateRelations();
-        if (($this->ns != 'app\models') && array_key_exists($this->tableName, $allRelations)) {
-            $relations = [];
-            foreach ($allRelations[$this->tableName] as $relationName => $relation) {
+        $allRelations = [];
+        foreach (parent::generateRelations() as $tableName => $relations) {
+            $allRelations[$tableName] = [];
+            foreach ($relations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
-                if ($className == $this->modelClass) { // itself
-                    $baseName = Inflector::classify($this->tableName);
-                    $code = str_replace('(' . $className . '::className()', '(\'app\models\\' . $baseName . '\'', $code);
-                    if ($hasMany) {
-                        $relationName = Inflector::camelize(Inflector::pluralize($this->tableName));
-                    } elseif ($relationName == $className) {
-                        $relationName = $baseName;
-                    }
-                } else {
-                    if (array_key_exists($className, $this->fileUseMap)) {
-                        $this->use[] = $this->fileUseMap[$className];
+                $nsClassName = $this->ns . '\\' . $className;
+                $nsClassName1 = preg_replace('~\\\\base$~', '', $this->ns) . '\\' . preg_replace('~Base$~', '', $className);
+                if (class_exists($nsClassName1) && (get_parent_class($nsClassName1) == $nsClassName)) {
+                    if ($nsClassName1::tableName() == $tableName) {
+                        $code = str_replace('(' . $className . '::className(),', '(\'' . $nsClassName1 . '\',', $code);
                     } else {
-                        $this->use[] = 'app\models\\' . $className;
+                        $code = str_replace('(' . $className . '::className(),', '(\\' . $nsClassName1 . '::className(),', $code);
+                    }
+                    if ($hasMany) {
+                        $relationName = Inflector::pluralize(preg_replace('~Bases$~', '', $relationName));
                     }
                 }
-                $relations[$relationName] = [$code, $className, $hasMany];
+                $allRelations[$tableName][$relationName] = [$code, $className, $hasMany];
             }
-            $allRelations[$this->tableName] = $relations;
         }
         return $allRelations;
-    }*/
-
-    /*public function render($template, $params = [])
-    {
-        return str_replace('use Yii;', Helper::getUseDirective($this->use), parent::render($template, $params));
-    }*/
+    }
 }
