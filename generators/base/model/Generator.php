@@ -92,6 +92,35 @@ class Generator extends YiiGiiModelGenerator
     /**
      * @inheritdoc
      */
+    protected function generateRelations()
+    {
+        $allRelations = [];
+        foreach (parent::generateRelations() as $tableName => $relations) {
+            $allRelations[$tableName] = [];
+            foreach ($relations as $relationName => $relation) {
+                list ($code, $className, $hasMany) = $relation;
+                $nsClassName = $this->ns . '\\' . $className;
+                $nsClassName2 = preg_replace('~\\\\base$~', '', $this->ns) . '\\' . preg_replace('~Base$~', '', $className);
+                if (class_exists($nsClassName2) && (get_parent_class($nsClassName2) == $nsClassName)) {
+                    /* @var $nsClassName2 \yii\db\ActiveRecord */
+                    if ($nsClassName2::tableName() == $tableName) {
+                        $code = str_replace('(' . $className . '::className(),', '(\'' . $nsClassName2 . '\',', $code);
+                    } else {
+                        $code = str_replace('(' . $className . '::className(),', '(\\' . $nsClassName2 . '::className(),', $code);
+                    }
+                    if ($hasMany) {
+                        $relationName = Inflector::pluralize(preg_replace('~Bases$~', '', $relationName));
+                    }
+                }
+                $allRelations[$tableName][$relationName] = [$code, $className, $hasMany];
+            }
+        }
+        return $allRelations;
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function generateClassName($tableName, $useSchemaName = null)
     {
         $className = parent::generateClassName($tableName, $useSchemaName) . 'Base';
@@ -117,34 +146,5 @@ class Generator extends YiiGiiModelGenerator
             $this->queryBaseClass = $this->_userQueryBaseClass;
         }
         return $queryClassName;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function generateRelations()
-    {
-        $allRelations = [];
-        foreach (parent::generateRelations() as $tableName => $relations) {
-            $allRelations[$tableName] = [];
-            foreach ($relations as $relationName => $relation) {
-                list ($code, $className, $hasMany) = $relation;
-                $nsClassName = $this->ns . '\\' . $className;
-                $nsClassName2 = preg_replace('~\\\\base$~', '', $this->ns) . '\\' . preg_replace('~Base$~', '', $className);
-                if (class_exists($nsClassName2) && (get_parent_class($nsClassName2) == $nsClassName)) {
-                    /* @var $nsClassName2 \yii\db\ActiveRecord */
-                    if ($nsClassName2::tableName() == $tableName) {
-                        $code = str_replace('(' . $className . '::className(),', '(\'' . $nsClassName2 . '\',', $code);
-                    } else {
-                        $code = str_replace('(' . $className . '::className(),', '(\\' . $nsClassName2 . '::className(),', $code);
-                    }
-                    if ($hasMany) {
-                        $relationName = Inflector::pluralize(preg_replace('~Bases$~', '', $relationName));
-                    }
-                }
-                $allRelations[$tableName][$relationName] = [$code, $className, $hasMany];
-            }
-        }
-        return $allRelations;
     }
 }
