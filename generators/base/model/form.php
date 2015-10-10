@@ -32,7 +32,8 @@ echo $form->field($generator, 'ns')->widget(AutoComplete::classname(), [
 echo $form->field($generator, 'baseClass')->widget(AutoComplete::classname(), [
     'source' => ['yii\db\ActiveRecord', 'yii\boost\db\ActiveRecord']
 ]);
-echo $form->field($generator, 'db')->dropDownList(Helper::getDbConnections());
+$dbConnections = Helper::getDbConnections();
+echo $form->field($generator, 'db')->dropDownList(array_combine($dbConnections, $dbConnections));
 echo $form->field($generator, 'useTablePrefix')->checkbox();
 echo $form->field($generator, 'generateRelations')->checkbox();
 echo $form->field($generator, 'generateLabelsFromComments')->checkbox();
