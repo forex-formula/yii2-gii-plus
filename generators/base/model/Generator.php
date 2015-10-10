@@ -22,11 +22,17 @@ class Generator extends YiiGiiModelGenerator
     public $queryClass = '';
     public $queryBaseClass = 'yii\boost\db\ActiveQuery';
 
+    /**
+     * @inheritdoc
+     */
     public function getName()
     {
         return 'Base Model Generator';
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getDescription()
     {
         return 'This generator generates a base ActiveRecord class for the specified database table.';
@@ -54,17 +60,23 @@ class Generator extends YiiGiiModelGenerator
         return parent::beforeValidate();
     }
 
-    private $_baseClass = '';
-    private $_queryBaseClass = '';
+    /**
+     * @var string|null
+     */
+    private $_userBaseClass = null;
 
-    private $_fileUseMap = [];
+    /**
+     * @var string|null
+     */
+    private $_userQueryBaseClass = null;
 
-    //private $_use = [];
-
+    /**
+     * @inheritdoc
+     */
     public function generate()
     {
-        $this->_baseClass = $this->baseClass;
-        $this->_queryBaseClass = $this->queryBaseClass;
+        $this->_userBaseClass = $this->baseClass;
+        $this->_userQueryBaseClass = $this->queryBaseClass;
         return parent::generate();
     }
 
@@ -78,16 +90,16 @@ class Generator extends YiiGiiModelGenerator
         if (class_exists($nsClassName)) {
             $this->baseClass = get_parent_class($nsClassName);
             // use
-            $this->_fileUseMap[$className] = [];
+            /*$this->_fileUseMap[$className] = [];
             $path = Yii::getAlias('@' . str_replace('\\', '/', ltrim($nsClassName, '\\') . '.php'));
             if (is_file($path) && preg_match('~use([^;]+);~', file_get_contents($path), $match)) {
                 $use = array_filter(array_map('trim', explode(',', $match[1])), 'strlen');
                 foreach ($use as $value) {
                     $this->_fileUseMap[$className][preg_replace('~^.+[\\\\ ]([^\\\\ ]+)$~', '$1', $value)] = $value;
                 }
-            }
+            }*/
         } else {
-            $this->baseClass = $this->_baseClass;
+            $this->baseClass = $this->_userBaseClass;
         }
         return $className;
     }
@@ -102,7 +114,7 @@ class Generator extends YiiGiiModelGenerator
         if (class_exists($nsQueryClassName)) {
             $this->queryBaseClass = get_parent_class($nsQueryClassName);
         } else {
-            $this->queryBaseClass = $this->_queryBaseClass;
+            $this->queryBaseClass = $this->_userQueryBaseClass;
         }
         return $queryClassName;
     }
