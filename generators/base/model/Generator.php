@@ -2,12 +2,11 @@
 
 namespace yii\gii\plus\generators\base\model;
 
-use yii\gii\plus\helpers\Helper,
-    yii\helpers\Inflector,
-    ReflectionClass,
-    Yii,
-    yii\gii\generators\model\Generator as YiiGiiModelGenerator;
-
+use yii\gii\plus\helpers\Helper;
+use yii\helpers\Inflector;
+use ReflectionClass;
+use Yii;
+use yii\gii\generators\model\Generator as YiiGiiModelGenerator;
 
 class Generator extends YiiGiiModelGenerator
 {
