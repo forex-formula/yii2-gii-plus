@@ -13,13 +13,12 @@ class Generator extends YiiGiiModelGenerator
 {
 
     public $ns = 'app\models\base';
-    public $modelClass = '';
+    public $tableName = '*';
     public $baseClass = 'yii\boost\db\ActiveRecord';
     public $generateLabelsFromComments = true;
     public $useSchemaName = false;
     public $generateQuery = true;
     public $queryNs = 'app\models\query\base';
-    public $queryClass = '';
     public $queryBaseClass = 'yii\boost\db\ActiveQuery';
 
     /**
@@ -55,6 +54,9 @@ class Generator extends YiiGiiModelGenerator
         return dirname($class->getFileName()) . '/default';
     }
 
+    /**
+     * @inheritdoc
+     */
     public function beforeValidate()
     {
         if (preg_match('~^([^\\\\]+)\\\\models~', $this->ns, $match)) {
