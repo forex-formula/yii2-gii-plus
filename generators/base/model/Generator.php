@@ -83,7 +83,10 @@ class Generator extends YiiGiiModelGenerator
     {
         $this->_userBaseClass = $this->baseClass;
         $this->_userQueryBaseClass = $this->queryBaseClass;
-        return parent::generate();
+        $files = parent::generate();
+        $this->_userBaseClass = null;
+        $this->_userQueryBaseClass = null;
+        return $files;
     }
 
     /**
