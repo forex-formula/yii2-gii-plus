@@ -42,7 +42,7 @@ class Helper
         foreach (Yii::$app->getComponents() as $id => $definition) {
             $component = Yii::$app->get($id);
             if ($component instanceof DbConnection) {
-                $dbConnections[$id] = $id;
+                $dbConnections[] = $id;
             }
         }
         return $dbConnections;
