@@ -63,7 +63,7 @@ class Generator extends YiiGiiModelGenerator
             $this->queryNs = preg_replace('~^([^\\\\]+\\\\)models~', $match[1] . 'models', $this->queryNs);
         }
         if (preg_match('~models(\\\\(?:[^\\\\]+\\\\)+)base$~', $this->ns, $match)) {
-            $this->queryNs = preg_replace('~models(\\\\(?:[^\\\\]+\\\\)+)query$~', 'models' . $match[1] . 'query', $this->queryNs);
+            $this->queryNs = preg_replace('~models(\\\\(?:[^\\\\]+\\\\)+)query\\\\base$~', 'models' . $match[1] . 'query\base', $this->queryNs);
         }
         return parent::beforeValidate();
     }
