@@ -59,11 +59,11 @@ class Generator extends YiiGiiModelGenerator
      */
     public function beforeValidate()
     {
-        if (preg_match('~^([^\\\\]+)\\\\models~', $this->ns, $match)) {
-            $this->queryNs = preg_replace('~^([^\\\\]+)\\\\models~', $match[1] . '\models', $this->queryNs);
+        if (preg_match('~^([^\\\\]+\\\\)models~', $this->ns, $match)) {
+            $this->queryNs = preg_replace('~^([^\\\\]+\\\\)models~', $match[1] . 'models', $this->queryNs);
         }
-        if (preg_match('~models\\\\([^\\\\]+)\\\\base$~', $this->ns, $match)) {
-            $this->queryNs = preg_replace('~models\\\\([^\\\\]+)\\\\base$~', 'models\\' . $match[1] . '\base$', $this->queryNs);
+        if (preg_match('~models(\\\\(?:[^\\\\]+\\\\)+)base$~', $this->ns, $match)) {
+            $this->queryNs = preg_replace('~models(\\\\(?:[^\\\\]+\\\\)+)query$~', 'models' . $match[1] . 'query', $this->queryNs);
         }
         return parent::beforeValidate();
     }
@@ -109,7 +109,7 @@ class Generator extends YiiGiiModelGenerator
                     $this->_fileUseMap[$className][preg_replace('~^.+[\\\\ ]([^\\\\ ]+)$~', '$1', $value)] = $value;
                 }
             }*/
-        } else {
+        } elseif (!is_null($this->_userBaseClass)) {
             $this->baseClass = $this->_userBaseClass;
         }
         return $className;
@@ -124,7 +124,7 @@ class Generator extends YiiGiiModelGenerator
         $nsQueryClassName = $this->queryNs . '\\' . $queryClassName;
         if (class_exists($nsQueryClassName)) {
             $this->queryBaseClass = get_parent_class($nsQueryClassName);
-        } else {
+        } elseif (!is_null($this->_userQueryBaseClass)) {
             $this->queryBaseClass = $this->_userQueryBaseClass;
         }
         return $queryClassName;
