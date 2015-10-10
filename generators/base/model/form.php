@@ -1,10 +1,10 @@
 <?php
 
-use yii\gii\plus\widgets\AutoComplete,
-    yii\gii\plus\helpers\Helper,
-    yii\helpers\Html,
-    yii\web\JsExpression,
-    yii\helpers\Json;
+use yii\jui\autocomplete\AutoComplete;
+use yii\gii\plus\helpers\Helper;
+use yii\helpers\Html;
+use yii\web\JsExpression;
+use yii\helpers\Json;
 
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\base\model\Generator */
