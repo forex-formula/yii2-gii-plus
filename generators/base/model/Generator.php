@@ -101,7 +101,7 @@ class Generator extends YiiGiiModelGenerator
                 list ($code, $className, $hasMany) = $relation;
                 $nsClassName = $this->ns . '\\' . $className;
                 $nsClassName2 = preg_replace('~\\\\base$~', '', $this->ns) . '\\' . preg_replace('~Base$~', '', $className);
-                if (($nsClassName != $nsClassName2) && class_exists($nsClassName2) && ($nsClassName == get_parent_class($nsClassName2))) {
+                if (($nsClassName != $nsClassName2) && class_exists($nsClassName2) && (get_parent_class($nsClassName2) == $nsClassName)) {
                     /* @var $nsClassName2 string|\yii\db\ActiveRecord */
                     if ($nsClassName2::tableName() == $tableName) {
                         $code = str_replace('(' . $className . '::className(),', '(\'' . $nsClassName2 . '\',', $code);
