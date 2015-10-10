@@ -130,12 +130,13 @@ class Generator extends YiiGiiModelGenerator
             foreach ($relations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
                 $nsClassName = $this->ns . '\\' . $className;
-                $nsClassName1 = preg_replace('~\\\\base$~', '', $this->ns) . '\\' . preg_replace('~Base$~', '', $className);
-                if (class_exists($nsClassName1) && (get_parent_class($nsClassName1) == $nsClassName)) {
-                    if ($nsClassName1::tableName() == $tableName) {
-                        $code = str_replace('(' . $className . '::className(),', '(\'' . $nsClassName1 . '\',', $code);
+                $nsClassName2 = preg_replace('~\\\\base$~', '', $this->ns) . '\\' . preg_replace('~Base$~', '', $className);
+                if (class_exists($nsClassName2) && (get_parent_class($nsClassName2) == $nsClassName)) {
+                    /* @var $nsClassName2 \yii\db\ActiveRecord */
+                    if ($nsClassName2::tableName() == $tableName) {
+                        $code = str_replace('(' . $className . '::className(),', '(\'' . $nsClassName2 . '\',', $code);
                     } else {
-                        $code = str_replace('(' . $className . '::className(),', '(\\' . $nsClassName1 . '::className(),', $code);
+                        $code = str_replace('(' . $className . '::className(),', '(\\' . $nsClassName2 . '::className(),', $code);
                     }
                     if ($hasMany) {
                         $relationName = Inflector::pluralize(preg_replace('~Bases$~', '', $relationName));
