@@ -10,8 +10,20 @@ use yii\helpers\Json;
 /* @var $generator yii\gii\plus\generators\base\model\Generator */
 /* @var $form yii\widgets\ActiveForm */
 
+$jsPattern = <<<JS
+function (request, response) {
+    var data = {data};
+    response(data[jQuery('#{db}').val()]);
+}
+JS;
+
+$jsExpression = new JsExpression(strtr($jsPattern, [
+    '{data}' => Json::htmlEncode(Helper::getDbConnectionTableNames()),
+    '{db}' => Html::getInputId($generator, 'db')
+]));
+
 echo $form->field($generator, 'tableName')->widget(AutoComplete::classname(), [
-    'source' => new JsExpression('function (request, response) { var data = ' . Json::htmlEncode(Helper::getDbConnectionTableNames()) . '; response(data[jQuery(\'#' . Html::getInputId($generator, 'db') . '\').val()]); }')
+    'source' => $jsExpression
 ]);
 echo $form->field($generator, 'modelClass');
 echo $form->field($generator, 'ns');
