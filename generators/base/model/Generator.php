@@ -58,6 +58,7 @@ class Generator extends YiiGiiModelGenerator
     private $_queryBaseClass = '';
 
     private $_fileUseMap = [];
+
     //private $_use = [];
 
     public function generate()
@@ -67,6 +68,9 @@ class Generator extends YiiGiiModelGenerator
         return parent::generate();
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function generateClassName($tableName, $useSchemaName = null)
     {
         $className = parent::generateClassName($tableName, $useSchemaName) . 'Base';
@@ -88,12 +92,15 @@ class Generator extends YiiGiiModelGenerator
         return $className;
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function generateQueryClassName($modelClassName)
     {
         $queryClassName = parent::generateQueryClassName(preg_replace('~Base$~', '', $modelClassName)) . 'Base';
-        $queryNsQueryClassName = $this->queryNs . '\\' . $queryClassName;
-        if (class_exists($queryNsQueryClassName)) {
-            $this->queryBaseClass = get_parent_class($queryNsQueryClassName);
+        $nsQueryClassName = $this->queryNs . '\\' . $queryClassName;
+        if (class_exists($nsQueryClassName)) {
+            $this->queryBaseClass = get_parent_class($nsQueryClassName);
         } else {
             $this->queryBaseClass = $this->_queryBaseClass;
         }
