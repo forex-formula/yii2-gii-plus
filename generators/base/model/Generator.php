@@ -38,11 +38,17 @@ class Generator extends YiiGiiModelGenerator
         return 'This generator generates a base ActiveRecord class for the specified database table.';
     }
 
+    /**
+     * @inheritdoc
+     */
     public function requiredTemplates()
     {
         return ['model.php', 'query.php'];
     }
 
+    /**
+     * @inheritdoc
+     */
     public function defaultTemplate()
     {
         $class = new ReflectionClass(get_parent_class(__CLASS__));
