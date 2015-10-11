@@ -2,25 +2,30 @@
 
 namespace yii\gii\plus;
 
-use yii\console\Application as ConsoleApplication,
-    yii\web\Application as WebApplication,
-    Yii,
-    yii\gii\Module as YiiGiiModule;
-
+use yii\console\Application as ConsoleApplication;
+use yii\web\Application as WebApplication;
+use Yii;
+use yii\gii\Module as YiiGiiModule;
 
 class Module extends YiiGiiModule
 {
 
+    /**
+     * @inheritdoc
+     */
     public function bootstrap($app)
     {
+        parent::bootstrap($app);
         if ($app instanceof WebApplication) {
             $this->setViewPath(Yii::getAlias('@yii/gii/views'));
         } elseif ($app instanceof ConsoleApplication) {
-            $app->controllerMap[$this->id . '-plus'] = ['class' => 'yii\gii\plus\console\GenerateController'];
+            $app->controllerMap[$this->id]['class'] = 'yii\gii\plus\console\GenerateController';
         }
-        parent::bootstrap($app);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function coreGenerators()
     {
         return array_merge(parent::coreGenerators(), [
