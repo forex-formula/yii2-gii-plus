@@ -154,9 +154,13 @@ class Generator extends YiiGiiModelGenerator
     public function render($template, $params = [])
     {
         return preg_replace_callback('~@return \\\\(yii\\\\db\\\\ActiveQuery)\n\s*\*/\n\s*public function get([^\(]+)\(\)\n\s*\{\n\s*return \$this\-\>has(?:One|Many)\(([^,]+),~', function ($match) {
-            /* @var $modelClass string|\yii\db\ActiveRecord */
-            $modelClass = eval('return ' . $match[3] . ';');
-            return str_replace($match[1], get_class($modelClass::find()), $match[0]);
+            if (strpos($match[3], '\\') !== false) {
+                /* @var $modelClass string|\yii\db\ActiveRecord */
+                $modelClass = eval('return ' . $match[3] . ';');
+                return str_replace($match[1], get_class($modelClass::find()), $match[0]);
+            } else {
+                return $match[0];
+            }
         }, parent::render($template, $params));
     }
 }
