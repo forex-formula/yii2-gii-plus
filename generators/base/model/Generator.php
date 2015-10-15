@@ -166,7 +166,7 @@ class Generator extends YiiGiiModelGenerator
         }, $output);
         $output = preg_replace_callback('~@return \\\\(([^\\\\]+\\\\models\\\\(?:[^\\\\]+\\\\)*)base\\\\(\w+)Base)(?:\[\])?\|array(?:\|null)?\n\s*\*/\n\s*public function (?:all|one)\(~U', function ($match) {
             /* @var $modelClass string|\yii\db\ActiveRecord */
-            $modelClass = $match[2] . '\\' . $match[3];
+            $modelClass = $match[2] . $match[3];
             if (class_exists($modelClass)) {
                 return str_replace($match[1], $modelClass, $match[0]);
             }
