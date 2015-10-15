@@ -153,10 +153,25 @@ class Generator extends YiiGiiModelGenerator
      */
     public function render($template, $params = [])
     {
-        return preg_replace_callback('~@return \\\\(yii\\\\db\\\\ActiveQuery)\n\s*\*/\n\s*public function get([^\(]+)\(\)\n\s*\{\n\s*return \$this\-\>has(?:One|Many)\(([^,]+),~', function ($match) {
+        $output = parent::render($template, $params);
+        $output = preg_replace_callback('~@return \\\\(yii\\\\db\\\\ActiveQuery)\n\s*\*/\n\s*public function get([^\(]+)\(\)\n\s*\{\n\s*return \$this\-\>has(?:One|Many)\(([^,]+),~', function ($match) {
+            if (strpos($match[3], '\\') !== false) {
+                /* @var $modelClass string|\yii\db\ActiveRecord */
+                $modelClass = eval('return ' . $match[3] . ';');
+                if (class_exists($modelClass)) {
+                    return str_replace($match[1], get_class($modelClass::find()), $match[0]);
+                }
+            }
+            return $match[0];
+        }, $output);
+        $output = preg_replace_callback('~@return \\\\(([^\\\\]+\\\\models\\\\(?:[^\\\\]+\\\\)*base)\\\\(\w+Base))(?:\[\])?\|array(?:\|null)?\n\s*\*/\n\s*public function (?:all|one)\(~U', function ($match) {
             /* @var $modelClass string|\yii\db\ActiveRecord */
-            $modelClass = eval('return ' . $match[3] . ';');
-            return str_replace($match[1], get_class($modelClass::find()), $match[0]);
-        }, parent::render($template, $params));
+            $modelClass = preg_replace('~\\\\base$~', '', $match[2]) . '\\' . preg_replace('~Base$~', '', $match[3]);
+            if (class_exists($modelClass)) {
+                return str_replace($match[1], $modelClass, $match[0]);
+            }
+            return $match[0];
+        }, $output);
+        return $output;
     }
 }
