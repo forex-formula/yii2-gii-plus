@@ -1,6 +1,6 @@
 <?php
 
-use yii\jui\autocomplete\AutoComplete;
+use yii\jui\autocomplete2\AutoComplete;
 use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
