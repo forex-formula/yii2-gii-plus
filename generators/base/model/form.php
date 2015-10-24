@@ -1,14 +1,14 @@
 <?php
 
+/* @var $this yii\web\View */
+/* @var $generator yii\gii\plus\generators\base\model\Generator */
+/* @var $form yii\widgets\ActiveForm */
+
 use yii\jui\autocomplete2\AutoComplete;
 use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
 use yii\helpers\Json;
-
-/* @var $this yii\web\View */
-/* @var $generator yii\gii\plus\generators\base\model\Generator */
-/* @var $form yii\widgets\ActiveForm */
 
 $jsPattern = <<<JS
 function (request, response) {
