@@ -3,7 +3,7 @@
 use yii\helpers\Inflector;
 
 /* @var $this yii\web\View */
-/* @var $generator yii\gii\plus\generators\model\Generator */
+/* @var $generator yii\gii\plus\generators\extra\model\Generator */
 
 $primaryKey = $generator->getPrimaryKey();
 

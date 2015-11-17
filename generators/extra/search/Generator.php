@@ -1,6 +1,6 @@
 <?php
 
-namespace yii\gii\plus\generators\model;
+namespace yii\gii\plus\generators\extra\search;
 
 use yii\gii\CodeFile,
     yii\gii\plus\helpers\Helper,
@@ -14,22 +14,21 @@ class Generator extends YiiGiiCrudGenerator
 {
 
     public $newModelClass = '';
-    public $newQueryClass = '';
 
     public function getName()
     {
-        return 'Model Generator';
+        return 'Search Model Generator';
     }
 
     public function getDescription()
     {
-        return 'This generator generates an ActiveRecord class for the specified base ActiveRecord class.';
+        return '';
     }
 
     public function attributes()
     {
         $attributes = array_diff(parent::attributes(), ['controllerClass', 'viewPath', 'baseControllerClass', 'indexWidgetType', 'searchModelClass']);
-        return array_merge($attributes, ['newModelClass', 'newQueryClass']);
+        return array_merge($attributes, ['newModelClass']);
     }
 
     public function rules()
@@ -43,7 +42,6 @@ class Generator extends YiiGiiCrudGenerator
             $key = array_search('searchModelClass', $rule[0]);
             if ($key !== false) {
                 $rule[0][$key] = 'newModelClass';
-                $rule[0][] = 'newQueryClass';
             }
             $rule[0] = array_intersect($rule[0], $attributes);
             if (count($rule[0])) {
@@ -55,7 +53,7 @@ class Generator extends YiiGiiCrudGenerator
 
     public function requiredTemplates()
     {
-        return ['model.php', 'query.php'];
+        return ['search.php'];
     }
 
     public function validateNewClass($attribute, $params)
@@ -66,30 +64,19 @@ class Generator extends YiiGiiCrudGenerator
     }
 
     private $_newModelClass = '';
-    private $_newQueryClass = '';
 
     public function generate()
     {
         $this->_newModelClass = $this->newModelClass;
-        $this->_newQueryClass = $this->newQueryClass;
-        if (!strlen($this->_newModelClass) || !strlen($this->_newQueryClass)) {
+        if (!strlen($this->_newModelClass)) {
             $appNs = preg_match('~^([^\\\\]+)\\\\models\\\\~', $this->modelClass, $match) ? $match[1] : 'app';
             /* @var $modelClass \yii\db\ActiveRecord */
             $modelClass = $this->modelClass;
             $baseName = Inflector::classify($modelClass::tableName());
-            if (!strlen($this->_newModelClass)) {
-                $this->_newModelClass = $appNs . '\models\\' . $baseName;
-            }
-            if (!strlen($this->_newQueryClass)) {
-                $this->_newQueryClass = $appNs . '\models\query\\' . $baseName . 'Query';
-            }
+            $this->_newModelClass = $appNs . '\models\search\\' . $baseName . 'Search';
         }
         $newModelPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->_newModelClass, '\\') . '.php'));
-        $newQueryPath = Yii::getAlias('@' . str_replace('\\', '/', ltrim($this->_newQueryClass, '\\') . '.php'));
-        return [
-            new CodeFile($newModelPath, $this->render('model.php')),
-            new CodeFile($newQueryPath, $this->render('query.php'))
-        ];
+        return [new CodeFile($newModelPath, $this->render('search.php'))];
     }
 
     public function getModelClass()
@@ -116,32 +103,6 @@ class Generator extends YiiGiiCrudGenerator
         return $modelAlias;
     }
 
-    public function getQueryClass()
-    {
-        /* @var $modelClass \yii\db\BaseActiveRecord */
-        $modelClass = $this->getModelClass();
-        return get_class($modelClass::find());
-    }
-
-    public function getQueryNamespace()
-    {
-        return StringHelper::dirname(ltrim($this->getQueryClass(), '\\'));
-    }
-
-    public function getQueryName()
-    {
-        return StringHelper::basename($this->getQueryClass());
-    }
-
-    public function getQueryAlias()
-    {
-        $queryAlias = $this->getQueryName();
-        if ($queryAlias == $this->getNewQueryName()) {
-            $queryAlias .= 'Base';
-        }
-        return $queryAlias;
-    }
-
     public function getNewModelClass()
     {
         return $this->_newModelClass;
@@ -157,24 +118,9 @@ class Generator extends YiiGiiCrudGenerator
         return StringHelper::basename($this->getNewModelClass());
     }
 
-    public function getNewQueryClass()
+    public function getUseDirective()
     {
-        return $this->_newQueryClass;
-    }
-
-    public function getNewQueryNamespace()
-    {
-        return StringHelper::dirname(ltrim($this->getNewQueryClass(), '\\'));
-    }
-
-    public function getNewQueryName()
-    {
-        return StringHelper::basename($this->getNewQueryClass());
-    }
-
-    public function getModelUseDirective()
-    {
-        $use = ['Yii'];
+        $use = ['yii\base\Model'];
         if ($this->getModelNamespace() != $this->getNewModelNamespace()) {
             $modelAlias = $this->getModelAlias();
             if ($modelAlias == $this->getModelName()) {
@@ -183,38 +129,10 @@ class Generator extends YiiGiiCrudGenerator
                 $use[] = $this->getModelClass() . ' as ' . $modelAlias;
             }
         }
-        if ($this->getNewQueryNamespace() != $this->getNewModelNamespace()) {
-            $use[] = $this->getNewQueryClass();
-        }
         if (count($use)) {
             return Helper::getUseDirective($use) . "\n\n";
         } else {
             return '';
         }
-    }
-
-    public function getQueryUseDirective()
-    {
-        $use = [];
-        if ($this->getQueryNamespace() != $this->getNewQueryNamespace()) {
-            $queryAlias = $this->getQueryAlias();
-            if ($queryAlias == $this->getQueryName()) {
-                $use[] = $this->getQueryClass();
-            } else {
-                $use[] = $this->getQueryClass() . ' as ' . $queryAlias;
-            }
-        }
-        if (count($use)) {
-            return Helper::getUseDirective($use) . "\n\n";
-        } else {
-            return '';
-        }
-    }
-
-    public function getPrimaryKey()
-    {
-        /* @var $modelClass \yii\db\BaseActiveRecord */
-        $modelClass = $this->getModelClass();
-        return $modelClass::primaryKey();
     }
 }
