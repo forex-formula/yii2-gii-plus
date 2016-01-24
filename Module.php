@@ -26,7 +26,7 @@ class Module extends YiiGiiModule
     protected function coreGenerators()
     {
         return array_merge(parent::coreGenerators(), [
-            'base-model' => ['class' => 'yii\gii\plus\generators\base\model\Generator']
+            'basemodel' => ['class' => 'yii\gii\plus\generators\base\model\Generator']
         ]);
     }
 }
