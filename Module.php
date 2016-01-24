@@ -2,11 +2,11 @@
 
 namespace yii\gii\plus;
 
+use yii\gii\Module as GiiModule;
 use yii\web\Application as WebApplication;
 use Yii;
-use yii\gii\Module as YiiGiiModule;
 
-class Module extends YiiGiiModule
+class Module extends GiiModule
 {
 
     /**
