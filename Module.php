@@ -19,4 +19,14 @@ class Module extends YiiGiiModule
             $this->setViewPath(Yii::getAlias('@yii/gii/views'));
         }
     }
+
+    /**
+     * @inheritdoc
+     */
+    protected function coreGenerators()
+    {
+        return array_merge(parent::coreGenerators(), [
+            'base-model' => ['class' => 'yii\gii\plus\generators\base\model\Generator']
+        ]);
+    }
 }
