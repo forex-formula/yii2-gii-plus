@@ -4,6 +4,7 @@ namespace yii\gii\plus\generators\base\model;
 
 use yii\db\Connection;
 use yii\gii\generators\model\Generator as ModelGenerator;
+use ReflectionClass;
 use Yii;
 
 class Generator extends ModelGenerator
@@ -63,7 +64,11 @@ class Generator extends ModelGenerator
                 $rules[] = $rule;
             }
         }
-        return $rules;
+        return array_merge($rules, [
+            ['queryNs', 'default', 'value' => function (Generator $model, $attribute) {
+                return preg_replace('~\\\\models(\\\\|$)~i', '\models\query$1', $model->ns);
+            }]
+        ]);
     }
 
     /**
@@ -80,6 +85,15 @@ class Generator extends ModelGenerator
     public function requiredTemplates()
     {
         return ['model.php', 'query.php'];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function defaultTemplate()
+    {
+        $class = new ReflectionClass(get_parent_class(__CLASS__));
+        return dirname($class->getFileName()) . '/default';
     }
 
     /**
