@@ -49,9 +49,37 @@ class Generator extends ModelGenerator
     /**
      * @inheritdoc
      */
+    public function rules()
+    {
+        $rules = [];
+        foreach (parent::rules() as $rule) {
+            if (!is_array($rule[0])) {
+                $rule[0] = [$rule[0]];
+            }
+            if ($rule[1] == 'required') {
+                $rule[0] = array_diff($rule[0], ['queryNs']);
+            }
+            if (count($rule[0])) {
+                $rules[] = $rule;
+            }
+        }
+        return $rules;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function autoCompleteData()
     {
         return [];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function requiredTemplates()
+    {
+        return ['model.php', 'query.php'];
     }
 
     /**
