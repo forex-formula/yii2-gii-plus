@@ -20,6 +20,14 @@ class Generator extends ModelGenerator
     }
 
     /**
+     * @inheritdoc
+     */
+    public function autoCompleteData()
+    {
+        return [];
+    }
+
+    /**
      * @return array
      */
     public function getDbListItems()
