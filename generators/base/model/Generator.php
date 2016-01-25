@@ -9,7 +9,34 @@ use Yii;
 class Generator extends ModelGenerator
 {
 
+    public $db = 'db';
+    public $ns = 'app\models\base';
+    public $tableName = '*';
+    public $modelClass;
+    public $baseClass = 'yii\db\ActiveRecord';
+    public $generateRelations = true;
+    public $generateLabelsFromComments = false;
+    public $useTablePrefix = false;
+    public $useSchemaName = true;
     public $generateQuery = true;
+    public $queryNs;
+    public $queryClass;
+    public $queryBaseClass = 'yii\db\ActiveQuery';
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+        if (Yii::getAlias('@common', false)) {
+            $this->ns = 'common\models\base';
+        }
+        if (Yii::getAlias('@yii\boost', false)) {
+            $this->baseClass = 'yii\boost\db\ActiveRecord';
+            $this->queryBaseClass = 'yii\boost\db\ActiveQuery';
+        }
+    }
 
     /**
      * @inheritdoc
