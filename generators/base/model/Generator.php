@@ -102,14 +102,15 @@ class Generator extends ModelGenerator
     /**
      * @var Connection[]
      */
-    protected $dbConnections = [];
+    protected $dbConnections;
 
     /**
      * @return Connection[]
      */
     protected function getDbConnections()
     {
-        if (!count($this->dbConnections)) {
+        if (is_null($this->dbConnections)) {
+            $this->dbConnections = [];
             foreach (Yii::$app->getComponents() as $id => $definition) {
                 $db = Yii::$app->get($id);
                 if ($db instanceof Connection) {
@@ -118,6 +119,22 @@ class Generator extends ModelGenerator
             }
         }
         return $this->dbConnections;
+    }
+
+    /**
+     * @var array
+     */
+    protected $nsPrefixes;
+
+    /**
+     * @return array
+     */
+    protected function getNsPrefixes()
+    {
+        if (is_null($this->nsPrefixes)) {
+            $this->nsPrefixes = ['app', 'backend', 'common', 'console', 'frontend'];
+        }
+        return $this->nsPrefixes;
     }
 
     /**
@@ -152,11 +169,11 @@ class Generator extends ModelGenerator
         $data = [];
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = [];
-            foreach (['app', 'backend', 'common', 'console', 'frontend'] as $prefix) {
-                if (Yii::getAlias('@' . $prefix . '/models', false)) {
+            foreach ($this->getNsPrefixes() as $nsPrefix) {
+                if (Yii::getAlias('@' . $nsPrefix . '/models', false)) {
                     $data[$id] = array_merge($data[$id], [
-                        $prefix . '\models\base',
-                        $prefix . '\models\\' . $id . '\base'
+                        $nsPrefix . '\models\base',
+                        $nsPrefix . '\models\\' . $id . '\base'
                     ]);
                 }
             }
@@ -172,11 +189,11 @@ class Generator extends ModelGenerator
         $data = [];
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = [];
-            foreach (['app', 'backend', 'common', 'console', 'frontend'] as $prefix) {
-                if (Yii::getAlias('@' . $prefix . '/models', false)) {
+            foreach ($this->getNsPrefixes() as $nsPrefix) {
+                if (Yii::getAlias('@' . $nsPrefix . '/models', false)) {
                     $data[$id] = array_merge($data[$id], [
-                        $prefix . '\models\query\base',
-                        $prefix . '\models\\' . $id . '\query\base'
+                        $nsPrefix . '\models\query\base',
+                        $nsPrefix . '\models\\' . $id . '\query\base'
                     ]);
                 }
             }
