@@ -100,18 +100,24 @@ class Generator extends ModelGenerator
     }
 
     /**
+     * @var Connection[]
+     */
+    protected $dbConnections = [];
+
+    /**
      * @return Connection[]
      */
     protected function getDbConnections()
     {
-        $dbConnections = [];
-        foreach (Yii::$app->getComponents() as $id => $definition) {
-            $db = Yii::$app->get($id);
-            if ($db instanceof Connection) {
-                $dbConnections[$id] = $db;
+        if (!count($this->dbConnections)) {
+            foreach (Yii::$app->getComponents() as $id => $definition) {
+                $db = Yii::$app->get($id);
+                if ($db instanceof Connection) {
+                    $this->dbConnections[$id] = $db;
+                }
             }
         }
-        return $dbConnections;
+        return $this->dbConnections;
     }
 
     /**
