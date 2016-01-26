@@ -210,7 +210,14 @@ class Generator extends ModelGenerator
         return array_combine($ids, $ids);
     }
 
+    /**
+     * @var string
+     */
     protected $commonBaseClass;
+
+    /**
+     * @var string
+     */
     protected $commonQueryBaseClass;
 
     /**
