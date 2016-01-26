@@ -146,11 +146,11 @@ class Generator extends ModelGenerator
         $data = [];
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = [];
-            foreach (['app', 'backend', 'common', 'console', 'frontend'] as $alias) {
-                if (Yii::getAlias('@' . $alias, false)) {
+            foreach (['app', 'backend', 'common', 'console', 'frontend'] as $prefix) {
+                if (Yii::getAlias('@' . $prefix . '/models', false)) {
                     $data[$id] = array_merge($data[$id], [
-                        $alias . '\models\base',
-                        $alias . '\models\\' . $id . '\base'
+                        $prefix . '\models\base',
+                        $prefix . '\models\\' . $id . '\base'
                     ]);
                 }
             }
@@ -166,11 +166,11 @@ class Generator extends ModelGenerator
         $data = [];
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = [];
-            foreach (['app', 'backend', 'common', 'console', 'frontend'] as $alias) {
-                if (Yii::getAlias('@' . $alias, false)) {
+            foreach (['app', 'backend', 'common', 'console', 'frontend'] as $prefix) {
+                if (Yii::getAlias('@' . $prefix . '/models', false)) {
                     $data[$id] = array_merge($data[$id], [
-                        $alias . '\models\query\base',
-                        $alias . '\models\\' . $id . '\query\base'
+                        $prefix . '\models\query\base',
+                        $prefix . '\models\\' . $id . '\query\base'
                     ]);
                 }
             }
