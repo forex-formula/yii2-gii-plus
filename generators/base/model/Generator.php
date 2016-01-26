@@ -3,6 +3,9 @@
 namespace yii\gii\plus\generators\base\model;
 
 use yii\db\Connection;
+use yii\helpers\Html;
+use yii\web\JsExpression;
+use yii\helpers\Json;
 use yii\gii\generators\model\Generator as ModelGenerator;
 use ReflectionClass;
 use Yii;
@@ -74,6 +77,17 @@ class Generator extends ModelGenerator
     /**
      * @inheritdoc
      */
+    public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(), [
+            'modelClass' => 'Base Model Class',
+            'queryClass' => 'Base ActiveQuery Class'
+        ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function autoCompleteData()
     {
         return [];
@@ -97,16 +111,50 @@ class Generator extends ModelGenerator
     }
 
     /**
+     * @return Connection[]
+     */
+    protected function getDbConnections()
+    {
+        $dbConnections = [];
+        foreach (Yii::$app->getComponents() as $id => $definition) {
+            $db = Yii::$app->get($id);
+            if ($db instanceof Connection) {
+                $dbConnections[$id] = $db;
+            }
+        }
+        return $dbConnections;
+    }
+
+    /**
+     * @param array $data
+     * @return JsExpression
+     */
+    protected function createAutoComplete(array $data)
+    {
+        return new JsExpression('function (request, response) { response(' . Json::htmlEncode($data) . '[jQuery(\'#' . Html::getInputId($this, 'db') . '\').val()]); }');
+    }
+
+    /**
+     * @return JsExpression
+     */
+    public function getTableNameAutoComplete()
+    {
+        $tableNameListItems = [];
+        foreach ($this->getDbConnections() as $id => $db) {
+            $tableNameListItems[$id] = ['*'];
+            foreach ($db->getSchema()->getTableNames() as $tableName) {
+                $tableNameListItems[$id][] = $tableName;
+            }
+        }
+        return $this->createAutoComplete($tableNameListItems);
+    }
+
+    /**
      * @return array
      */
     public function getDbListItems()
     {
-        $dbListItems = [];
-        foreach (Yii::$app->getComponents() as $id => $definition) {
-            if (Yii::$app->get($id) instanceof Connection) {
-                $dbListItems[$id] = $id;
-            }
-        }
-        return $dbListItems;
+        $ids = array_keys($this->getDbConnections());
+        return array_combine($ids, $ids);
     }
 }

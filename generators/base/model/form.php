@@ -6,7 +6,9 @@
 
 use yii\jui\autosearch\AutoComplete;
 
-echo $form->field($generator, 'tableName');
+echo $form->field($generator, 'tableName')->widget(AutoComplete::className(), [
+    'source' => $generator->getTableNameAutoComplete()
+]);
 echo $form->field($generator, 'modelClass');
 echo $form->field($generator, 'ns')->widget(AutoComplete::className(), [
     'source' => [
