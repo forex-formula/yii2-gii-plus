@@ -33,10 +33,10 @@ class Generator extends ModelGenerator
     public function init()
     {
         parent::init();
-        if (Yii::getAlias('@common', false)) {
+        if (Yii::getAlias('@common/models', false)) {
             $this->ns = 'common\models\base';
         }
-        if (Yii::getAlias('@yii\boost', false)) {
+        if (Yii::getAlias('@yii/boost/db', false)) {
             $this->baseClass = 'yii\boost\db\ActiveRecord';
             $this->queryBaseClass = 'yii\boost\db\ActiveQuery';
         }
@@ -185,5 +185,58 @@ class Generator extends ModelGenerator
     {
         $ids = array_keys($this->getDbConnections());
         return array_combine($ids, $ids);
+    }
+
+    /**
+     * @var string|null
+     */
+    protected $commonBaseClass = null;
+
+    /**
+     * @var string|null
+     */
+    protected $commonQueryBaseClass = null;
+
+    /**
+     * @inheritdoc
+     */
+    public function generate()
+    {
+        $this->commonBaseClass = $this->baseClass;
+        $this->commonQueryBaseClass = $this->queryBaseClass;
+        $files = parent::generate();
+        $this->commonBaseClass = null;
+        $this->commonQueryBaseClass = null;
+        return $files;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function generateClassName($tableName, $useSchemaName = null)
+    {
+        $className = parent::generateClassName($tableName, $useSchemaName) . 'Base';
+        $nsClassName = $this->ns . '\\' . $className;
+        if (class_exists($nsClassName)) {
+            $this->baseClass = get_parent_class($nsClassName);
+        } elseif (!is_null($this->commonBaseClass)) {
+            $this->baseClass = $this->commonBaseClass;
+        }
+        return $className;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function generateQueryClassName($modelClassName)
+    {
+        $queryClassName = parent::generateQueryClassName(preg_replace('~Base$~', '', $modelClassName)) . 'Base';
+        $nsQueryClassName = $this->queryNs . '\\' . $queryClassName;
+        if (class_exists($nsQueryClassName)) {
+            $this->queryBaseClass = get_parent_class($nsQueryClassName);
+        } elseif (!is_null($this->commonQueryBaseClass)) {
+            $this->queryBaseClass = $this->commonQueryBaseClass;
+        }
+        return $queryClassName;
     }
 }
