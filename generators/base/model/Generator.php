@@ -69,7 +69,7 @@ class Generator extends ModelGenerator
         }
         return array_merge($rules, [
             ['queryNs', 'default', 'value' => function (Generator $model, $attribute) {
-                return preg_replace('~\\\\models(\\\\|$)~i', '\models\query$1', $model->ns);
+                return preg_replace('~\\\\base$~', '\query\base', $model->ns);
             }]
         ]);
     }
@@ -139,14 +139,54 @@ class Generator extends ModelGenerator
      */
     public function getTableNameAutoComplete()
     {
-        $tableNameListItems = [];
+        $data = [];
         foreach ($this->getDbConnections() as $id => $db) {
-            $tableNameListItems[$id] = ['*'];
+            $data[$id] = ['*'];
             foreach ($db->getSchema()->getTableNames() as $tableName) {
-                $tableNameListItems[$id][] = $tableName;
+                $data[$id][] = $tableName;
             }
         }
-        return $this->createAutoComplete($tableNameListItems);
+        return $this->createAutoComplete($data);
+    }
+
+    /**
+     * @return JsExpression
+     */
+    public function getNsAutoComplete()
+    {
+        $data = [];
+        foreach ($this->getDbConnections() as $id => $db) {
+            $data[$id] = [];
+            foreach (['app', 'backend', 'common', 'console', 'frontend'] as $alias) {
+                if (Yii::getAlias('@' . $alias, false)) {
+                    $data[$id] = array_merge($data[$id], [
+                        $alias . '\models\base',
+                        $alias . '\models\\' . $id . '\base'
+                    ]);
+                }
+            }
+        }
+        return $this->createAutoComplete($data);
+    }
+
+    /**
+     * @return JsExpression
+     */
+    public function getQueryNsAutoComplete()
+    {
+        $data = [];
+        foreach ($this->getDbConnections() as $id => $db) {
+            $data[$id] = [];
+            foreach (['app', 'backend', 'common', 'console', 'frontend'] as $alias) {
+                if (Yii::getAlias('@' . $alias, false)) {
+                    $data[$id] = array_merge($data[$id], [
+                        $alias . '\models\query\base',
+                        $alias . '\models\\' . $id . '\query\base'
+                    ]);
+                }
+            }
+        }
+        return $this->createAutoComplete($data);
     }
 
     /**
