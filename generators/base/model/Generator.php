@@ -187,15 +187,8 @@ class Generator extends ModelGenerator
         return array_combine($ids, $ids);
     }
 
-    /**
-     * @var string|null
-     */
-    protected $commonBaseClass = null;
-
-    /**
-     * @var string|null
-     */
-    protected $commonQueryBaseClass = null;
+    protected $commonBaseClass;
+    protected $commonQueryBaseClass;
 
     /**
      * @inheritdoc
@@ -205,8 +198,8 @@ class Generator extends ModelGenerator
         $this->commonBaseClass = $this->baseClass;
         $this->commonQueryBaseClass = $this->queryBaseClass;
         $files = parent::generate();
-        $this->commonBaseClass = null;
-        $this->commonQueryBaseClass = null;
+        $this->baseClass = $this->commonBaseClass;
+        $this->queryBaseClass = $this->commonQueryBaseClass;
         return $files;
     }
 
@@ -219,7 +212,7 @@ class Generator extends ModelGenerator
         $nsClassName = $this->ns . '\\' . $className;
         if (class_exists($nsClassName)) {
             $this->baseClass = get_parent_class($nsClassName);
-        } elseif (!is_null($this->commonBaseClass)) {
+        } else {
             $this->baseClass = $this->commonBaseClass;
         }
         return $className;
@@ -234,7 +227,7 @@ class Generator extends ModelGenerator
         $nsQueryClassName = $this->queryNs . '\\' . $queryClassName;
         if (class_exists($nsQueryClassName)) {
             $this->queryBaseClass = get_parent_class($nsQueryClassName);
-        } elseif (!is_null($this->commonQueryBaseClass)) {
+        } else {
             $this->queryBaseClass = $this->commonQueryBaseClass;
         }
         return $queryClassName;
