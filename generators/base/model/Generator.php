@@ -77,17 +77,6 @@ class Generator extends ModelGenerator
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
-        return array_merge(parent::attributeLabels(), [
-            'modelClass' => 'Base Model Class',
-            'queryClass' => 'Base ActiveQuery Class'
-        ]);
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function autoCompleteData()
     {
         return [];
