@@ -132,7 +132,12 @@ class Generator extends ModelGenerator
     protected function getNsPrefixes()
     {
         if (is_null($this->nsPrefixes)) {
-            $this->nsPrefixes = ['app', 'backend', 'common', 'console', 'frontend'];
+            $this->nsPrefixes = [];
+            foreach (['app', 'backend', 'common', 'console', 'frontend'] as $prefix) {
+                if (Yii::getAlias('@' . $prefix . '/models', false)) {
+                    $this->nsPrefixes[] = $prefix . '\models';
+                }
+            }
         }
         return $this->nsPrefixes;
     }
@@ -170,12 +175,10 @@ class Generator extends ModelGenerator
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = [];
             foreach ($this->getNsPrefixes() as $nsPrefix) {
-                if (Yii::getAlias('@' . $nsPrefix . '/models', false)) {
-                    $data[$id] = array_merge($data[$id], [
-                        $nsPrefix . '\models\base',
-                        $nsPrefix . '\models\\' . $id . '\base'
-                    ]);
-                }
+                $data[$id] = array_merge($data[$id], [
+                    $nsPrefix . '\base',
+                    $nsPrefix . '\\' . $id . '\base'
+                ]);
             }
         }
         return $this->createAutoComplete($data);
@@ -190,12 +193,10 @@ class Generator extends ModelGenerator
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = [];
             foreach ($this->getNsPrefixes() as $nsPrefix) {
-                if (Yii::getAlias('@' . $nsPrefix . '/models', false)) {
-                    $data[$id] = array_merge($data[$id], [
-                        $nsPrefix . '\models\query\base',
-                        $nsPrefix . '\models\\' . $id . '\query\base'
-                    ]);
-                }
+                $data[$id] = array_merge($data[$id], [
+                    $nsPrefix . '\query\base',
+                    $nsPrefix . '\\' . $id . '\query\base'
+                ]);
             }
         }
         return $this->createAutoComplete($data);
