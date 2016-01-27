@@ -318,4 +318,19 @@ class Generator extends ModelGenerator
         }
         return $queryClassName;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function render($template, $params = [])
+    {
+        $output = parent::render($template, $params);
+        $nsClassName = $this->ns . '\\' . $params['className'];
+        if (class_exists($nsClassName)) {
+            $output = preg_replace_callback('~@return \\\\(yii\\\\db\\\\ActiveQuery)\s+\*/\s+public function ([^\(]+)\(\)~', function ($match) use ($nsClassName) {
+                return str_replace($match[1], get_class(call_user_func([new $nsClassName, $match[2]])), $match[0]);
+            }, $output);
+        }
+        return $output;
+    }
 }
