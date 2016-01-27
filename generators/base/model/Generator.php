@@ -156,23 +156,20 @@ class Generator extends ModelGenerator
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = ['*'];
             $schema = $db->getSchema();
+            foreach ($schema->getTableNames('', true) as $tableName) {
+                $data[$id][] = $tableName;
+            }
             try {
                 $schemaNames = $schema->getSchemaNames(true);
             } catch (NotSupportedException $e) {
                 $schemaNames = [];
             }
-            if (count($schemaNames)) {
-                foreach ($schemaNames as $schemaName) {
-                    $data[$id][] = $schemaName . '.*';
-                }
-                foreach ($schemaNames as $schemaName) {
-                    foreach ($schema->getTableNames($schemaName, true) as $tableName) {
-                        $data[$id][] = $schemaName . '.' . $tableName;
-                    }
-                }
-            } else {
-                foreach ($schema->getTableNames('', true) as $tableName) {
-                    $data[$id][] = $tableName;
+            foreach ($schemaNames as $schemaName) {
+                $data[$id][] = $schemaName . '.*';
+            }
+            foreach ($schemaNames as $schemaName) {
+                foreach ($schema->getTableNames($schemaName, true) as $tableName) {
+                    $data[$id][] = $schemaName . '.' . $tableName;
                 }
             }
         }
@@ -187,11 +184,20 @@ class Generator extends ModelGenerator
         $data = [];
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = [];
+            try {
+                $schemaNames = $db->getSchema()->getSchemaNames(true);
+            } catch (NotSupportedException $e) {
+                $schemaNames = [];
+            }
             foreach ($this->getNsPrefixes() as $nsPrefix) {
-                $data[$id] = array_merge($data[$id], [
-                    $nsPrefix . '\base',
-                    $nsPrefix . '\\' . $id . '\base'
-                ]);
+                $data[$id][] = $nsPrefix . '\base';
+                foreach ($schemaNames as $schemaName) {
+                    $data[$id][] = $nsPrefix . '\\' . $schemaName . '\base';
+                }
+                $data[$id][] = $nsPrefix . '\\' . $id . '\base';
+                foreach ($schemaNames as $schemaName) {
+                    $data[$id][] = $nsPrefix . '\\' . $id . '\\' . $schemaName . '\base';
+                }
             }
         }
         return $this->createAutoComplete($data);
@@ -226,11 +232,20 @@ class Generator extends ModelGenerator
         $data = [];
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = [];
+            try {
+                $schemaNames = $db->getSchema()->getSchemaNames(true);
+            } catch (NotSupportedException $e) {
+                $schemaNames = [];
+            }
             foreach ($this->getNsPrefixes() as $nsPrefix) {
-                $data[$id] = array_merge($data[$id], [
-                    $nsPrefix . '\query\base',
-                    $nsPrefix . '\\' . $id . '\query\base'
-                ]);
+                $data[$id][] = $nsPrefix . '\query\base';
+                foreach ($schemaNames as $schemaName) {
+                    $data[$id][] = $nsPrefix . '\\' . $schemaName . '\query\base';
+                }
+                $data[$id][] = $nsPrefix . '\\' . $id . '\query\base';
+                foreach ($schemaNames as $schemaName) {
+                    $data[$id][] = $nsPrefix . '\\' . $id . '\\' . $schemaName . '\query\base';
+                }
             }
         }
         return $this->createAutoComplete($data);
