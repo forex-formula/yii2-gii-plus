@@ -14,13 +14,11 @@ echo $form->field($generator, 'ns')->widget(AutoComplete::className(), [
     'source' => $generator->getNsAutoComplete()
 ]);
 echo $form->field($generator, 'baseClass')->widget(AutoComplete::className(), [
-    'source' => [
-        'yii\db\ActiveRecord',
-        'yii\boost\db\ActiveRecord'
-    ]
+    'source' => $generator->getBaseClassAutoComplete()
 ]);
 echo $form->field($generator, 'db')->dropDownList($generator->getDbListItems());
 echo $form->field($generator, 'useTablePrefix')->checkbox();
+echo $form->field($generator, 'useSchemaName')->checkbox();
 echo $form->field($generator, 'generateRelations')->checkbox();
 echo $form->field($generator, 'generateLabelsFromComments')->checkbox();
 echo $form->field($generator, 'generateQuery')->checkbox();
@@ -29,10 +27,7 @@ echo $form->field($generator, 'queryNs')->widget(AutoComplete::className(), [
 ]);
 echo $form->field($generator, 'queryClass');
 echo $form->field($generator, 'queryBaseClass')->widget(AutoComplete::className(), [
-    'source' => [
-        'yii\db\ActiveQuery',
-        'yii\boost\db\ActiveQuery'
-    ]
+    'source' => $generator->getQueryBaseClassAutoComplete()
 ]);
 echo $form->field($generator, 'enableI18N')->checkbox();
 echo $form->field($generator, 'messageCategory');

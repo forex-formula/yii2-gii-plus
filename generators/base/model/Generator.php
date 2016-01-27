@@ -9,23 +9,17 @@ use yii\helpers\Json;
 use yii\gii\generators\model\Generator as ModelGenerator;
 use ReflectionClass;
 use Yii;
+use yii\base\NotSupportedException;
 
 class Generator extends ModelGenerator
 {
 
-    public $db = 'db';
     public $ns = 'app\models\base';
     public $tableName = '*';
-    public $modelClass;
-    public $baseClass = 'yii\db\ActiveRecord';
-    public $generateRelations = true;
-    public $generateLabelsFromComments = false;
-    public $useTablePrefix = false;
-    public $useSchemaName = true;
+    public $generateLabelsFromComments = true;
+    public $useSchemaName = false;
     public $generateQuery = true;
     public $queryNs;
-    public $queryClass;
-    public $queryBaseClass = 'yii\db\ActiveQuery';
 
     /**
      * @inheritdoc
@@ -36,8 +30,10 @@ class Generator extends ModelGenerator
         if (Yii::getAlias('@common/models', false)) {
             $this->ns = 'common\models\base';
         }
-        if (Yii::getAlias('@yii/boost/db', false)) {
+        if (class_exists('yii\boost\db\ActiveRecord')) {
             $this->baseClass = 'yii\boost\db\ActiveRecord';
+        }
+        if (class_exists('yii\boost\db\ActiveQuery')) {
             $this->queryBaseClass = 'yii\boost\db\ActiveQuery';
         }
     }
@@ -159,8 +155,25 @@ class Generator extends ModelGenerator
         $data = [];
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = ['*'];
-            foreach ($db->getSchema()->getTableNames() as $tableName) {
-                $data[$id][] = $tableName;
+            $schema = $db->getSchema();
+            try {
+                $schemaNames = $schema->getSchemaNames(true);
+            } catch (NotSupportedException $e) {
+                $schemaNames = [];
+            }
+            if (count($schemaNames)) {
+                foreach ($schemaNames as $schemaName) {
+                    $data[$id][] = $schemaName . '.*';
+                }
+                foreach ($schemaNames as $schemaName) {
+                    foreach ($schema->getTableNames($schemaName, true) as $tableName) {
+                        $data[$id][] = $schemaName . '.' . $tableName;
+                    }
+                }
+            } else {
+                foreach ($schema->getTableNames('', true) as $tableName) {
+                    $data[$id][] = $tableName;
+                }
             }
         }
         return $this->createAutoComplete($data);
@@ -185,6 +198,27 @@ class Generator extends ModelGenerator
     }
 
     /**
+     * @return array
+     */
+    public function getBaseClassAutoComplete()
+    {
+        $data = ['yii\db\ActiveRecord'];
+        if (class_exists('yii\boost\db\ActiveRecord')) {
+            $data[] = 'yii\boost\db\ActiveRecord';
+        }
+        return $data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDbListItems()
+    {
+        $ids = array_keys($this->getDbConnections());
+        return array_combine($ids, $ids);
+    }
+
+    /**
      * @return JsExpression
      */
     public function getQueryNsAutoComplete()
@@ -205,10 +239,13 @@ class Generator extends ModelGenerator
     /**
      * @return array
      */
-    public function getDbListItems()
+    public function getQueryBaseClassAutoComplete()
     {
-        $ids = array_keys($this->getDbConnections());
-        return array_combine($ids, $ids);
+        $data = ['yii\db\ActiveQuery'];
+        if (class_exists('yii\boost\db\ActiveQuery')) {
+            $data[] = 'yii\boost\db\ActiveQuery';
+        }
+        return $data;
     }
 
     /**
