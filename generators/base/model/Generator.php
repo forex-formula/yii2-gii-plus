@@ -7,9 +7,9 @@ use yii\helpers\Html;
 use yii\web\JsExpression;
 use yii\helpers\Json;
 use yii\gii\generators\model\Generator as ModelGenerator;
+use yii\base\NotSupportedException;
 use ReflectionClass;
 use Yii;
-use yii\base\NotSupportedException;
 
 class Generator extends ModelGenerator
 {
@@ -280,7 +280,7 @@ class Generator extends ModelGenerator
         $nsClassName = $this->ns . '\\' . $className;
         if (class_exists($nsClassName)) {
             $this->baseClass = get_parent_class($nsClassName);
-        } else {
+        } elseif (!is_null($this->commonBaseClass)) {
             $this->baseClass = $this->commonBaseClass;
         }
         return $className;
@@ -295,7 +295,7 @@ class Generator extends ModelGenerator
         $nsQueryClassName = $this->queryNs . '\\' . $queryClassName;
         if (class_exists($nsQueryClassName)) {
             $this->queryBaseClass = get_parent_class($nsQueryClassName);
-        } else {
+        } elseif (!is_null($this->commonQueryBaseClass)) {
             $this->queryBaseClass = $this->commonQueryBaseClass;
         }
         return $queryClassName;
