@@ -148,19 +148,20 @@ class Generator extends ModelGenerator
     }
 
     /**
+     * @param bool $refresh
      * @return JsExpression
      */
-    public function getTableNameAutoComplete()
+    public function getTableNameAutoComplete($refresh = false)
     {
         $data = [];
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = ['*'];
             $schema = $db->getSchema();
-            foreach ($schema->getTableNames('', true) as $tableName) {
+            foreach ($schema->getTableNames('', $refresh) as $tableName) {
                 $data[$id][] = $tableName;
             }
             try {
-                $schemaNames = $schema->getSchemaNames(true);
+                $schemaNames = $schema->getSchemaNames($refresh);
             } catch (NotSupportedException $e) {
                 $schemaNames = [];
             }
@@ -168,7 +169,7 @@ class Generator extends ModelGenerator
                 $data[$id][] = $schemaName . '.*';
             }
             foreach ($schemaNames as $schemaName) {
-                foreach ($schema->getTableNames($schemaName, true) as $tableName) {
+                foreach ($schema->getTableNames($schemaName, $refresh) as $tableName) {
                     $data[$id][] = $schemaName . '.' . $tableName;
                 }
             }
@@ -177,15 +178,16 @@ class Generator extends ModelGenerator
     }
 
     /**
+     * @param bool $refresh
      * @return JsExpression
      */
-    public function getNsAutoComplete()
+    public function getNsAutoComplete($refresh = false)
     {
         $data = [];
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = [];
             try {
-                $schemaNames = $db->getSchema()->getSchemaNames(true);
+                $schemaNames = $db->getSchema()->getSchemaNames($refresh);
             } catch (NotSupportedException $e) {
                 $schemaNames = [];
             }
@@ -225,15 +227,16 @@ class Generator extends ModelGenerator
     }
 
     /**
+     * @param bool $refresh
      * @return JsExpression
      */
-    public function getQueryNsAutoComplete()
+    public function getQueryNsAutoComplete($refresh = false)
     {
         $data = [];
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = [];
             try {
-                $schemaNames = $db->getSchema()->getSchemaNames(true);
+                $schemaNames = $db->getSchema()->getSchemaNames($refresh);
             } catch (NotSupportedException $e) {
                 $schemaNames = [];
             }

@@ -9,7 +9,7 @@ use yii\helpers\Html;
 use yii\web\JsExpression;
 
 echo $form->field($generator, 'tableName')->widget(AutoComplete::className(), [
-    'source' => $generator->getTableNameAutoComplete()
+    'source' => $generator->getTableNameAutoComplete(true)
 ]);
 echo $form->field($generator, 'modelClass');
 echo $form->field($generator, 'ns')->widget(AutoComplete::className(), [
