@@ -129,9 +129,13 @@ class Generator extends ModelGenerator
     {
         if (is_null($this->nsPrefixes)) {
             $this->nsPrefixes = [];
-            foreach (['app', 'backend', 'common', 'console', 'frontend'] as $prefix) {
-                if (Yii::getAlias('@' . $prefix, false)) {
-                    $this->nsPrefixes[] = $prefix . '\models';
+            foreach (['app', 'backend', 'common', 'console', 'frontend'] as $rootNs) {
+                $appPath = Yii::getAlias('@' . $rootNs, false);
+                if ($appPath) {
+                    $this->nsPrefixes[] = $rootNs . '\models';
+                    foreach (glob($appPath . '/modules/*', GLOB_ONLYDIR) as $modulePath) {
+                        $this->nsPrefixes[] = $rootNs . '\modules\\' . basename($modulePath) . '\models';
+                    }
                 }
             }
         }
