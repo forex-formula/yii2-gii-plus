@@ -157,9 +157,6 @@ class Generator extends ModelGenerator
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = ['*'];
             $schema = $db->getSchema();
-            foreach ($schema->getTableNames('', $refresh) as $tableName) {
-                $data[$id][] = $tableName;
-            }
             try {
                 $schemaNames = $schema->getSchemaNames($refresh);
             } catch (NotSupportedException $e) {
@@ -167,6 +164,9 @@ class Generator extends ModelGenerator
             }
             foreach ($schemaNames as $schemaName) {
                 $data[$id][] = $schemaName . '.*';
+            }
+            foreach ($schema->getTableNames('', $refresh) as $tableName) {
+                $data[$id][] = $tableName;
             }
             foreach ($schemaNames as $schemaName) {
                 foreach ($schema->getTableNames($schemaName, $refresh) as $tableName) {
