@@ -3,15 +3,15 @@
 namespace yii\gii\plus\generators\base\model;
 
 use yii\db\Connection;
+use yii\gii\generators\model\Generator as GiiModelGenerator;
 use yii\helpers\Html;
 use yii\web\JsExpression;
 use yii\helpers\Json;
-use yii\gii\generators\model\Generator as ModelGenerator;
 use yii\base\NotSupportedException;
 use ReflectionClass;
 use Yii;
 
-class Generator extends ModelGenerator
+class Generator extends GiiModelGenerator
 {
 
     public $ns = 'app\models\base';

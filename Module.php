@@ -26,7 +26,8 @@ class Module extends GiiModule
     protected function coreGenerators()
     {
         return array_merge(parent::coreGenerators(), [
-            'basemodel' => ['class' => 'yii\gii\plus\generators\base\model\Generator']
+            'basemodel' => ['class' => 'yii\gii\plus\generators\base\model\Generator'],
+            'usermodel' => ['class' => 'yii\gii\plus\generators\user\model\Generator']
         ]);
     }
 }
