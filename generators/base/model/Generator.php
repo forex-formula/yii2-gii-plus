@@ -295,11 +295,13 @@ class Generator extends ModelGenerator
     protected function generateClassName($tableName, $useSchemaName = null)
     {
         $className = parent::generateClassName($tableName, $useSchemaName) . 'Base';
-        $nsClassName = $this->ns . '\\' . $className;
-        if (class_exists($nsClassName)) {
-            $this->baseClass = get_parent_class($nsClassName);
-        } elseif (!is_null($this->commonBaseClass)) {
-            $this->baseClass = $this->commonBaseClass;
+        if (!is_null($this->commonBaseClass)) {
+            $nsClassName = $this->ns . '\\' . $className;
+            if (class_exists($nsClassName)) {
+                $this->baseClass = get_parent_class($nsClassName);
+            } else {
+                $this->baseClass = $this->commonBaseClass;
+            }
         }
         return $className;
     }
@@ -310,11 +312,13 @@ class Generator extends ModelGenerator
     protected function generateQueryClassName($modelClassName)
     {
         $queryClassName = parent::generateQueryClassName(preg_replace('~Base$~', '', $modelClassName)) . 'Base';
-        $nsQueryClassName = $this->queryNs . '\\' . $queryClassName;
-        if (class_exists($nsQueryClassName)) {
-            $this->queryBaseClass = get_parent_class($nsQueryClassName);
-        } elseif (!is_null($this->commonQueryBaseClass)) {
-            $this->queryBaseClass = $this->commonQueryBaseClass;
+        if (!is_null($this->commonQueryBaseClass)) {
+            $nsQueryClassName = $this->queryNs . '\\' . $queryClassName;
+            if (class_exists($nsQueryClassName)) {
+                $this->queryBaseClass = get_parent_class($nsQueryClassName);
+            } else {
+                $this->queryBaseClass = $this->commonQueryBaseClass;
+            }
         }
         return $queryClassName;
     }
