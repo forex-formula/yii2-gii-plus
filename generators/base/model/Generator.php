@@ -27,7 +27,7 @@ class Generator extends ModelGenerator
     public function init()
     {
         parent::init();
-        if (Yii::getAlias('@common/models', false)) {
+        if (Yii::getAlias('@common', false)) {
             $this->ns = 'common\models\base';
         }
         if (class_exists('yii\boost\db\ActiveRecord')) {
@@ -130,7 +130,7 @@ class Generator extends ModelGenerator
         if (is_null($this->nsPrefixes)) {
             $this->nsPrefixes = [];
             foreach (['app', 'backend', 'common', 'console', 'frontend'] as $prefix) {
-                if (Yii::getAlias('@' . $prefix . '/models', false)) {
+                if (Yii::getAlias('@' . $prefix, false)) {
                     $this->nsPrefixes[] = $prefix . '\models';
                 }
             }

@@ -19,6 +19,9 @@
     "yiisoft/yii2-codeception": "*",
     "codeception/codeception": "*"
   },
+  "suggest": {
+    "ivan-chkv/yii2-boost": "Yii 2 Boost Extension"
+  },
   "autoload": {
     "psr-4": {
       "yii\\gii\\plus\\": ""
