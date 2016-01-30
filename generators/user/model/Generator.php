@@ -3,11 +3,23 @@
 namespace yii\gii\plus\generators\user\model;
 
 use yii\gii\Generator as GiiGenerator;
+use Yii;
 
 class Generator extends GiiGenerator
 {
 
     public $baseModelClass = 'app\models\base\*Base';
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+        if (Yii::getAlias('@common', false)) {
+            $this->baseModelClass = 'common\models\base\*Base';
+        }
+    }
 
     /**
      * @inheritdoc
@@ -23,10 +35,10 @@ class Generator extends GiiGenerator
     public function rules()
     {
         return array_merge(parent::rules(), [
-            [['baseModelClass'], 'filter', 'filter' => 'trim'],
-            [['baseModelClass'], 'required'],
-            [['baseModelClass'], 'match', 'pattern' => '~^(?:\w+\\\\)+base\\\\(?:\w+|\*)Base$~'],
-            [['baseModelClass'], 'validateBaseModelClass']
+            ['baseModelClass', 'filter', 'filter' => 'trim'],
+            ['baseModelClass', 'required'],
+            ['baseModelClass', 'match', 'pattern' => '~^(?:\w+\\\\)+base\\\\(?:\w+|\*)Base$~'],
+            ['baseModelClass', 'validateBaseModelClass']
         ]);
     }
 
