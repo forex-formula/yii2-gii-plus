@@ -41,6 +41,15 @@ class Generator extends GiiModelGenerator
     /**
      * @inheritdoc
      */
+    public function defaultTemplate()
+    {
+        $class = new ReflectionClass(get_parent_class(__CLASS__));
+        return dirname($class->getFileName()) . '/default';
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getName()
     {
         return 'Base Model Generator';
@@ -64,9 +73,13 @@ class Generator extends GiiModelGenerator
             }
         }
         return array_merge($rules, [
+            ['ns', 'match', 'pattern' => '~\\\\base$~'],
+            ['modelClass', 'match', 'pattern' => '~Base$~'],
             ['queryNs', 'default', 'value' => function (Generator $model, $attribute) {
                 return preg_replace('~\\\\base$~', '\query\base', $model->ns);
-            }]
+            }],
+            ['queryNs', 'match', 'pattern' => '~\\\\query\\\\base$~'],
+            ['queryClass', 'match', 'pattern' => '~QueryBase$~']
         ]);
     }
 
@@ -89,10 +102,9 @@ class Generator extends GiiModelGenerator
     /**
      * @inheritdoc
      */
-    public function defaultTemplate()
+    public function stickyAttributes()
     {
-        $class = new ReflectionClass(get_parent_class(__CLASS__));
-        return dirname($class->getFileName()) . '/default';
+        return array_diff(parent::stickyAttributes(), ['queryNs']);
     }
 
     /**
@@ -273,23 +285,23 @@ class Generator extends GiiModelGenerator
     /**
      * @var string
      */
-    protected $commonBaseClass;
+    protected $userBaseClass;
 
     /**
      * @var string
      */
-    protected $commonQueryBaseClass;
+    protected $userQueryBaseClass;
 
     /**
      * @inheritdoc
      */
     public function generate()
     {
-        $this->commonBaseClass = $this->baseClass;
-        $this->commonQueryBaseClass = $this->queryBaseClass;
+        $this->userBaseClass = $this->baseClass;
+        $this->userQueryBaseClass = $this->queryBaseClass;
         $files = parent::generate();
-        $this->baseClass = $this->commonBaseClass;
-        $this->queryBaseClass = $this->commonQueryBaseClass;
+        $this->baseClass = $this->userBaseClass;
+        $this->queryBaseClass = $this->userQueryBaseClass;
         return $files;
     }
 
@@ -299,12 +311,12 @@ class Generator extends GiiModelGenerator
     protected function generateClassName($tableName, $useSchemaName = null)
     {
         $className = parent::generateClassName($tableName, $useSchemaName) . 'Base';
-        if (!is_null($this->commonBaseClass)) {
+        if (!is_null($this->userBaseClass)) {
             $nsClassName = $this->ns . '\\' . $className;
             if (class_exists($nsClassName)) {
                 $this->baseClass = get_parent_class($nsClassName);
             } else {
-                $this->baseClass = $this->commonBaseClass;
+                $this->baseClass = $this->userBaseClass;
             }
         }
         return $className;
@@ -316,12 +328,12 @@ class Generator extends GiiModelGenerator
     protected function generateQueryClassName($modelClassName)
     {
         $queryClassName = parent::generateQueryClassName(preg_replace('~Base$~', '', $modelClassName)) . 'Base';
-        if (!is_null($this->commonQueryBaseClass)) {
+        if (!is_null($this->userQueryBaseClass)) {
             $nsQueryClassName = $this->queryNs . '\\' . $queryClassName;
             if (class_exists($nsQueryClassName)) {
                 $this->queryBaseClass = get_parent_class($nsQueryClassName);
             } else {
-                $this->queryBaseClass = $this->commonQueryBaseClass;
+                $this->queryBaseClass = $this->userQueryBaseClass;
             }
         }
         return $queryClassName;
