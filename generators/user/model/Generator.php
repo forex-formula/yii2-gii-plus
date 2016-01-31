@@ -58,6 +58,23 @@ class Generator extends GiiGenerator
     protected $nsPrefixes;
 
     /**
+     * @param string $nsPrefix
+     * @param string $path
+     * @return array
+     */
+    protected function getSubNsPrefixes($nsPrefix, $path)
+    {
+        $nsPrefixes = [$nsPrefix];
+        foreach (glob($path . '/*', GLOB_ONLYDIR) as $subpath) {
+            $basename = basename($subpath);
+            if (($basename != 'base') && ($basename != 'query')) {
+                $nsPrefixes = array_merge($nsPrefixes, $this->getSubNsPrefixes($nsPrefix . '\\' . $basename, $subpath));
+            }
+        }
+        return $nsPrefixes;
+    }
+
+    /**
      * @return array
      */
     protected function getNsPrefixes()
@@ -67,9 +84,9 @@ class Generator extends GiiGenerator
             foreach (['app', 'backend', 'common', 'console', 'frontend'] as $rootNs) {
                 $appPath = Yii::getAlias('@' . $rootNs, false);
                 if ($appPath) {
-                    $this->nsPrefixes[] = $rootNs . '\models';
+                    $this->nsPrefixes = array_merge($this->nsPrefixes, $this->getSubNsPrefixes($rootNs . '\models', $appPath . '/models'));
                     foreach (glob($appPath . '/modules/*', GLOB_ONLYDIR) as $modulePath) {
-                        $this->nsPrefixes[] = $rootNs . '\modules\\' . basename($modulePath) . '\models';
+                        $this->nsPrefixes = array_merge($this->nsPrefixes, $this->getSubNsPrefixes($rootNs . '\modules\\' . basename($modulePath) . '\models', $modulePath . '/models'));
                     }
                 }
             }
