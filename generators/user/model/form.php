@@ -4,4 +4,8 @@
 /* @var $form yii\widgets\ActiveForm */
 /* @var $generator yii\gii\plus\generators\user\model\Generator */
 
-echo $form->field($generator, 'baseModelClass');
+use yii\jui\autosearch\AutoComplete;
+
+echo $form->field($generator, 'baseModelClass')->widget(AutoComplete::className(), [
+    'source' => $generator->getBaseModelClassAutoComplete()
+]);
