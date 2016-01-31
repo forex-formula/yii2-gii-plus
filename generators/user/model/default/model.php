@@ -5,7 +5,8 @@
 /* @var $ns string */
 /* @var $modelName string */
 /* @var $modelClass string */
-/* @var $modelBaseClass string */
+/* @var $baseModelName string */
+/* @var $baseModelClass string */
 /* @var $queryNs string */
 /* @var $queryName string */
 /* @var $queryClass string */
@@ -16,19 +17,21 @@ echo '<?php', "\n";
 
 namespace <?= $ns ?>;
 
+use <?= $baseModelClass ?>;
+use <?= $queryClass ?>;
 use Yii;
 
-class <?= $modelName ?> extends \<?= $modelBaseClass ?>
+class <?= $modelName ?> extends <?= $baseModelName ?>
 
 {
 
     /**
      * @inheritdoc
-     * @return \<?= $queryClass ?>
+     * @return <?= $queryName ?>
 
      */
     public static function find()
     {
-        return Yii::createObject(\<?= $queryClass ?>::className(), [get_called_class()]);
+        return Yii::createObject(<?= $queryName ?>::className(), [get_called_class()]);
     }
 }

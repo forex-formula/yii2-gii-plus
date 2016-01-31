@@ -121,16 +121,18 @@ class Generator extends GiiGenerator
                 $modelName = basename($filename, 'Base.php');
                 $modelClass = $ns . '\\' . $modelName;
                 /* @var $modelBaseClass \yii\db\ActiveRecord */
-                $modelBaseClass = $match[1] . '\base\\' . basename($filename, '.php');
+                $baseModelName = basename($filename, '.php');
+                $baseModelClass = $ns . '\base\\' . $baseModelName;
                 $queryNs = $ns . '\query';
                 $queryName = $modelName . 'Query';
                 $queryClass = $queryNs . '\\' . $queryName;
-                $queryBaseClass = get_class($modelBaseClass::find());
+                $queryBaseClass = get_class($baseModelClass::find());
                 $params = [
                     'ns' => $ns,
                     'modelName' => $modelName,
                     'modelClass' => $modelClass,
-                    'modelBaseClass' => $modelBaseClass,
+                    'baseModelName' => $baseModelName,
+                    'baseModelClass' => $baseModelClass,
                     'queryNs' => $queryNs,
                     'queryName' => $queryName,
                     'queryClass' => $queryClass,

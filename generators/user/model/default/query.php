@@ -5,7 +5,8 @@
 /* @var $ns string */
 /* @var $modelName string */
 /* @var $modelClass string */
-/* @var $modelBaseClass string */
+/* @var $baseModelName string */
+/* @var $baseModelClass string */
 /* @var $queryNs string */
 /* @var $queryName string */
 /* @var $queryClass string */
