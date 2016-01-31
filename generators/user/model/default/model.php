@@ -13,14 +13,27 @@
 /* @var $baseQueryName string */
 /* @var $baseQueryClass string */
 
+$uses = [
+    $baseModelClass,
+    $queryClass,
+    'Yii'
+];
+usort($uses, function ($use1, $use2) {
+    if (preg_match('~[\\\\\s]([^\\\\\s]+)$~', $use1, $match)) {
+        $use1 = $match[1];
+    }
+    if (preg_match('~[\\\\\s]([^\\\\\s]+)$~', $use2, $match)) {
+        $use2 = $match[1];
+    }
+    return strcasecmp($use1, $use2);
+});
+
 echo '<?php', "\n";
 ?>
 
 namespace <?= $ns ?>;
 
-use <?= $baseModelClass ?>;
-use <?= $queryClass ?>;
-use Yii;
+use <?= implode(';' . "\n" . 'use ', $uses) ?>;
 
 class <?= $modelName ?> extends <?= $baseModelName ?>
 
