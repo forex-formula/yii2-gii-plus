@@ -5,6 +5,7 @@ namespace yii\gii\plus\generators\base\model;
 use yii\db\Connection;
 use yii\gii\generators\model\Generator as GiiModelGenerator;
 use yii\helpers\Html;
+use yii\helpers\Inflector;
 use yii\web\JsExpression;
 use yii\helpers\Json;
 use yii\base\NotSupportedException;
@@ -308,6 +309,33 @@ class Generator extends GiiModelGenerator
     /**
      * @inheritdoc
      */
+    protected function generateRelations()
+    {
+        $allRelations = [];
+        foreach (parent::generateRelations() as $tableName => $relations) {
+            $allRelations[$tableName] = [];
+            foreach ($relations as $relationName => $relation) {
+                list ($code, $className, $hasMany) = $relation;
+                $nsClassName = $this->ns . '\\' . $className;
+                if (preg_match('~^((?:\w+\\\\)*\w+)\\\\base\\\\(\w+)Base$~', $nsClassName, $match)) {
+                    $nsClassName2 = $match[1] . '\\' . $match[2];
+                    if (class_exists($nsClassName2) && is_subclass_of($nsClassName2, $nsClassName)) {
+                        $code = str_replace('(' . $className . ':', '(\\' . $nsClassName2 . ':', $code);
+                        $className = $match[2];
+                        if ($hasMany) {
+                            $relationName = Inflector::pluralize($className);
+                        }
+                    }
+                }
+                $allRelations[$tableName][$relationName] = [$code, $className, $hasMany];
+            }
+        }
+        return $allRelations;
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function generateClassName($tableName, $useSchemaName = null)
     {
         $className = parent::generateClassName($tableName, $useSchemaName) . 'Base';
@@ -346,9 +374,14 @@ class Generator extends GiiModelGenerator
     {
         $output = parent::render($template, $params);
         $nsClassName = $this->ns . '\\' . $params['className'];
-        if (class_exists($nsClassName)) {
-            $output = preg_replace_callback('~@return \\\\(yii\\\\db\\\\ActiveQuery)\s+\*/\s+public function ([^\(]+)\(\)~', function ($match) use ($nsClassName) {
-                return str_replace($match[1], get_class(call_user_func([new $nsClassName, $match[2]])), $match[0]);
+        if (class_exists($nsClassName) && is_subclass_of($nsClassName, 'yii\db\ActiveRecord')) {
+            $model = new $nsClassName;
+            $output = preg_replace_callback('~@return \\\\(yii\\\\db\\\\ActiveQuery)\s+\*/\s+public function ([^\(]+)\(\)~', function ($match) use ($model) {
+                if (method_exists($model, $match[2])) {
+                    return str_replace($match[1], get_class(call_user_func([$model, $match[2]])), $match[0]);
+                } else {
+                    return $match[0];
+                }
             }, $output);
         }
         return $output;
