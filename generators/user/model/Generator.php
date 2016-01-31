@@ -120,13 +120,13 @@ class Generator extends GiiGenerator
                 $ns = $match[1];
                 $modelName = basename($filename, 'Base.php');
                 $modelClass = $ns . '\\' . $modelName;
-                /* @var $modelBaseClass \yii\db\ActiveRecord */
                 $baseModelName = basename($filename, '.php');
                 $baseModelClass = $ns . '\base\\' . $baseModelName;
                 $queryNs = $ns . '\query';
                 $queryName = $modelName . 'Query';
                 $queryClass = $queryNs . '\\' . $queryName;
-                $queryBaseClass = get_class($baseModelClass::find());
+                $baseQueryName = $modelName . 'QueryBase';
+                $baseQueryClass = $queryNs . '\base\\' . $baseQueryName;
                 $params = [
                     'ns' => $ns,
                     'modelName' => $modelName,
@@ -136,7 +136,8 @@ class Generator extends GiiGenerator
                     'queryNs' => $queryNs,
                     'queryName' => $queryName,
                     'queryClass' => $queryClass,
-                    'queryBaseClass' => $queryBaseClass
+                    'baseQueryName' => $baseQueryName,
+                    'baseQueryClass' => $baseQueryClass
                 ];
                 $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $ns)) . '/' . $modelName . '.php', $this->render('model.php', $params));
                 $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $queryNs)) . '/' . $queryName . '.php', $this->render('query.php', $params));

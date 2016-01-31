@@ -10,14 +10,17 @@
 /* @var $queryNs string */
 /* @var $queryName string */
 /* @var $queryClass string */
-/* @var $queryBaseClass string */
+/* @var $baseQueryName string */
+/* @var $baseQueryClass string */
 
 echo '<?php', "\n";
 ?>
 
 namespace <?= $queryNs ?>;
 
-class <?= $queryName ?> extends \<?= $queryBaseClass ?>
+use <?= $baseQueryClass ?>;
+
+class <?= $queryName ?> extends <?= $baseQueryName ?>
 
 {
 }
