@@ -175,7 +175,7 @@ class Generator extends GiiModelGenerator
             $data[$id] = ['*'];
             $schema = $db->getSchema();
             try {
-                $schemaNames = $schema->getSchemaNames($refresh);
+                $schemaNames = array_diff($schema->getSchemaNames($refresh), ['public']);
             } catch (NotSupportedException $e) {
                 $schemaNames = [];
             }
@@ -204,7 +204,7 @@ class Generator extends GiiModelGenerator
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = [];
             try {
-                $schemaNames = $db->getSchema()->getSchemaNames($refresh);
+                $schemaNames = array_diff($db->getSchema()->getSchemaNames($refresh), ['public']);
             } catch (NotSupportedException $e) {
                 $schemaNames = [];
             }
@@ -253,7 +253,7 @@ class Generator extends GiiModelGenerator
         foreach ($this->getDbConnections() as $id => $db) {
             $data[$id] = [];
             try {
-                $schemaNames = $db->getSchema()->getSchemaNames($refresh);
+                $schemaNames = array_diff($db->getSchema()->getSchemaNames($refresh), ['public']);
             } catch (NotSupportedException $e) {
                 $schemaNames = [];
             }
