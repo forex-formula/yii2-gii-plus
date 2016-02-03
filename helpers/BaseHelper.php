@@ -70,4 +70,39 @@ class BaseHelper
         }
         return static::$modelNamespaces;
     }
+
+    /**
+     * @var array
+     */
+    protected static $modelDeepNamespaces;
+
+    /**
+     * @param string $modelNs
+     * @return array
+     */
+    protected static function getModelSubNamespaces($modelNs)
+    {
+        $modelNamespaces = [$modelNs];
+        foreach (glob(Yii::getAlias('@' . str_replace('\\', '/', $modelNs)) . '/*', GLOB_ONLYDIR) as $path) {
+            $basename = basename($path);
+            if (($basename != 'base') && ($basename != 'query')) {
+                $modelNamespaces = array_merge($modelNamespaces, static::getModelSubNamespaces($modelNs . '\\' . $basename));
+            }
+        }
+        return $modelNamespaces;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getModelDeepNamespaces()
+    {
+        if (is_null(static::$modelDeepNamespaces)) {
+            static::$modelDeepNamespaces = [];
+            foreach (static::getModelNamespaces() as $modelNs) {
+                static::$modelDeepNamespaces = array_merge(static::$modelDeepNamespaces, static::getModelSubNamespaces($modelNs));
+            }
+        }
+        return static::$modelDeepNamespaces;
+    }
 }
