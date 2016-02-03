@@ -129,4 +129,26 @@ class BaseHelper
         }
         return static::$modelClasses;
     }
+
+    /**
+     * @var array
+     */
+    protected static $modelClassTableMap;
+
+    /**
+     * @return array
+     */
+    public static function getModelClassTableMap()
+    {
+        if (is_null(static::$modelClassTableMap)) {
+            static::$modelClassTableMap = [];
+            foreach (static::getModelClasses() as $modelClass) {
+                if (is_subclass_of($modelClass, 'yii\db\ActiveRecord')) {
+                    /* @var $modelClass string|\yii\db\ActiveRecord */
+                    static::$modelClassTableMap[$modelClass] = $modelClass::tableName();
+                }
+            }
+        }
+        return static::$modelClassTableMap;
+    }
 }
