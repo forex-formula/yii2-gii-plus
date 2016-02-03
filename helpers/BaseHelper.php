@@ -3,6 +3,7 @@
 namespace yii\gii\plus\helpers;
 
 use yii\db\Connection;
+use yii\base\NotSupportedException;
 use Yii;
 
 class BaseHelper
@@ -28,6 +29,21 @@ class BaseHelper
             }
         }
         return static::$dbConnections;
+    }
+
+    /**
+     * @param Connection $db
+     * @param bool $refresh
+     * @return array
+     */
+    public static function getSchemaNames(Connection $db, $refresh = false)
+    {
+        try {
+            $schemaNames = array_diff($db->getSchema()->getSchemaNames($refresh), ['public']);
+        } catch (NotSupportedException $e) {
+            $schemaNames = [];
+        }
+        return $schemaNames;
     }
 
     /**

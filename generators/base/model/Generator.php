@@ -8,7 +8,6 @@ use yii\helpers\Html;
 use yii\helpers\Inflector;
 use yii\web\JsExpression;
 use yii\helpers\Json;
-use yii\base\NotSupportedException;
 use ReflectionClass;
 use Yii;
 
@@ -126,15 +125,11 @@ class Generator extends GiiModelGenerator
         $data = [];
         foreach (Helper::getDbConnections() as $id => $db) {
             $data[$id] = ['*'];
-            $schema = $db->getSchema();
-            try {
-                $schemaNames = array_diff($schema->getSchemaNames($refresh), ['public']);
-            } catch (NotSupportedException $e) {
-                $schemaNames = [];
-            }
+            $schemaNames = Helper::getSchemaNames($db, $refresh);
             foreach ($schemaNames as $schemaName) {
                 $data[$id][] = $schemaName . '.*';
             }
+            $schema = $db->getSchema();
             foreach ($schema->getTableNames('', $refresh) as $tableName) {
                 $data[$id][] = $tableName;
             }
@@ -156,11 +151,7 @@ class Generator extends GiiModelGenerator
         $data = [];
         foreach (Helper::getDbConnections() as $id => $db) {
             $data[$id] = [];
-            try {
-                $schemaNames = array_diff($db->getSchema()->getSchemaNames($refresh), ['public']);
-            } catch (NotSupportedException $e) {
-                $schemaNames = [];
-            }
+            $schemaNames = Helper::getSchemaNames($db, $refresh);
             foreach (Helper::getModelNamespaces() as $modelNs) {
                 $data[$id][] = $modelNs . '\base';
                 foreach ($schemaNames as $schemaName) {
@@ -205,11 +196,7 @@ class Generator extends GiiModelGenerator
         $data = [];
         foreach (Helper::getDbConnections() as $id => $db) {
             $data[$id] = [];
-            try {
-                $schemaNames = array_diff($db->getSchema()->getSchemaNames($refresh), ['public']);
-            } catch (NotSupportedException $e) {
-                $schemaNames = [];
-            }
+            $schemaNames = Helper::getSchemaNames($db, $refresh);
             foreach (Helper::getModelNamespaces() as $modelNs) {
                 $data[$id][] = $modelNs . '\query\base';
                 foreach ($schemaNames as $schemaName) {
