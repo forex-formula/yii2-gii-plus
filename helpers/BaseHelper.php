@@ -108,4 +108,25 @@ class BaseHelper
         }
         return static::$modelDeepNamespaces;
     }
+
+    /**
+     * @var array
+     */
+    protected static $modelClasses;
+
+    /**
+     * @return array
+     */
+    public static function getModelClasses()
+    {
+        if (is_null(static::$modelClasses)) {
+            static::$modelClasses = [];
+            foreach (static::getModelDeepNamespaces() as $modelNs) {
+                foreach (glob(Yii::getAlias('@' . str_replace('\\', '/', $modelNs)) . '/*.php') as $modelPath) {
+                    static::$modelClasses[] = $modelNs . '\\' . basename($modelPath, '.php');
+                }
+            }
+        }
+        return static::$modelClasses;
+    }
 }
