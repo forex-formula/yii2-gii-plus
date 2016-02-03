@@ -2,8 +2,8 @@
 
 namespace yii\gii\plus\generators\base\model;
 
-use yii\db\Connection;
 use yii\gii\generators\model\Generator as GiiModelGenerator;
+use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
 use yii\helpers\Inflector;
 use yii\web\JsExpression;
@@ -109,28 +109,6 @@ class Generator extends GiiModelGenerator
     }
 
     /**
-     * @var Connection[]
-     */
-    protected $dbConnections;
-
-    /**
-     * @return Connection[]
-     */
-    protected function getDbConnections()
-    {
-        if (is_null($this->dbConnections)) {
-            $this->dbConnections = [];
-            foreach (Yii::$app->getComponents() as $id => $definition) {
-                $db = Yii::$app->get($id);
-                if ($db instanceof Connection) {
-                    $this->dbConnections[$id] = $db;
-                }
-            }
-        }
-        return $this->dbConnections;
-    }
-
-    /**
      * @var array
      */
     protected $nsPrefixes;
@@ -171,7 +149,7 @@ class Generator extends GiiModelGenerator
     public function getTableNameAutoComplete($refresh = false)
     {
         $data = [];
-        foreach ($this->getDbConnections() as $id => $db) {
+        foreach (Helper::getDbConnections() as $id => $db) {
             $data[$id] = ['*'];
             $schema = $db->getSchema();
             try {
@@ -201,7 +179,7 @@ class Generator extends GiiModelGenerator
     public function getNsAutoComplete($refresh = false)
     {
         $data = [];
-        foreach ($this->getDbConnections() as $id => $db) {
+        foreach (Helper::getDbConnections() as $id => $db) {
             $data[$id] = [];
             try {
                 $schemaNames = array_diff($db->getSchema()->getSchemaNames($refresh), ['public']);
@@ -239,7 +217,7 @@ class Generator extends GiiModelGenerator
      */
     public function getDbListItems()
     {
-        $ids = array_keys($this->getDbConnections());
+        $ids = array_keys(Helper::getDbConnections());
         return array_combine($ids, $ids);
     }
 
@@ -250,7 +228,7 @@ class Generator extends GiiModelGenerator
     public function getQueryNsAutoComplete($refresh = false)
     {
         $data = [];
-        foreach ($this->getDbConnections() as $id => $db) {
+        foreach (Helper::getDbConnections() as $id => $db) {
             $data[$id] = [];
             try {
                 $schemaNames = array_diff($db->getSchema()->getSchemaNames($refresh), ['public']);
