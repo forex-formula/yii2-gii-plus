@@ -82,14 +82,14 @@ class BaseHelper
      */
     protected static function getModelSubNamespaces($modelNs)
     {
-        $modelNamespaces = [$modelNs];
+        $modelSubNamespaces = [$modelNs];
         foreach (glob(Yii::getAlias('@' . str_replace('\\', '/', $modelNs)) . '/*', GLOB_ONLYDIR) as $path) {
             $basename = basename($path);
             if (($basename != 'base') && ($basename != 'query')) {
-                $modelNamespaces = array_merge($modelNamespaces, static::getModelSubNamespaces($modelNs . '\\' . $basename));
+                $modelSubNamespaces = array_merge($modelSubNamespaces, static::getModelSubNamespaces($modelNs . '\\' . $basename));
             }
         }
-        return $modelNamespaces;
+        return $modelSubNamespaces;
     }
 
     /**
