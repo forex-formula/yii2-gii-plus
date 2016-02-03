@@ -109,31 +109,6 @@ class Generator extends GiiModelGenerator
     }
 
     /**
-     * @var array
-     */
-    protected $nsPrefixes;
-
-    /**
-     * @return array
-     */
-    protected function getNsPrefixes()
-    {
-        if (is_null($this->nsPrefixes)) {
-            $this->nsPrefixes = [];
-            foreach (['app', 'backend', 'common', 'console', 'frontend'] as $rootNs) {
-                $appPath = Yii::getAlias('@' . $rootNs, false);
-                if ($appPath) {
-                    $this->nsPrefixes[] = $rootNs . '\models';
-                    foreach (glob($appPath . '/modules/*', GLOB_ONLYDIR) as $modulePath) {
-                        $this->nsPrefixes[] = $rootNs . '\modules\\' . basename($modulePath) . '\models';
-                    }
-                }
-            }
-        }
-        return $this->nsPrefixes;
-    }
-
-    /**
      * @param array $data
      * @return JsExpression
      */
@@ -186,14 +161,14 @@ class Generator extends GiiModelGenerator
             } catch (NotSupportedException $e) {
                 $schemaNames = [];
             }
-            foreach ($this->getNsPrefixes() as $nsPrefix) {
-                $data[$id][] = $nsPrefix . '\base';
+            foreach (Helper::getModelNamespaces() as $modelNs) {
+                $data[$id][] = $modelNs . '\base';
                 foreach ($schemaNames as $schemaName) {
-                    $data[$id][] = $nsPrefix . '\\' . $schemaName . '\base';
+                    $data[$id][] = $modelNs . '\\' . $schemaName . '\base';
                 }
-                $data[$id][] = $nsPrefix . '\\' . $id . '\base';
+                $data[$id][] = $modelNs . '\\' . $id . '\base';
                 foreach ($schemaNames as $schemaName) {
-                    $data[$id][] = $nsPrefix . '\\' . $id . '\\' . $schemaName . '\base';
+                    $data[$id][] = $modelNs . '\\' . $id . '\\' . $schemaName . '\base';
                 }
             }
         }
@@ -235,14 +210,14 @@ class Generator extends GiiModelGenerator
             } catch (NotSupportedException $e) {
                 $schemaNames = [];
             }
-            foreach ($this->getNsPrefixes() as $nsPrefix) {
-                $data[$id][] = $nsPrefix . '\query\base';
+            foreach (Helper::getModelNamespaces() as $modelNs) {
+                $data[$id][] = $modelNs . '\query\base';
                 foreach ($schemaNames as $schemaName) {
-                    $data[$id][] = $nsPrefix . '\\' . $schemaName . '\query\base';
+                    $data[$id][] = $modelNs . '\\' . $schemaName . '\query\base';
                 }
-                $data[$id][] = $nsPrefix . '\\' . $id . '\query\base';
+                $data[$id][] = $modelNs . '\\' . $id . '\query\base';
                 foreach ($schemaNames as $schemaName) {
-                    $data[$id][] = $nsPrefix . '\\' . $id . '\\' . $schemaName . '\query\base';
+                    $data[$id][] = $modelNs . '\\' . $id . '\\' . $schemaName . '\query\base';
                 }
             }
         }

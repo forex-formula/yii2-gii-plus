@@ -29,4 +29,29 @@ class BaseHelper
         }
         return static::$dbConnections;
     }
+
+    /**
+     * @var array
+     */
+    protected static $modelNamespaces;
+
+    /**
+     * @return array
+     */
+    public static function getModelNamespaces()
+    {
+        if (is_null(static::$modelNamespaces)) {
+            static::$modelNamespaces = [];
+            foreach (['app', 'backend', 'common', 'console', 'frontend'] as $appNs) {
+                $appPath = Yii::getAlias('@' . $appNs, false);
+                if ($appPath) {
+                    static::$modelNamespaces[] = $appNs . '\models';
+                    foreach (glob($appPath . '/modules/*', GLOB_ONLYDIR) as $modulePath) {
+                        static::$modelNamespaces[] = $appNs . '\modules\\' . basename($modulePath) . '\models';
+                    }
+                }
+            }
+        }
+        return static::$modelNamespaces;
+    }
 }
