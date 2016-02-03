@@ -82,11 +82,13 @@ class BaseHelper
      */
     protected static function getModelSubNamespaces($modelNs)
     {
-        $modelSubNamespaces = [$modelNs];
+        $modelSubNamespaces = [];
         foreach (glob(Yii::getAlias('@' . str_replace('\\', '/', $modelNs)) . '/*', GLOB_ONLYDIR) as $path) {
             $basename = basename($path);
             if (($basename != 'base') && ($basename != 'query')) {
-                $modelSubNamespaces = array_merge($modelSubNamespaces, static::getModelSubNamespaces($modelNs . '\\' . $basename));
+                $modelSubNs = $modelNs . '\\' . $basename;
+                $modelSubNamespaces[] = $modelSubNs;
+                $modelSubNamespaces = array_merge($modelSubNamespaces, static::getModelSubNamespaces($modelSubNs));
             }
         }
         return $modelSubNamespaces;
@@ -100,6 +102,7 @@ class BaseHelper
         if (is_null(static::$modelDeepNamespaces)) {
             static::$modelDeepNamespaces = [];
             foreach (static::getModelNamespaces() as $modelNs) {
+                static::$modelDeepNamespaces[] = $modelNs;
                 static::$modelDeepNamespaces = array_merge(static::$modelDeepNamespaces, static::getModelSubNamespaces($modelNs));
             }
         }
