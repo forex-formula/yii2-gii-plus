@@ -249,38 +249,34 @@ class Generator extends GiiModelGenerator
     /**
      * @var array
      */
-    protected $allRelations;
+    protected $tableUses;
+
+    /**
+     * @var array
+     */
+    protected $tableRelations;
 
     /**
      * @inheritdoc
      */
     protected function generateRelations()
     {
-        $allRelations = [];
+        $this->tableUses = [];
+        $tableRelations = [];
         foreach (parent::generateRelations() as $tableName => $relations) {
-            $allRelations[$tableName] = [];
+            $this->tableUses[$tableName] = ['Yii'];
+            $tableRelations[$tableName] = [];
             foreach ($relations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
-                $nsClassName = $this->ns . '\\' . $className;
-                /*
-                if (preg_match('~^((?:\w+\\\\)*\w+)\\\\base\\\\(\w+)Base$~', $nsClassName, $match)) {
-                    $nsClassName2 = $match[1] . '\\' . $match[2];
-                    if (class_exists($nsClassName2) && is_subclass_of($nsClassName2, $nsClassName)) {
-                        $code = str_replace('(' . $className . ':', '(\\' . $nsClassName2 . ':', $code);
-                        $className = $match[2];
-                        if ($hasMany) {
-                            $relationName = Inflector::pluralize($className);
-                        }
-                    }
-                }
-                */
+                $nsClassName = preg_replace('~\\\\base$~', '', $this->ns) . '\\' . $className;
                 if (class_exists($nsClassName) && is_subclass_of($nsClassName, 'yii\db\ActiveRecord')) {
-                    $allRelations[$tableName][$relationName] = [$code, $className, $hasMany];
+                    $this->tableUses[$tableName][] = $nsClassName;
+                    $tableRelations[$tableName][$relationName] = [$code, $className, $hasMany];
                 }
             }
         }
-        $this->allRelations = $allRelations;
-        return $allRelations;
+        $this->tableRelations = $tableRelations;
+        return $tableRelations;
     }
 
     /**
@@ -288,7 +284,7 @@ class Generator extends GiiModelGenerator
      */
     protected function generateClassName($tableName, $useSchemaName = null)
     {
-        if (is_null($this->allRelations)) {
+        if (is_null($this->tableRelations)) {
             return parent::generateClassName($tableName, $useSchemaName);
         }
         $className = parent::generateClassName($tableName, $useSchemaName) . 'Base';
@@ -326,6 +322,9 @@ class Generator extends GiiModelGenerator
     public function render($template, $params = [])
     {
         $output = parent::render($template, $params);
+        if (array_key_exists('tableName', $params) && array_key_exists($params['tableName'], $this->tableUses)) {
+            $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $this->tableUses[$params['tableName']]) . ';', $output);
+        }
         if (array_key_exists('className', $params)) {
             $nsClassName = $this->ns . '\\' . $params['className'];
             if (class_exists($nsClassName) && is_subclass_of($nsClassName, 'yii\db\ActiveRecord')) {
