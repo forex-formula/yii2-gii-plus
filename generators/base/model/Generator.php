@@ -261,8 +261,8 @@ class Generator extends GiiModelGenerator
             $allRelations[$tableName] = [];
             foreach ($relations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
-                /*
                 $nsClassName = $this->ns . '\\' . $className;
+                /*
                 if (preg_match('~^((?:\w+\\\\)*\w+)\\\\base\\\\(\w+)Base$~', $nsClassName, $match)) {
                     $nsClassName2 = $match[1] . '\\' . $match[2];
                     if (class_exists($nsClassName2) && is_subclass_of($nsClassName2, $nsClassName)) {
@@ -274,7 +274,9 @@ class Generator extends GiiModelGenerator
                     }
                 }
                 */
-                $allRelations[$tableName][$relationName] = [$code, $className, $hasMany];
+                if (class_exists($nsClassName) && is_subclass_of($nsClassName, 'yii\db\ActiveRecord')) {
+                    $allRelations[$tableName][$relationName] = [$code, $className, $hasMany];
+                }
             }
         }
         $this->allRelations = $allRelations;
