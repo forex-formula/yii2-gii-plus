@@ -269,7 +269,7 @@ class Generator extends GiiModelGenerator
             foreach ($relations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
                 $nsClassName = array_search(array_search($className, $this->classNames), $modelClassTableMap);
-                if (class_exists($nsClassName)) {
+                if (($nsClassName !== false) && class_exists($nsClassName)) {
                     $this->tableUses[$tableName][] = $nsClassName;
                     $tableRelations[$tableName][$relationName] = [$code, $className, $hasMany];
                 }
