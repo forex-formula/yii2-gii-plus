@@ -124,7 +124,7 @@ class BaseHelper
             foreach (static::getModelDeepNamespaces() as $modelNs) {
                 foreach (glob(Yii::getAlias('@' . str_replace('\\', '/', $modelNs)) . '/*.php') as $modelPath) {
                     $modelClass = $modelNs . '\\' . basename($modelPath, '.php');
-                    if (is_subclass_of($modelClass, 'yii\db\ActiveRecord')) {
+                    if (class_exists($modelClass) && is_subclass_of($modelClass, 'yii\db\ActiveRecord')) {
                         static::$modelClasses[] = $modelClass;
                     }
                 }
@@ -151,5 +151,22 @@ class BaseHelper
             }
         }
         return static::$modelClassTableMap;
+    }
+
+    /**
+     * @param array $uses
+     * @return bool
+     */
+    public static function sortUses(array &$uses)
+    {
+        return usort($uses, function ($use1, $use2) {
+            if (preg_match('~[\\\\\s]([^\\\\\s]+)$~', $use1, $match)) {
+                $use1 = $match[1];
+            }
+            if (preg_match('~[\\\\\s]([^\\\\\s]+)$~', $use2, $match)) {
+                $use2 = $match[1];
+            }
+            return strcasecmp($use1, $use2);
+        });
     }
 }
