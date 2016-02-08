@@ -5,7 +5,6 @@ namespace yii\gii\plus\generators\base\model;
 use yii\gii\generators\model\Generator as GiiModelGenerator;
 use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
-use yii\helpers\Inflector;
 use yii\web\JsExpression;
 use yii\helpers\Json;
 use ReflectionClass;
@@ -261,6 +260,7 @@ class Generator extends GiiModelGenerator
      */
     protected function generateRelations()
     {
+        $modelClassTableMap = Helper::getModelClassTableMap();
         $this->tableUses = [];
         $tableRelations = [];
         foreach (parent::generateRelations() as $tableName => $relations) {
@@ -268,14 +268,15 @@ class Generator extends GiiModelGenerator
             $tableRelations[$tableName] = [];
             foreach ($relations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
-                $nsClassName = preg_replace('~\\\\base$~', '', $this->ns) . '\\' . $className;
-                if (class_exists($nsClassName) && is_subclass_of($nsClassName, 'yii\db\ActiveRecord')) {
+                $nsClassName = array_search(array_search($className, $this->classNames), $modelClassTableMap);
+                if (class_exists($nsClassName)) {
                     $this->tableUses[$tableName][] = $nsClassName;
                     $tableRelations[$tableName][$relationName] = [$code, $className, $hasMany];
                 }
             }
         }
         $this->tableRelations = $tableRelations;
+        $this->classNames = [];
         return $tableRelations;
     }
 
@@ -323,7 +324,17 @@ class Generator extends GiiModelGenerator
     {
         $output = parent::render($template, $params);
         if (array_key_exists('tableName', $params) && array_key_exists($params['tableName'], $this->tableUses)) {
-            $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $this->tableUses[$params['tableName']]) . ';', $output);
+            $uses = $this->tableUses[$params['tableName']];
+            usort($uses, function ($use1, $use2) {
+                if (preg_match('~[\\\\\s]([^\\\\\s]+)$~', $use1, $match)) {
+                    $use1 = $match[1];
+                }
+                if (preg_match('~[\\\\\s]([^\\\\\s]+)$~', $use2, $match)) {
+                    $use2 = $match[1];
+                }
+                return strcasecmp($use1, $use2);
+            });
+            $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
         }
         if (array_key_exists('className', $params)) {
             $nsClassName = $this->ns . '\\' . $params['className'];
