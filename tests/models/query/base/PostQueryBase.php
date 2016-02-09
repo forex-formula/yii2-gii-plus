@@ -5,7 +5,7 @@ namespace app\models\query\base;
 /**
  * This is the ActiveQuery class for [[\app\models\base\PostBase]].
  *
- * @see \app\models\base\PostBase
+ * @see \app\models\Post
  */
 class PostQueryBase extends \yii\db\ActiveQuery
 {
@@ -17,7 +17,7 @@ class PostQueryBase extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return \app\models\base\PostBase[]|array
+     * @return \app\models\Post[]|array
      */
     public function all($db = null)
     {
@@ -26,7 +26,7 @@ class PostQueryBase extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return \app\models\base\PostBase|array|null
+     * @return \app\models\Post|array|null
      */
     public function one($db = null)
     {

@@ -5,7 +5,7 @@ namespace app\models\query\base;
 /**
  * This is the ActiveQuery class for [[\app\models\base\CommentBase]].
  *
- * @see \app\models\base\CommentBase
+ * @see \app\models\Comment
  */
 class CommentQueryBase extends \yii\db\ActiveQuery
 {
@@ -17,7 +17,7 @@ class CommentQueryBase extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return \app\models\base\CommentBase[]|array
+     * @return \app\models\Comment[]|array
      */
     public function all($db = null)
     {
@@ -26,7 +26,7 @@ class CommentQueryBase extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return \app\models\base\CommentBase|array|null
+     * @return \app\models\Comment|array|null
      */
     public function one($db = null)
     {

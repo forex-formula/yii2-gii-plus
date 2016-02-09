@@ -360,6 +360,14 @@ class Generator extends GiiModelGenerator
                 return $match[0];
             }
         }, $output);
+        $output = preg_replace_callback('~(@see |@return )\\\\((?:\w+\\\\)*\w+)\\\\base\\\\(\w+)Base~', function ($match) {
+            $nsClassName = $match[2] . '\\' . $match[3];
+            if (class_exists($nsClassName)) {
+                return $match[1] . '\\' . $nsClassName;
+            } else {
+                return $match[0];
+            }
+        }, $output);
         return $output;
     }
 }
