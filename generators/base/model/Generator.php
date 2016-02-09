@@ -2,12 +2,11 @@
 
 namespace yii\gii\plus\generators\base\model;
 
-use yii\db\Connection;
 use yii\gii\generators\model\Generator as GiiModelGenerator;
+use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
 use yii\helpers\Json;
-use yii\base\NotSupportedException;
 use ReflectionClass;
 use Yii;
 
@@ -108,53 +107,6 @@ class Generator extends GiiModelGenerator
     }
 
     /**
-     * @var Connection[]
-     */
-    protected $dbConnections;
-
-    /**
-     * @return Connection[]
-     */
-    protected function getDbConnections()
-    {
-        if (is_null($this->dbConnections)) {
-            $this->dbConnections = [];
-            foreach (Yii::$app->getComponents() as $id => $definition) {
-                $db = Yii::$app->get($id);
-                if ($db instanceof Connection) {
-                    $this->dbConnections[$id] = $db;
-                }
-            }
-        }
-        return $this->dbConnections;
-    }
-
-    /**
-     * @var array
-     */
-    protected $nsPrefixes;
-
-    /**
-     * @return array
-     */
-    protected function getNsPrefixes()
-    {
-        if (is_null($this->nsPrefixes)) {
-            $this->nsPrefixes = [];
-            foreach (['app', 'backend', 'common', 'console', 'frontend'] as $rootNs) {
-                $appPath = Yii::getAlias('@' . $rootNs, false);
-                if ($appPath) {
-                    $this->nsPrefixes[] = $rootNs . '\models';
-                    foreach (glob($appPath . '/modules/*', GLOB_ONLYDIR) as $modulePath) {
-                        $this->nsPrefixes[] = $rootNs . '\modules\\' . basename($modulePath) . '\models';
-                    }
-                }
-            }
-        }
-        return $this->nsPrefixes;
-    }
-
-    /**
      * @param array $data
      * @return JsExpression
      */
@@ -170,17 +122,13 @@ class Generator extends GiiModelGenerator
     public function getTableNameAutoComplete($refresh = false)
     {
         $data = [];
-        foreach ($this->getDbConnections() as $id => $db) {
+        foreach (Helper::getDbConnections() as $id => $db) {
             $data[$id] = ['*'];
-            $schema = $db->getSchema();
-            try {
-                $schemaNames = $schema->getSchemaNames($refresh);
-            } catch (NotSupportedException $e) {
-                $schemaNames = [];
-            }
+            $schemaNames = Helper::getSchemaNames($db, $refresh);
             foreach ($schemaNames as $schemaName) {
                 $data[$id][] = $schemaName . '.*';
             }
+            $schema = $db->getSchema();
             foreach ($schema->getTableNames('', $refresh) as $tableName) {
                 $data[$id][] = $tableName;
             }
@@ -200,21 +148,17 @@ class Generator extends GiiModelGenerator
     public function getNsAutoComplete($refresh = false)
     {
         $data = [];
-        foreach ($this->getDbConnections() as $id => $db) {
+        foreach (Helper::getDbConnections() as $id => $db) {
             $data[$id] = [];
-            try {
-                $schemaNames = $db->getSchema()->getSchemaNames($refresh);
-            } catch (NotSupportedException $e) {
-                $schemaNames = [];
-            }
-            foreach ($this->getNsPrefixes() as $nsPrefix) {
-                $data[$id][] = $nsPrefix . '\base';
+            $schemaNames = Helper::getSchemaNames($db, $refresh);
+            foreach (Helper::getModelNamespaces() as $modelNs) {
+                $data[$id][] = $modelNs . '\base';
                 foreach ($schemaNames as $schemaName) {
-                    $data[$id][] = $nsPrefix . '\\' . $schemaName . '\base';
+                    $data[$id][] = $modelNs . '\\' . $schemaName . '\base';
                 }
-                $data[$id][] = $nsPrefix . '\\' . $id . '\base';
+                $data[$id][] = $modelNs . '\\' . $id . '\base';
                 foreach ($schemaNames as $schemaName) {
-                    $data[$id][] = $nsPrefix . '\\' . $id . '\\' . $schemaName . '\base';
+                    $data[$id][] = $modelNs . '\\' . $id . '\\' . $schemaName . '\base';
                 }
             }
         }
@@ -238,7 +182,7 @@ class Generator extends GiiModelGenerator
      */
     public function getDbListItems()
     {
-        $ids = array_keys($this->getDbConnections());
+        $ids = array_keys(Helper::getDbConnections());
         return array_combine($ids, $ids);
     }
 
@@ -249,21 +193,17 @@ class Generator extends GiiModelGenerator
     public function getQueryNsAutoComplete($refresh = false)
     {
         $data = [];
-        foreach ($this->getDbConnections() as $id => $db) {
+        foreach (Helper::getDbConnections() as $id => $db) {
             $data[$id] = [];
-            try {
-                $schemaNames = $db->getSchema()->getSchemaNames($refresh);
-            } catch (NotSupportedException $e) {
-                $schemaNames = [];
-            }
-            foreach ($this->getNsPrefixes() as $nsPrefix) {
-                $data[$id][] = $nsPrefix . '\query\base';
+            $schemaNames = Helper::getSchemaNames($db, $refresh);
+            foreach (Helper::getModelNamespaces() as $modelNs) {
+                $data[$id][] = $modelNs . '\query\base';
                 foreach ($schemaNames as $schemaName) {
-                    $data[$id][] = $nsPrefix . '\\' . $schemaName . '\query\base';
+                    $data[$id][] = $modelNs . '\\' . $schemaName . '\query\base';
                 }
-                $data[$id][] = $nsPrefix . '\\' . $id . '\query\base';
+                $data[$id][] = $modelNs . '\\' . $id . '\query\base';
                 foreach ($schemaNames as $schemaName) {
-                    $data[$id][] = $nsPrefix . '\\' . $id . '\\' . $schemaName . '\query\base';
+                    $data[$id][] = $modelNs . '\\' . $id . '\\' . $schemaName . '\query\base';
                 }
             }
         }
@@ -293,12 +233,19 @@ class Generator extends GiiModelGenerator
     protected $userQueryBaseClass;
 
     /**
+     * @var bool
+     */
+    protected $relationsDone;
+
+    /**
      * @inheritdoc
      */
     public function generate()
     {
         $this->userBaseClass = $this->baseClass;
         $this->userQueryBaseClass = $this->queryBaseClass;
+        $this->classNames = [];
+        $this->relationsDone = false;
         $files = parent::generate();
         $this->baseClass = $this->userBaseClass;
         $this->queryBaseClass = $this->userQueryBaseClass;
@@ -306,10 +253,43 @@ class Generator extends GiiModelGenerator
     }
 
     /**
+     * @var array
+     */
+    protected $tableUses;
+
+    /**
+     * @inheritdoc
+     */
+    protected function generateRelations()
+    {
+        $modelClassTableMap = Helper::getModelClassTableMap();
+        $this->tableUses = [];
+        $tableRelations = [];
+        foreach (parent::generateRelations() as $tableName => $relations) {
+            $this->tableUses[$tableName] = ['Yii'];
+            $tableRelations[$tableName] = [];
+            foreach ($relations as $relationName => $relation) {
+                list ($code, $className, $hasMany) = $relation;
+                $nsClassName = array_search(array_search($className, $this->classNames), $modelClassTableMap);
+                if (($nsClassName !== false) && class_exists($nsClassName)) {
+                    $this->tableUses[$tableName][] = $nsClassName;
+                    $tableRelations[$tableName][$relationName] = [$code, $className, $hasMany];
+                }
+            }
+        }
+        $this->classNames = [];
+        $this->relationsDone = true;
+        return $tableRelations;
+    }
+
+    /**
      * @inheritdoc
      */
     protected function generateClassName($tableName, $useSchemaName = null)
     {
+        if (!$this->relationsDone) {
+            return parent::generateClassName($tableName, $useSchemaName);
+        }
         $className = parent::generateClassName($tableName, $useSchemaName) . 'Base';
         if (!is_null($this->userBaseClass)) {
             $nsClassName = $this->ns . '\\' . $className;
@@ -345,11 +325,23 @@ class Generator extends GiiModelGenerator
     public function render($template, $params = [])
     {
         $output = parent::render($template, $params);
-        $nsClassName = $this->ns . '\\' . $params['className'];
-        if (class_exists($nsClassName)) {
-            $output = preg_replace_callback('~@return \\\\(yii\\\\db\\\\ActiveQuery)\s+\*/\s+public function ([^\(]+)\(\)~', function ($match) use ($nsClassName) {
-                return str_replace($match[1], get_class(call_user_func([new $nsClassName, $match[2]])), $match[0]);
-            }, $output);
+        if (array_key_exists('tableName', $params) && array_key_exists($params['tableName'], $this->tableUses)) {
+            $uses = $this->tableUses[$params['tableName']];
+            Helper::sortUses($uses);
+            $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
+        }
+        if (array_key_exists('className', $params)) {
+            $nsClassName = $this->ns . '\\' . $params['className'];
+            if (class_exists($nsClassName) && is_subclass_of($nsClassName, 'yii\db\ActiveRecord')) {
+                $model = new $nsClassName;
+                $output = preg_replace_callback('~@return \\\\(yii\\\\db\\\\ActiveQuery)\s+\*/\s+public function ([^\(]+)\(\)~', function ($match) use ($model) {
+                    if (method_exists($model, $match[2])) {
+                        return str_replace($match[1], get_class(call_user_func([$model, $match[2]])), $match[0]);
+                    } else {
+                        return $match[0];
+                    }
+                }, $output);
+            }
         }
         return $output;
     }
