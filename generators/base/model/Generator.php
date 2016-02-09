@@ -285,6 +285,15 @@ class Generator extends GiiModelGenerator
     /**
      * @inheritdoc
      */
+    protected function getTableNames()
+    {
+        $tableNames = array_diff(parent::getTableNames(), ['migration']);
+        return $this->tableNames = $tableNames;
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function generateClassName($tableName, $useSchemaName = null)
     {
         if (!$this->relationsDone) {
