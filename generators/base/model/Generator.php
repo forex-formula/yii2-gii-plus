@@ -233,12 +233,19 @@ class Generator extends GiiModelGenerator
     protected $userQueryBaseClass;
 
     /**
+     * @var bool
+     */
+    protected $relationsDone;
+
+    /**
      * @inheritdoc
      */
     public function generate()
     {
         $this->userBaseClass = $this->baseClass;
         $this->userQueryBaseClass = $this->queryBaseClass;
+        $this->classNames = [];
+        $this->relationsDone = false;
         $files = parent::generate();
         $this->baseClass = $this->userBaseClass;
         $this->queryBaseClass = $this->userQueryBaseClass;
@@ -249,11 +256,6 @@ class Generator extends GiiModelGenerator
      * @var array
      */
     protected $tableUses;
-
-    /**
-     * @var array
-     */
-    protected $tableRelations;
 
     /**
      * @inheritdoc
@@ -275,8 +277,8 @@ class Generator extends GiiModelGenerator
                 }
             }
         }
-        $this->tableRelations = $tableRelations;
         $this->classNames = [];
+        $this->relationsDone = true;
         return $tableRelations;
     }
 
@@ -285,7 +287,7 @@ class Generator extends GiiModelGenerator
      */
     protected function generateClassName($tableName, $useSchemaName = null)
     {
-        if (is_null($this->tableRelations)) {
+        if (!$this->relationsDone) {
             return parent::generateClassName($tableName, $useSchemaName);
         }
         $className = parent::generateClassName($tableName, $useSchemaName) . 'Base';
