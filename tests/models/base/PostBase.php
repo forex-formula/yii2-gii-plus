@@ -71,10 +71,10 @@ class PostBase extends \yii\db\ActiveRecord
 
     /**
      * @inheritdoc
-     * @return \app\models\query\base\PostQueryBase the active query used by this AR class.
+     * @return \app\models\query\PostQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new \app\models\query\base\PostQueryBase(get_called_class());
+        return new \app\models\query\PostQuery(get_called_class());
     }
 }

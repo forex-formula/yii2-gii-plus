@@ -58,10 +58,10 @@ class CommentBase extends \yii\db\ActiveRecord
 
     /**
      * @inheritdoc
-     * @return \app\models\query\base\CommentQueryBase the active query used by this AR class.
+     * @return \app\models\query\CommentQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new \app\models\query\base\CommentQueryBase(get_called_class());
+        return new \app\models\query\CommentQuery(get_called_class());
     }
 }

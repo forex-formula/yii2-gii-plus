@@ -55,10 +55,10 @@ class BlogBase extends \yii\db\ActiveRecord
 
     /**
      * @inheritdoc
-     * @return \app\models\query\base\BlogQueryBase the active query used by this AR class.
+     * @return \app\models\query\BlogQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new \app\models\query\base\BlogQueryBase(get_called_class());
+        return new \app\models\query\BlogQuery(get_called_class());
     }
 }

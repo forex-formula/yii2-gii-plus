@@ -352,6 +352,14 @@ class Generator extends GiiModelGenerator
                 }, $output);
             }
         }
+        $output = preg_replace_callback('~(@return |return new )\\\\((?:\w+\\\\)*\w+\\\\query)\\\\base\\\\(\w+Query)Base~', function ($match) {
+            $nsClassName = $match[2] . '\\' . $match[3];
+            if (class_exists($nsClassName)) {
+                return $match[1] . '\\' . $nsClassName;
+            } else {
+                return $match[0];
+            }
+        }, $output);
         return $output;
     }
 }
