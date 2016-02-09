@@ -136,21 +136,21 @@ class BaseHelper
     /**
      * @var array
      */
-    protected static $modelClassTableMap;
+    protected static $modelClassTableNameMap;
 
     /**
      * @return array
      */
-    public static function getModelClassTableMap()
+    public static function getModelClassTableNameMap()
     {
-        if (is_null(static::$modelClassTableMap)) {
-            static::$modelClassTableMap = [];
+        if (is_null(static::$modelClassTableNameMap)) {
+            static::$modelClassTableNameMap = [];
             foreach (static::getModelClasses() as $modelClass) {
                 /* @var $modelClass string|\yii\db\ActiveRecord */
-                static::$modelClassTableMap[$modelClass] = $modelClass::tableName();
+                static::$modelClassTableNameMap[$modelClass] = $modelClass::tableName();
             }
         }
-        return static::$modelClassTableMap;
+        return static::$modelClassTableNameMap;
     }
 
     /**

@@ -262,7 +262,7 @@ class Generator extends GiiModelGenerator
      */
     protected function generateRelations()
     {
-        $modelClassTableMap = Helper::getModelClassTableMap();
+        $modelClassTableNameMap = Helper::getModelClassTableNameMap();
         $this->tableUses = [];
         $tableRelations = [];
         foreach (parent::generateRelations() as $tableName => $relations) {
@@ -270,7 +270,7 @@ class Generator extends GiiModelGenerator
             $tableRelations[$tableName] = [];
             foreach ($relations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
-                $nsClassName = array_search(array_search($className, $this->classNames), $modelClassTableMap);
+                $nsClassName = array_search(array_search($className, $this->classNames), $modelClassTableNameMap);
                 if (($nsClassName !== false) && class_exists($nsClassName)) {
                     $this->tableUses[$tableName][] = $nsClassName;
                     $tableRelations[$tableName][$relationName] = [$code, $className, $hasMany];
