@@ -21,14 +21,17 @@ class m160209_192728_init extends Migration
         $this->createTable('comment', [
             'id' => 'INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY',
             'post_id' => 'INT UNSIGNED NOT NULL',
+            'parent_id' => 'INT UNSIGNED NULL DEFAULT NULL',
             'text' => 'TEXT NOT NULL'
         ], $options);
         $this->addForeignKey('post__blog_id', 'post', 'blog_id', 'blog', 'id', 'RESTRICT', 'NO ACTION');
         $this->addForeignKey('comment__post_id', 'comment', 'post_id', 'post', 'id', 'RESTRICT', 'NO ACTION');
+        $this->addForeignKey('comment__parent_id', 'comment', 'parent_id', 'comment', 'id', 'RESTRICT', 'NO ACTION');
     }
 
     public function down()
     {
+        $this->dropForeignKey('comment__parent_id', 'comment');
         $this->dropForeignKey('comment__post_id', 'comment');
         $this->dropForeignKey('post__blog_id', 'post');
         $this->dropTable('comment');

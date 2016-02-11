@@ -2,6 +2,7 @@
 
 namespace app\models\base;
 
+use app\models\Comment;
 use app\models\Post;
 use Yii;
 
@@ -10,8 +11,11 @@ use Yii;
  *
  * @property integer $id
  * @property integer $post_id
+ * @property integer $parent_id
  * @property string $text
  *
+ * @property Comment $parent
+ * @property Comment[] $comments
  * @property Post $post
  */
 class CommentBase extends \yii\db\ActiveRecord
@@ -31,7 +35,7 @@ class CommentBase extends \yii\db\ActiveRecord
     {
         return [
             [['post_id', 'text'], 'required'],
-            [['post_id'], 'integer'],
+            [['post_id', 'parent_id'], 'integer'],
             [['text'], 'string']
         ];
     }
@@ -44,8 +48,25 @@ class CommentBase extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'post_id' => 'Post ID',
+            'parent_id' => 'Parent ID',
             'text' => 'Text',
         ];
+    }
+
+    /**
+     * @return \app\models\query\CommentQuery
+     */
+    public function getParent()
+    {
+        return $this->hasOne(Comment::className(), ['id' => 'parent_id']);
+    }
+
+    /**
+     * @return \app\models\query\CommentQuery
+     */
+    public function getComments()
+    {
+        return $this->hasMany(Comment::className(), ['parent_id' => 'id']);
     }
 
     /**

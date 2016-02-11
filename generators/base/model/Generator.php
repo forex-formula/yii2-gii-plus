@@ -335,7 +335,7 @@ class Generator extends GiiModelGenerator
     {
         $output = parent::render($template, $params);
         if (array_key_exists('tableName', $params) && is_array($this->tableUses) && array_key_exists($params['tableName'], $this->tableUses)) {
-            $uses = $this->tableUses[$params['tableName']];
+            $uses = array_unique($this->tableUses[$params['tableName']]);
             Helper::sortUses($uses);
             $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
         }

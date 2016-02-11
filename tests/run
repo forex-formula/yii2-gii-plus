@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+DIR=$(dirname $0)
+
+rm -fr $DIR/models2
+mv $DIR/models $DIR/models2
+
+$DIR/yii migrate/up --interactive=0
+$DIR/yii gii/basemodel --interactive=0
+$DIR/yii gii/usermodel --interactive=0
+$DIR/yii gii/basemodel --interactive=0 --overwrite=1
+$DIR/yii gii/basemodel --interactive=0 --overwrite=1
+$DIR/yii migrate/down --interactive=0
