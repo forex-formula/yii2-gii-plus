@@ -262,7 +262,7 @@ class Generator extends GiiModelGenerator
      */
     protected function generateRelations()
     {
-        $modelClassTableMap = Helper::getModelClassTableMap();
+        $modelClassTableNameMap = Helper::getModelClassTableNameMap();
         $this->tableUses = [];
         $tableRelations = [];
         foreach (parent::generateRelations() as $tableName => $relations) {
@@ -270,7 +270,7 @@ class Generator extends GiiModelGenerator
             $tableRelations[$tableName] = [];
             foreach ($relations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
-                $nsClassName = array_search(array_search($className, $this->classNames), $modelClassTableMap);
+                $nsClassName = array_search(array_search($className, $this->classNames), $modelClassTableNameMap);
                 if (($nsClassName !== false) && class_exists($nsClassName)) {
                     $this->tableUses[$tableName][] = $nsClassName;
                     $tableRelations[$tableName][$relationName] = [$code, $className, $hasMany];
@@ -280,6 +280,15 @@ class Generator extends GiiModelGenerator
         $this->classNames = [];
         $this->relationsDone = true;
         return $tableRelations;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getTableNames()
+    {
+        $tableNames = array_diff(parent::getTableNames(), ['migration']);
+        return $this->tableNames = $tableNames;
     }
 
     /**
@@ -325,8 +334,8 @@ class Generator extends GiiModelGenerator
     public function render($template, $params = [])
     {
         $output = parent::render($template, $params);
-        if (array_key_exists('tableName', $params) && array_key_exists($params['tableName'], $this->tableUses)) {
-            $uses = $this->tableUses[$params['tableName']];
+        if (array_key_exists('tableName', $params) && is_array($this->tableUses) && array_key_exists($params['tableName'], $this->tableUses)) {
+            $uses = array_unique($this->tableUses[$params['tableName']]);
             Helper::sortUses($uses);
             $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
         }
@@ -343,6 +352,22 @@ class Generator extends GiiModelGenerator
                 }, $output);
             }
         }
+        $output = preg_replace_callback('~(@return |return new )\\\\((?:\w+\\\\)*\w+\\\\query)\\\\base\\\\(\w+Query)Base~', function ($match) {
+            $nsClassName = $match[2] . '\\' . $match[3];
+            if (class_exists($nsClassName)) {
+                return $match[1] . '\\' . $nsClassName;
+            } else {
+                return $match[0];
+            }
+        }, $output);
+        $output = preg_replace_callback('~(@see |@return )\\\\((?:\w+\\\\)*\w+)\\\\base\\\\(\w+)Base~', function ($match) {
+            $nsClassName = $match[2] . '\\' . $match[3];
+            if (class_exists($nsClassName)) {
+                return $match[1] . '\\' . $nsClassName;
+            } else {
+                return $match[0];
+            }
+        }, $output);
         return $output;
     }
 }

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+DIR=$(dirname $0)
+
+rm -fr $DIR/models
+echo 'CREATE DATABASE yii2_gii_plus_tests;' | mysql
+$DIR/yii migrate/up --interactive=0
+$DIR/yii gii/basemodel --interactive=0
+$DIR/yii gii/usermodel --interactive=0
+$DIR/yii gii/basemodel --interactive=0 --overwrite=1
+$DIR/yii gii/basemodel --interactive=0 --overwrite=1
+$DIR/yii migrate/down --interactive=0
+echo 'DROP DATABASE yii2_gii_plus_tests;' | mysql
