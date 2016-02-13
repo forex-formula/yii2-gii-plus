@@ -1,0 +1,35 @@
+#!/bin/sh
+
+D1="Running 'Base Model Generator'...
+
+The following files will be generated:
+  [unchanged] models/base/BlogBase.php
+  [unchanged] models/query/base/BlogQueryBase.php
+  [unchanged] models/base/CommentBase.php
+  [unchanged] models/query/base/CommentQueryBase.php
+  [unchanged] models/base/PostBase.php
+  [unchanged] models/query/base/PostQueryBase.php
+
+No files were chosen to be generated."
+
+D2="Running 'User Model Generator'...
+
+The following files will be generated:
+  [unchanged] models/Blog.php
+  [unchanged] models/query/BlogQuery.php
+  [unchanged] models/Comment.php
+  [unchanged] models/query/CommentQuery.php
+  [unchanged] models/Post.php
+  [unchanged] models/query/PostQuery.php
+
+No files were chosen to be generated."
+
+DIR=$(dirname $0)
+
+rm -fr $DIR/models
+echo 'CREATE DATABASE yii2_gii_plus_tests;' | mysql
+$DIR/yii migrate/up --interactive=0 > /dev/null
+O1=`$DIR/yii gii/basemodel --interactive=0`
+O2=`$DIR/yii gii/usermodel --interactive=0`
+$DIR/yii migrate/down --interactive=0 > /dev/null
+echo 'DROP DATABASE yii2_gii_plus_tests;' | mysql
