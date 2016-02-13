@@ -3,7 +3,7 @@
 DIR=$(dirname $0)
 
 rm -fr $DIR/models
-echo 'DROP DATABASE yii2_gii_plus_tests;
+echo 'DROP DATABASE IF EXISTS yii2_gii_plus_tests;
 CREATE DATABASE yii2_gii_plus_tests;' | mysql
 $DIR/yii migrate --interactive=0
 $DIR/yii gii/basemodel --interactive=0
