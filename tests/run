@@ -1,5 +1,7 @@
 #!/bin/sh
 
+DIR=$(dirname $0)
+
 EXPECTED1="Running 'Base Model Generator'...
 
 The following files will be generated:
@@ -11,6 +13,14 @@ The following files will be generated:
   [unchanged] models/query/base/PostQueryBase.php
 
 No files were chosen to be generated."
+ACTUAL1=`$DIR/yii gii/basemodel --interactive=0 --overwrite=0`
+
+if [ "$EXPECTED1" = "$ACTUAL1" ]; then
+    echo '1 passed'
+else
+    echo $ACTUAL1
+    exit 1
+fi
 
 EXPECTED2="Running 'User Model Generator'...
 
@@ -23,22 +33,7 @@ The following files will be generated:
   [unchanged] models/query/PostQuery.php
 
 No files were chosen to be generated."
-
-DIR=$(dirname $0)
-
-echo 'CREATE DATABASE yii2_gii_plus_tests;' | mysql
-$DIR/yii migrate/up --interactive=0 > /dev/null
-ACTUAL1=`$DIR/yii gii/basemodel --interactive=0 --overwrite=0`
 ACTUAL2=`$DIR/yii gii/usermodel --interactive=0 --overwrite=0`
-$DIR/yii migrate/down --interactive=0 > /dev/null
-echo 'DROP DATABASE yii2_gii_plus_tests;' | mysql
-
-if [ "$EXPECTED1" = "$ACTUAL1" ]; then
-    echo '1 passed'
-else
-    echo $ACTUAL1
-    exit 1
-fi
 
 if [ "$EXPECTED2" = "$ACTUAL2" ]; then
     echo '2 passed'
