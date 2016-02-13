@@ -22,5 +22,9 @@ install:
   - travis_retry composer global require "fxp/composer-asset-plugin:~1.1.1"
   - travis_retry composer install --prefer-dist --no-interaction
 
+before_script:
+  - mysql -e 'CREATE DATABASE yii2_gii_plus_tests;'
+  - tests/yii migrate --interactive=0
+
 script:
   - tests/run
