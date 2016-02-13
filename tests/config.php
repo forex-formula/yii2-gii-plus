@@ -11,6 +11,7 @@ return [
         'db' => [
             'class' => 'yii\db\Connection',
             'dsn' => 'mysql:host=localhost;dbname=yii2_gii_plus_tests',
+            'username' => 'travis',
             'charset' => 'utf8'
         ]
     ]
