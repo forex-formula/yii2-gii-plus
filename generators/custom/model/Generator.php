@@ -1,6 +1,6 @@
 <?php
 
-namespace yii\gii\plus\generators\user\model;
+namespace yii\gii\plus\generators\custom\model;
 
 use yii\gii\CodeFile;
 use yii\gii\Generator as GiiGenerator;
@@ -33,7 +33,7 @@ class Generator extends GiiGenerator
      */
     public function getName()
     {
-        return 'User Model Generator';
+        return 'Custom Model Generator';
     }
 
     /**

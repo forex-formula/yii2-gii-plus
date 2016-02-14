@@ -1,7 +1,7 @@
 <?php
 
 /* @var $this yii\web\View */
-/* @var $generator yii\gii\plus\generators\user\model\Generator */
+/* @var $generator yii\gii\plus\generators\custom\model\Generator */
 /* @var $ns string */
 /* @var $modelName string */
 /* @var $modelClass string */
@@ -33,13 +33,13 @@ class <?= $modelName ?> extends <?= $baseModelName ?>
 
 {
 
-    /**
-     * @inheritdoc
-     * @return <?= $queryName ?>
+/**
+* @inheritdoc
+* @return <?= $queryName ?>
 
-     */
-    public static function find()
-    {
-        return Yii::createObject(<?= $queryName ?>::className(), [get_called_class()]);
-    }
+*/
+public static function find()
+{
+return Yii::createObject(<?= $queryName ?>::className(), [get_called_class()]);
+}
 }
