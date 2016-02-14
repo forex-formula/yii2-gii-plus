@@ -33,13 +33,13 @@ class <?= $modelName ?> extends <?= $baseModelName ?>
 
 {
 
-/**
-* @inheritdoc
-* @return <?= $queryName ?>
+    /**
+     * @inheritdoc
+     * @return <?= $queryName ?>
 
-*/
-public static function find()
-{
-return Yii::createObject(<?= $queryName ?>::className(), [get_called_class()]);
-}
+     */
+    public static function find()
+    {
+        return Yii::createObject(<?= $queryName ?>::className(), [get_called_class()]);
+    }
 }
