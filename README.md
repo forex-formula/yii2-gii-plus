@@ -29,3 +29,13 @@ This command generates the following files:
 * models/query/BlogQuery.php
 * models/query/CommentQuery.php
 * models/query/PostQuery.php
+
+## After Custom Models
+
+You should regenerate base models after custom models.
+```
+yii gii/base_model --interactive=0 --overwrite=1
+yii gii/base_model --interactive=0 --overwrite=1
+```
+The first regeneration inserts relations.
+The second regeneration updates phpDoc @return directives.
