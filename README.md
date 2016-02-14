@@ -37,4 +37,4 @@ You should regenerate base models after custom models.
 yii gii/base_model --interactive=0 --overwrite=1
 yii gii/base_model --interactive=0 --overwrite=1
 ```
-The first regeneration inserts relations. The second regeneration updates phpDoc @return directives.
+A first regeneration inserts relations. A second regeneration updates phpDoc @return directives.
