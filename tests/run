@@ -22,7 +22,7 @@ else
     exit 1
 fi
 
-EXPECTED2="Running 'User Model Generator'...
+EXPECTED2="Running 'Custom Model Generator'...
 
 The following files will be generated:
   [unchanged] models/Blog.php
