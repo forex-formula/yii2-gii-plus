@@ -13,6 +13,9 @@ use Yii;
 class Generator extends GiiModelGenerator
 {
 
+    public $includeFilter = '^.*$';
+    public $excludeFilter = '^migration$';
+
     public $ns = 'app\models\base';
     public $tableName = '*';
     public $generateLabelsFromComments = true;
@@ -72,6 +75,8 @@ class Generator extends GiiModelGenerator
             }
         }
         return array_merge($rules, [
+            [['includeFilter', 'excludeFilter'], 'filter', 'filter' => 'trim'],
+            [['includeFilter', 'excludeFilter'], 'required'],
             ['ns', 'match', 'pattern' => '~\\\\base$~'],
             ['modelClass', 'match', 'pattern' => '~Base$~'],
             ['queryNs', 'default', 'value' => function (Generator $model, $attribute) {
@@ -287,7 +292,9 @@ class Generator extends GiiModelGenerator
      */
     protected function getTableNames()
     {
-        $tableNames = array_diff(parent::getTableNames(), ['migration']);
+        $tableNames = array_filter(parent::getTableNames(), function ($tableName) {
+            return preg_match('~' . $this->includeFilter . '~i', $tableName) && !preg_match('~' . $this->excludeFilter . '~i', $tableName);
+        });
         return $this->tableNames = $tableNames;
     }
 
