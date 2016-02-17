@@ -13,7 +13,14 @@ use Yii;
 class Generator extends GiiModelGenerator
 {
 
+    /**
+     * @var string
+     */
     public $includeFilter = '^.*$';
+
+    /**
+     * @var string
+     */
     public $excludeFilter = '^migration$';
 
     public $ns = 'app\models\base';
