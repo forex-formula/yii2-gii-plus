@@ -100,11 +100,11 @@ class Generator extends GiiModelGenerator
      * @param string $attribute
      * @param array $params
      */
-    public function validatePattern($attribute, $params)
+    public function validatePattern($attribute, array $params)
     {
         if (!$this->hasErrors($attribute)) {
             try {
-                preg_match('~^' . $this->$attribute . '$~i', '');
+                preg_match('~^' . $this->{$attribute} . '$~i', '');
             } catch (ErrorException $e) {
                 $this->addError($attribute, $e->getMessage());
             }
