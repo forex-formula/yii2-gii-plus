@@ -100,7 +100,7 @@ class Generator extends GiiModelGenerator
      * @param string $attribute
      * @param array $params
      */
-    public function validatePattern($attribute, array $params)
+    public function validatePattern($attribute, $params)
     {
         if (!$this->hasErrors($attribute)) {
             try {
