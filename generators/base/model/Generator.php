@@ -105,8 +105,8 @@ class Generator extends GiiModelGenerator
         if (!$this->hasErrors($attribute)) {
             try {
                 preg_match('~^' . $this->{$attribute} . '$~i', '');
-            } catch (ErrorException $e) {
-                $this->addError($attribute, $e->getMessage());
+            } catch (ErrorException $exception) {
+                $this->addError($attribute, $exception->getMessage());
             }
         }
     }
