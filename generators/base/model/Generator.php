@@ -16,12 +16,12 @@ class Generator extends GiiModelGenerator
     /**
      * @var string
      */
-    public $includeFilter = '^.*$';
+    public $includeFilter = '.*';
 
     /**
      * @var string
      */
-    public $excludeFilter = '^migration$';
+    public $excludeFilter = 'migration';
 
     public $ns = 'app\models\base';
     public $tableName = '*';
@@ -300,7 +300,7 @@ class Generator extends GiiModelGenerator
     protected function getTableNames()
     {
         $tableNames = array_filter(parent::getTableNames(), function ($tableName) {
-            return preg_match('~' . $this->includeFilter . '~i', $tableName) && !preg_match('~' . $this->excludeFilter . '~i', $tableName);
+            return preg_match('~^' . $this->includeFilter . '$~i', $tableName) && !preg_match('~^' . $this->excludeFilter . '$~i', $tableName);
         });
         return $this->tableNames = $tableNames;
     }
