@@ -2,6 +2,7 @@
 
 namespace yii\gii\plus\generators\base\model;
 
+use yii\base\ErrorException;
 use yii\gii\generators\model\Generator as GiiModelGenerator;
 use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
@@ -84,6 +85,7 @@ class Generator extends GiiModelGenerator
         return array_merge($rules, [
             [['includeFilter', 'excludeFilter'], 'filter', 'filter' => 'trim'],
             [['includeFilter', 'excludeFilter'], 'required'],
+            [['includeFilter', 'excludeFilter'], 'validatePattern'],
             ['ns', 'match', 'pattern' => '~\\\\base$~'],
             ['modelClass', 'match', 'pattern' => '~Base$~'],
             ['queryNs', 'default', 'value' => function (Generator $model, $attribute) {
@@ -92,6 +94,21 @@ class Generator extends GiiModelGenerator
             ['queryNs', 'match', 'pattern' => '~\\\\query\\\\base$~'],
             ['queryClass', 'match', 'pattern' => '~QueryBase$~']
         ]);
+    }
+
+    /**
+     * @param string $attribute
+     * @param array $params
+     */
+    public function validatePattern($attribute, $params)
+    {
+        if (!$this->hasErrors($attribute)) {
+            try {
+                preg_match('~^' . $this->$attribute . '$~i', '');
+            } catch (ErrorException $e) {
+                $this->addError($attribute, $e->getMessage());
+            }
+        }
     }
 
     /**
@@ -299,10 +316,13 @@ class Generator extends GiiModelGenerator
      */
     protected function getTableNames()
     {
-        $tableNames = array_filter(parent::getTableNames(), function ($tableName) {
-            return preg_match('~^' . $this->includeFilter . '$~i', $tableName) && !preg_match('~^' . $this->excludeFilter . '$~i', $tableName);
-        });
-        return $this->tableNames = $tableNames;
+        try {
+            $this->tableNames = array_filter(parent::getTableNames(), function ($tableName) {
+                return preg_match('~^' . $this->includeFilter . '$~i', $tableName) && !preg_match('~^' . $this->excludeFilter . '$~i', $tableName);
+            });
+        } catch (ErrorException $e) {
+        }
+        return $this->tableNames;
     }
 
     /**
