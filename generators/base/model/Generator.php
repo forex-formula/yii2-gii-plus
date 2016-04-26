@@ -104,7 +104,7 @@ class Generator extends GiiModelGenerator
     {
         if (!$this->hasErrors($attribute)) {
             try {
-                preg_match('~^' . $this->$attribute . '$~', '');
+                preg_match('~^(?:' . $this->$attribute . ')$~', '');
             } catch (ErrorException $exception) {
                 $this->addError($attribute, $exception->getMessage());
             }
@@ -318,7 +318,7 @@ class Generator extends GiiModelGenerator
     {
         try {
             $this->tableNames = array_filter(parent::getTableNames(), function ($tableName) {
-                return preg_match('~^' . $this->includeFilter . '$~i', $tableName) && !preg_match('~^' . $this->excludeFilter . '$~i', $tableName);
+                return preg_match('~^(?:' . $this->includeFilter . ')$~i', $tableName) && !preg_match('~^(?:' . $this->excludeFilter . ')$~i', $tableName);
             });
         } catch (ErrorException $e) {
         }
