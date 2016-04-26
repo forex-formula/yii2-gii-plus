@@ -273,8 +273,8 @@ class Generator extends GiiModelGenerator
     {
         $this->commonBaseClass = $this->baseClass;
         $this->commonQueryBaseClass = $this->queryBaseClass;
-        $this->classNames = [];
         $this->relationsDone = false;
+        $this->classNames = [];
         $files = parent::generate();
         $this->baseClass = $this->commonBaseClass;
         $this->queryBaseClass = $this->commonQueryBaseClass;
