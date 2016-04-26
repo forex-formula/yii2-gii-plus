@@ -334,7 +334,7 @@ class Generator extends GiiModelGenerator
             return parent::generateClassName($tableName, $useSchemaName);
         }
         $className = parent::generateClassName($tableName, $useSchemaName) . 'Base';
-        if (!is_null($this->commonBaseClass)) {
+        if ($this->commonBaseClass) {
             $nsClassName = $this->ns . '\\' . $className;
             if (class_exists($nsClassName)) {
                 $this->baseClass = get_parent_class($nsClassName);
@@ -351,7 +351,7 @@ class Generator extends GiiModelGenerator
     protected function generateQueryClassName($modelClassName)
     {
         $queryClassName = parent::generateQueryClassName(preg_replace('~Base$~', '', $modelClassName)) . 'Base';
-        if (!is_null($this->commonQueryBaseClass)) {
+        if ($this->commonQueryBaseClass) {
             $nsQueryClassName = $this->queryNs . '\\' . $queryClassName;
             if (class_exists($nsQueryClassName)) {
                 $this->queryBaseClass = get_parent_class($nsQueryClassName);
