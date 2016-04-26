@@ -306,8 +306,8 @@ class Generator extends GiiModelGenerator
                 }
             }
         }
-        $this->classNames = [];
         $this->relationsDone = true;
+        $this->classNames = [];
         return $tableRelations;
     }
 
