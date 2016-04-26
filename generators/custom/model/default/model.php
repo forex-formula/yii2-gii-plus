@@ -1,5 +1,7 @@
 <?php
 
+use yii\gii\plus\helpers\Helper;
+
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\custom\model\Generator */
 /* @var $ns string */
@@ -12,8 +14,6 @@
 /* @var $queryClass string */
 /* @var $baseQueryName string */
 /* @var $baseQueryClass string */
-
-use yii\gii\plus\helpers\Helper;
 
 $uses = [
     $baseModelClass,

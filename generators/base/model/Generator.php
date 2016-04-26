@@ -22,7 +22,7 @@ class Generator extends GiiModelGenerator
     /**
      * @var string
      */
-    public $excludeFilter = 'migration';
+    public $excludeFilter = 'migration|cache|source_message|message|log|auth_\w+';
 
     public $ns = 'app\models\base';
     public $tableName = '*';
@@ -104,7 +104,7 @@ class Generator extends GiiModelGenerator
     {
         if (!$this->hasErrors($attribute)) {
             try {
-                preg_match('~^' . $this->{$attribute} . '$~i', '');
+                preg_match('~^(?:' . $this->$attribute . ')$~', '');
             } catch (ErrorException $exception) {
                 $this->addError($attribute, $exception->getMessage());
             }
@@ -273,8 +273,8 @@ class Generator extends GiiModelGenerator
     {
         $this->commonBaseClass = $this->baseClass;
         $this->commonQueryBaseClass = $this->queryBaseClass;
-        $this->classNames = [];
         $this->relationsDone = false;
+        $this->classNames = [];
         $files = parent::generate();
         $this->baseClass = $this->commonBaseClass;
         $this->queryBaseClass = $this->commonQueryBaseClass;
@@ -291,23 +291,23 @@ class Generator extends GiiModelGenerator
      */
     protected function generateRelations()
     {
-        $modelClassTableNameMap = Helper::getModelClassTableNameMap();
-        $this->tableUses = [];
         $tableRelations = [];
+        $this->tableUses = [];
+        $modelClassTableNameMap = Helper::getModelClassTableNameMap();
         foreach (parent::generateRelations() as $tableName => $relations) {
-            $this->tableUses[$tableName] = ['Yii'];
             $tableRelations[$tableName] = [];
+            $this->tableUses[$tableName] = ['Yii'];
             foreach ($relations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
                 $nsClassName = array_search(array_search($className, $this->classNames), $modelClassTableNameMap);
                 if (($nsClassName !== false) && class_exists($nsClassName)) {
-                    $this->tableUses[$tableName][] = $nsClassName;
                     $tableRelations[$tableName][$relationName] = [$code, $className, $hasMany];
+                    $this->tableUses[$tableName][] = $nsClassName;
                 }
             }
         }
-        $this->classNames = [];
         $this->relationsDone = true;
+        $this->classNames = [];
         return $tableRelations;
     }
 
@@ -318,7 +318,7 @@ class Generator extends GiiModelGenerator
     {
         try {
             $this->tableNames = array_filter(parent::getTableNames(), function ($tableName) {
-                return preg_match('~^' . $this->includeFilter . '$~i', $tableName) && !preg_match('~^' . $this->excludeFilter . '$~i', $tableName);
+                return preg_match('~^(?:' . $this->includeFilter . ')$~i', $tableName) && !preg_match('~^(?:' . $this->excludeFilter . ')$~i', $tableName);
             });
         } catch (ErrorException $e) {
         }
@@ -334,7 +334,7 @@ class Generator extends GiiModelGenerator
             return parent::generateClassName($tableName, $useSchemaName);
         }
         $className = parent::generateClassName($tableName, $useSchemaName) . 'Base';
-        if (!is_null($this->commonBaseClass)) {
+        if ($this->commonBaseClass) {
             $nsClassName = $this->ns . '\\' . $className;
             if (class_exists($nsClassName)) {
                 $this->baseClass = get_parent_class($nsClassName);
@@ -351,7 +351,7 @@ class Generator extends GiiModelGenerator
     protected function generateQueryClassName($modelClassName)
     {
         $queryClassName = parent::generateQueryClassName(preg_replace('~Base$~', '', $modelClassName)) . 'Base';
-        if (!is_null($this->commonQueryBaseClass)) {
+        if ($this->commonQueryBaseClass) {
             $nsQueryClassName = $this->queryNs . '\\' . $queryClassName;
             if (class_exists($nsQueryClassName)) {
                 $this->queryBaseClass = get_parent_class($nsQueryClassName);
