@@ -36,7 +36,9 @@ class CommentBase extends \yii\db\ActiveRecord
         return [
             [['post_id', 'text'], 'required'],
             [['post_id', 'parent_id'], 'integer'],
-            [['text'], 'string']
+            [['text'], 'string'],
+            [['parent_id'], 'exist', 'skipOnError' => true, 'targetClass' => CommentBase::className(), 'targetAttribute' => ['parent_id' => 'id']],
+            [['post_id'], 'exist', 'skipOnError' => true, 'targetClass' => PostBase::className(), 'targetAttribute' => ['post_id' => 'id']],
         ];
     }
 

@@ -36,7 +36,8 @@ class PostBase extends \yii\db\ActiveRecord
             [['blog_id', 'name', 'text'], 'required'],
             [['blog_id'], 'integer'],
             [['text'], 'string'],
-            [['name'], 'string', 'max' => 255]
+            [['name'], 'string', 'max' => 255],
+            [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => BlogBase::className(), 'targetAttribute' => ['blog_id' => 'id']],
         ];
     }
 
