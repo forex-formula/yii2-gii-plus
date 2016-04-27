@@ -26,19 +26,20 @@ class m160209_192728_init extends Migration
             'text' => 'TEXT NOT NULL'
         ], $tableOptions);
         $this->createIndex('blog_id', 'post', 'blog_id');
+        $this->createIndex('id__blog_id', 'post', ['id', 'blog_id']);
         $this->createIndex('blog_id', 'comment', 'blog_id');
-        $this->createIndex('post_id', 'comment', ['post_id']);
+        $this->createIndex('post_id__blog_id', 'comment', ['post_id', 'blog_id']);
         $this->createIndex('parent_id', 'comment', 'parent_id');
         $this->addForeignKey('post__blog_id', 'post', 'blog_id', 'blog', 'id', 'RESTRICT', 'NO ACTION');
         $this->addForeignKey('comment__blog_id', 'comment', 'blog_id', 'blog', 'id', 'RESTRICT', 'NO ACTION');
-        $this->addForeignKey('comment__post_id', 'comment', ['post_id'], 'post', ['id'], 'RESTRICT', 'NO ACTION');
+        $this->addForeignKey('comment__post_id__blog_id', 'comment', ['post_id', 'blog_id'], 'post', ['id', 'blog_id'], 'RESTRICT', 'NO ACTION');
         $this->addForeignKey('comment__parent_id', 'comment', 'parent_id', 'comment', 'id', 'RESTRICT', 'NO ACTION');
     }
 
     public function down()
     {
         $this->dropForeignKey('comment__parent_id', 'comment');
-        $this->dropForeignKey('comment__post_id', 'comment');
+        $this->dropForeignKey('comment__post_id__blog_id', 'comment');
         $this->dropForeignKey('comment__blog_id', 'comment');
         $this->dropForeignKey('post__blog_id', 'post');
         $this->dropTable('comment');

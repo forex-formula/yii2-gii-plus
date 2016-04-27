@@ -42,7 +42,7 @@ class CommentBase extends \yii\db\ActiveRecord
             [['text'], 'string'],
             [['parent_id'], 'exist', 'skipOnError' => true, 'targetClass' => CommentBase::className(), 'targetAttribute' => ['parent_id' => 'id']],
             [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => BlogBase::className(), 'targetAttribute' => ['blog_id' => 'id']],
-            [['post_id'], 'exist', 'skipOnError' => true, 'targetClass' => PostBase::className(), 'targetAttribute' => ['post_id' => 'id']],
+            [['post_id', 'blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => PostBase::className(), 'targetAttribute' => ['post_id' => 'id', 'blog_id' => 'blog_id']],
         ];
     }
 
@@ -89,7 +89,7 @@ class CommentBase extends \yii\db\ActiveRecord
      */
     public function getPost()
     {
-        return $this->hasOne(Post::className(), ['id' => 'post_id']);
+        return $this->hasOne(Post::className(), ['id' => 'post_id', 'blog_id' => 'blog_id']);
     }
 
     /**
