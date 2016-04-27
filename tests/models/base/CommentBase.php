@@ -2,6 +2,7 @@
 
 namespace app\models\base;
 
+use app\models\Blog;
 use app\models\Comment;
 use app\models\Post;
 use Yii;
@@ -10,12 +11,14 @@ use Yii;
  * This is the model class for table "comment".
  *
  * @property integer $id
+ * @property integer $blog_id
  * @property integer $post_id
  * @property integer $parent_id
  * @property string $text
  *
  * @property Comment $parent
  * @property Comment[] $comments
+ * @property Blog $blog
  * @property Post $post
  */
 class CommentBase extends \yii\db\ActiveRecord
@@ -34,10 +37,11 @@ class CommentBase extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['post_id', 'text'], 'required'],
-            [['post_id', 'parent_id'], 'integer'],
+            [['blog_id', 'post_id', 'text'], 'required'],
+            [['blog_id', 'post_id', 'parent_id'], 'integer'],
             [['text'], 'string'],
             [['parent_id'], 'exist', 'skipOnError' => true, 'targetClass' => CommentBase::className(), 'targetAttribute' => ['parent_id' => 'id']],
+            [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => BlogBase::className(), 'targetAttribute' => ['blog_id' => 'id']],
             [['post_id'], 'exist', 'skipOnError' => true, 'targetClass' => PostBase::className(), 'targetAttribute' => ['post_id' => 'id']],
         ];
     }
@@ -49,6 +53,7 @@ class CommentBase extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'blog_id' => 'Blog ID',
             'post_id' => 'Post ID',
             'parent_id' => 'Parent ID',
             'text' => 'Text',
@@ -69,6 +74,14 @@ class CommentBase extends \yii\db\ActiveRecord
     public function getComments()
     {
         return $this->hasMany(Comment::className(), ['parent_id' => 'id']);
+    }
+
+    /**
+     * @return \app\models\query\BlogQuery
+     */
+    public function getBlog()
+    {
+        return $this->hasOne(Blog::className(), ['id' => 'blog_id']);
     }
 
     /**

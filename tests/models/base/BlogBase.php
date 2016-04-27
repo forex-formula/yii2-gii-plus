@@ -2,6 +2,7 @@
 
 namespace app\models\base;
 
+use app\models\Comment;
 use app\models\Post;
 use Yii;
 
@@ -11,6 +12,7 @@ use Yii;
  * @property integer $id
  * @property string $name
  *
+ * @property Comment[] $comments
  * @property Post[] $posts
  */
 class BlogBase extends \yii\db\ActiveRecord
@@ -43,6 +45,14 @@ class BlogBase extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Name',
         ];
+    }
+
+    /**
+     * @return \app\models\query\CommentQuery
+     */
+    public function getComments()
+    {
+        return $this->hasMany(Comment::className(), ['blog_id' => 'id']);
     }
 
     /**
