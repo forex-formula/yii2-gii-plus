@@ -289,7 +289,7 @@ class Generator extends GiiModelGenerator
     /**
      * @var array
      */
-    protected $tableHasManyRelations;
+    protected $hasManyRelations;
 
     /**
      * @inheritdoc
@@ -298,12 +298,12 @@ class Generator extends GiiModelGenerator
     {
         $relations = [];
         $this->tableUses = [];
-        $this->tableHasManyRelations = [];
+        $this->hasManyRelations = [];
         $modelClassTableNameMap = Helper::getModelClassTableNameMap();
         foreach (parent::generateRelations() as $tableName => $tableRelations) {
             $relations[$tableName] = [];
             $this->tableUses[$tableName] = ['Yii'];
-            $this->tableHasManyRelations[$tableName] = [];
+            $this->hasManyRelations[$tableName] = [];
             foreach ($tableRelations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
                 $nsClassName = array_search(array_search($className, $this->classNames), $modelClassTableNameMap);
@@ -315,7 +315,7 @@ class Generator extends GiiModelGenerator
                         foreach ($nsClassName::getTableSchema()->foreignKeys as $foreignKey) {
                             if ($foreignKey[0] == $tableName) {
                                 unset($foreignKey[0]);
-                                $this->tableHasManyRelations[$tableName][$relationName] = [$nsClassName, $className, $foreignKey];
+                                $this->hasManyRelations[$tableName][$relationName] = [$nsClassName, $className, $foreignKey];
                             }
                         }
                     }
@@ -391,8 +391,8 @@ class Generator extends GiiModelGenerator
                 Helper::sortUses($uses);
                 $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
             }
-            if (is_array($this->tableHasManyRelations) && array_key_exists($tableName, $this->tableHasManyRelations)) {
-                $hasManyRelations = $this->tableHasManyRelations[$tableName];
+            if (is_array($this->hasManyRelations) && array_key_exists($tableName, $this->hasManyRelations)) {
+                $hasManyRelations = $this->hasManyRelations[$tableName];
                 foreach ($hasManyRelations as $relationName => $hasManyRelation) {
 
                 }
