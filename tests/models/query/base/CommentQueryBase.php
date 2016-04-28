@@ -31,4 +31,14 @@ class CommentQueryBase extends \yii\db\ActiveQuery
     {
         return parent::one($db);
     }
+
+    /**
+     * @return Comment
+     */
+    public function newComments()
+    {
+        $comment = new Comment;
+        $comment->id = $this->id;
+        return $comment;
+    }
 }

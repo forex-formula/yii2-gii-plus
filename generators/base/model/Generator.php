@@ -392,9 +392,20 @@ class Generator extends GiiModelGenerator
                 $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
             }
             if (is_array($this->hasManyRelations) && array_key_exists($tableName, $this->hasManyRelations)) {
-                $hasManyRelations = $this->hasManyRelations[$tableName];
-                foreach ($hasManyRelations as $relationName => $hasManyRelation) {
-
+                foreach ($this->hasManyRelations[$tableName] as $relationName => $hasManyRelation) {
+                    list ($nsClassName, $className, $foreignKey) = $hasManyRelation;
+                    $code = '
+    /**
+     * @return ' . $className . '
+     */
+    public function new' . $relationName . '()
+    {
+        $model = new ' . $className . ';
+        $model->id = $this->id;
+        return $model;
+    }
+';
+                    $output = preg_replace('~\}(\s*)$~', $code . '}\1', $output);
                 }
             }
         }

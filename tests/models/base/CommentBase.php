@@ -100,4 +100,14 @@ class CommentBase extends \yii\db\ActiveRecord
     {
         return new \app\models\query\CommentQuery(get_called_class());
     }
+
+    /**
+     * @return Comment
+     */
+    public function newComments()
+    {
+        $comment = new Comment;
+        $comment->id = $this->id;
+        return $comment;
+    }
 }
