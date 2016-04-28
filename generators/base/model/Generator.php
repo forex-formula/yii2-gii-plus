@@ -401,8 +401,10 @@ class Generator extends GiiModelGenerator
     public function new' . $relationName . '()
     {
         $model = new ' . $className . ';
-        $model->id = $this->id;
-        return $model;
+';
+                    $code .= '        $model->id = $this->id;
+';
+                    $code .= '        return $model;
     }
 ';
                     $output = preg_replace('~\}(\s*)$~', $code . '}\1', $output);
