@@ -284,7 +284,7 @@ class Generator extends GiiModelGenerator
     /**
      * @var array
      */
-    protected $tableUses;
+    protected $relationUses;
 
     /**
      * @var array
@@ -297,19 +297,19 @@ class Generator extends GiiModelGenerator
     protected function generateRelations()
     {
         $relations = [];
-        $this->tableUses = [];
+        $this->relationUses = [];
         $this->hasManyRelations = [];
         $modelClassTableNameMap = Helper::getModelClassTableNameMap();
         foreach (parent::generateRelations() as $tableName => $tableRelations) {
             $relations[$tableName] = [];
-            $this->tableUses[$tableName] = ['Yii'];
+            $this->relationUses[$tableName] = ['Yii'];
             $this->hasManyRelations[$tableName] = [];
             foreach ($tableRelations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
                 $nsClassName = array_search(array_search($className, $this->classNames), $modelClassTableNameMap);
                 if (($nsClassName !== false) && class_exists($nsClassName)) {
                     $relations[$tableName][$relationName] = [$code, $className, $hasMany];
-                    $this->tableUses[$tableName][] = $nsClassName;
+                    $this->relationUses[$tableName][] = $nsClassName;
                     if ($hasMany) {
                         /* @var $nsClassName \yii\db\ActiveRecord */
                         foreach ($nsClassName::getTableSchema()->foreignKeys as $foreignKey) {
@@ -386,8 +386,8 @@ class Generator extends GiiModelGenerator
         $output = parent::render($template, $params);
         if (array_key_exists('tableName', $params)) {
             $tableName = $params['tableName'];
-            if (is_array($this->tableUses) && array_key_exists($tableName, $this->tableUses)) {
-                $uses = array_unique($this->tableUses[$tableName]);
+            if (is_array($this->relationUses) && array_key_exists($tableName, $this->relationUses)) {
+                $uses = array_unique($this->relationUses[$tableName]);
                 Helper::sortUses($uses);
                 $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
             }
