@@ -31,24 +31,4 @@ class BlogQueryBase extends \yii\db\ActiveQuery
     {
         return parent::one($db);
     }
-
-    /**
-     * @return Comment
-     */
-    public function newComment()
-    {
-        $model = new Comment;
-        $model->blog_id = $this->id;
-        return $model;
-    }
-
-    /**
-     * @return Post
-     */
-    public function newPost()
-    {
-        $model = new Post;
-        $model->blog_id = $this->id;
-        return $model;
-    }
 }

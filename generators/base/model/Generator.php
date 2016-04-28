@@ -385,7 +385,7 @@ class Generator extends GiiModelGenerator
     public function render($template, $params = [])
     {
         $output = parent::render($template, $params);
-        if (array_key_exists('tableName', $params)) {
+        if (array_key_exists('tableName', $params) && !array_key_exists('modelClassName', $params)) {
             $tableName = $params['tableName'];
             if (is_array($this->relationUses) && array_key_exists($tableName, $this->relationUses)) {
                 $uses = array_unique($this->relationUses[$tableName]);

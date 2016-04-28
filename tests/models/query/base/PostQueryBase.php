@@ -31,15 +31,4 @@ class PostQueryBase extends \yii\db\ActiveQuery
     {
         return parent::one($db);
     }
-
-    /**
-     * @return Comment
-     */
-    public function newComment()
-    {
-        $model = new Comment;
-        $model->post_id = $this->id;
-        $model->blog_id = $this->blog_id;
-        return $model;
-    }
 }
