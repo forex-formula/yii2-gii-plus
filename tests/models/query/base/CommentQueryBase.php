@@ -35,7 +35,7 @@ class CommentQueryBase extends \yii\db\ActiveQuery
     /**
      * @return Comment
      */
-    public function newComments()
+    public function newComment()
     {
         $model = new Comment;
         $model->parent_id = $this->id;

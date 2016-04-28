@@ -75,7 +75,7 @@ class BlogBase extends \yii\db\ActiveRecord
     /**
      * @return Comment
      */
-    public function newComments()
+    public function newComment()
     {
         $model = new Comment;
         $model->blog_id = $this->id;
@@ -85,7 +85,7 @@ class BlogBase extends \yii\db\ActiveRecord
     /**
      * @return Post
      */
-    public function newPosts()
+    public function newPost()
     {
         $model = new Post;
         $model->blog_id = $this->id;

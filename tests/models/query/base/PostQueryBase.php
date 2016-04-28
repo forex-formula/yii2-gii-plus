@@ -35,7 +35,7 @@ class PostQueryBase extends \yii\db\ActiveQuery
     /**
      * @return Comment
      */
-    public function newComments()
+    public function newComment()
     {
         $model = new Comment;
         $model->post_id = $this->id;

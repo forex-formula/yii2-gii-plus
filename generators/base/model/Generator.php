@@ -6,6 +6,7 @@ use yii\base\ErrorException;
 use yii\gii\generators\model\Generator as GiiModelGenerator;
 use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
+use yii\helpers\Inflector;
 use yii\web\JsExpression;
 use yii\helpers\Json;
 use ReflectionClass;
@@ -398,7 +399,7 @@ class Generator extends GiiModelGenerator
     /**
      * @return ' . $className . '
      */
-    public function new' . $relationName . '()
+    public function new' . Inflector::singularize($relationName) . '()
     {
         $model = new ' . $className . ';
 ';
