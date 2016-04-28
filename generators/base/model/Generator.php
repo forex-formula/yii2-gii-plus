@@ -6,6 +6,7 @@ use yii\base\ErrorException;
 use yii\gii\generators\model\Generator as GiiModelGenerator;
 use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
+use yii\helpers\Inflector;
 use yii\web\JsExpression;
 use yii\helpers\Json;
 use ReflectionClass;
@@ -104,7 +105,7 @@ class Generator extends GiiModelGenerator
     {
         if (!$this->hasErrors($attribute)) {
             try {
-                preg_match('~^(?:' . $this->$attribute . ')$~', '');
+                preg_match('~^(?:' . $this->$attribute . ')$~', 'migration');
             } catch (ErrorException $exception) {
                 $this->addError($attribute, $exception->getMessage());
             }
@@ -132,7 +133,7 @@ class Generator extends GiiModelGenerator
      */
     public function stickyAttributes()
     {
-        return array_diff(parent::stickyAttributes(), ['queryNs']);
+        return array_merge(array_diff(parent::stickyAttributes(), ['queryNs']), ['includeFilter', 'excludeFilter']);
     }
 
     /**
@@ -284,31 +285,47 @@ class Generator extends GiiModelGenerator
     /**
      * @var array
      */
-    protected $tableUses;
+    protected $relationUses;
+
+    /**
+     * @var array
+     */
+    protected $hasManyRelations;
 
     /**
      * @inheritdoc
      */
     protected function generateRelations()
     {
-        $tableRelations = [];
-        $this->tableUses = [];
+        $relations = [];
+        $this->relationUses = [];
+        $this->hasManyRelations = [];
         $modelClassTableNameMap = Helper::getModelClassTableNameMap();
-        foreach (parent::generateRelations() as $tableName => $relations) {
-            $tableRelations[$tableName] = [];
-            $this->tableUses[$tableName] = ['Yii'];
-            foreach ($relations as $relationName => $relation) {
+        foreach (parent::generateRelations() as $tableName => $tableRelations) {
+            $relations[$tableName] = [];
+            $this->relationUses[$tableName] = ['Yii'];
+            $this->hasManyRelations[$tableName] = [];
+            foreach ($tableRelations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
                 $nsClassName = array_search(array_search($className, $this->classNames), $modelClassTableNameMap);
                 if (($nsClassName !== false) && class_exists($nsClassName)) {
-                    $tableRelations[$tableName][$relationName] = [$code, $className, $hasMany];
-                    $this->tableUses[$tableName][] = $nsClassName;
+                    $relations[$tableName][$relationName] = [$code, $className, $hasMany];
+                    $this->relationUses[$tableName][] = $nsClassName;
+                    if ($hasMany) {
+                        /* @var $nsClassName \yii\db\ActiveRecord */
+                        foreach ($nsClassName::getTableSchema()->foreignKeys as $foreignKey) {
+                            if ($foreignKey[0] == $tableName) {
+                                unset($foreignKey[0]);
+                                $this->hasManyRelations[$tableName][$relationName] = [$nsClassName, $className, $foreignKey];
+                            }
+                        }
+                    }
                 }
             }
         }
         $this->relationsDone = true;
         $this->classNames = [];
-        return $tableRelations;
+        return $relations;
     }
 
     /**
@@ -368,10 +385,34 @@ class Generator extends GiiModelGenerator
     public function render($template, $params = [])
     {
         $output = parent::render($template, $params);
-        if (array_key_exists('tableName', $params) && is_array($this->tableUses) && array_key_exists($params['tableName'], $this->tableUses)) {
-            $uses = array_unique($this->tableUses[$params['tableName']]);
-            Helper::sortUses($uses);
-            $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
+        if (array_key_exists('tableName', $params) && !array_key_exists('modelClassName', $params)) {
+            $tableName = $params['tableName'];
+            if (is_array($this->relationUses) && array_key_exists($tableName, $this->relationUses)) {
+                $uses = array_unique($this->relationUses[$tableName]);
+                Helper::sortUses($uses);
+                $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
+            }
+            if (is_array($this->hasManyRelations) && array_key_exists($tableName, $this->hasManyRelations)) {
+                foreach ($this->hasManyRelations[$tableName] as $relationName => $hasManyRelation) {
+                    list ($nsClassName, $className, $foreignKey) = $hasManyRelation;
+                    $code = '
+    /**
+     * @return ' . $className . '
+     */
+    public function new' . Inflector::singularize($relationName) . '()
+    {
+        $model = new ' . $className . ';
+';
+                    foreach ($foreignKey as $key1 => $key2) {
+                        $code .= '        $model->' . $key1 . ' = $this->' . $key2 . ';
+';
+                    }
+                    $code .= '        return $model;
+    }
+';
+                    $output = preg_replace('~\}(\s*)$~', $code . '}\1', $output);
+                }
+            }
         }
         if (array_key_exists('className', $params)) {
             $nsClassName = $this->ns . '\\' . $params['className'];
@@ -402,6 +443,7 @@ class Generator extends GiiModelGenerator
                 return $match[0];
             }
         }, $output);
+        $output = preg_replace('~\'targetClass\' \=\> (\w+)Base\:\:className\(\)~', '\'targetClass\' => \1::className()', $output);
         return $output;
     }
 }

@@ -37,7 +37,7 @@ class PostBase extends \yii\db\ActiveRecord
             [['blog_id'], 'integer'],
             [['text'], 'string'],
             [['name'], 'string', 'max' => 255],
-            [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => BlogBase::className(), 'targetAttribute' => ['blog_id' => 'id']],
+            [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
         ];
     }
 
@@ -59,7 +59,7 @@ class PostBase extends \yii\db\ActiveRecord
      */
     public function getComments()
     {
-        return $this->hasMany(Comment::className(), ['post_id' => 'id']);
+        return $this->hasMany(Comment::className(), ['post_id' => 'id', 'blog_id' => 'blog_id']);
     }
 
     /**
@@ -77,5 +77,16 @@ class PostBase extends \yii\db\ActiveRecord
     public static function find()
     {
         return new \app\models\query\PostQuery(get_called_class());
+    }
+
+    /**
+     * @return Comment
+     */
+    public function newComment()
+    {
+        $model = new Comment;
+        $model->post_id = $this->id;
+        $model->blog_id = $this->blog_id;
+        return $model;
     }
 }
