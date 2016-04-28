@@ -443,6 +443,7 @@ class Generator extends GiiModelGenerator
                 return $match[0];
             }
         }, $output);
+        $output = preg_replace('~\'targetClass\' \=\> (\w+)Base\:\:className\(\)~', '\'targetClass\' => \1::className()', $output);
         return $output;
     }
 }

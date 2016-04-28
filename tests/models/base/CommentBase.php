@@ -40,9 +40,9 @@ class CommentBase extends \yii\db\ActiveRecord
             [['blog_id', 'post_id', 'text'], 'required'],
             [['blog_id', 'post_id', 'parent_id'], 'integer'],
             [['text'], 'string'],
-            [['parent_id', 'post_id', 'blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => CommentBase::className(), 'targetAttribute' => ['parent_id' => 'id', 'post_id' => 'post_id', 'blog_id' => 'blog_id']],
-            [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => BlogBase::className(), 'targetAttribute' => ['blog_id' => 'id']],
-            [['post_id', 'blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => PostBase::className(), 'targetAttribute' => ['post_id' => 'id', 'blog_id' => 'blog_id']],
+            [['parent_id', 'post_id', 'blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Comment::className(), 'targetAttribute' => ['parent_id' => 'id', 'post_id' => 'post_id', 'blog_id' => 'blog_id']],
+            [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
+            [['post_id', 'blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Post::className(), 'targetAttribute' => ['post_id' => 'id', 'blog_id' => 'blog_id']],
         ];
     }
 
