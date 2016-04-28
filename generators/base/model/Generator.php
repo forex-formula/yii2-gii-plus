@@ -104,7 +104,7 @@ class Generator extends GiiModelGenerator
     {
         if (!$this->hasErrors($attribute)) {
             try {
-                preg_match('~^(?:' . $this->$attribute . ')$~', '');
+                preg_match('~^(?:' . $this->$attribute . ')$~', 'migration');
             } catch (ErrorException $exception) {
                 $this->addError($attribute, $exception->getMessage());
             }
@@ -132,7 +132,7 @@ class Generator extends GiiModelGenerator
      */
     public function stickyAttributes()
     {
-        return array_diff(parent::stickyAttributes(), ['queryNs']);
+        return array_merge(array_diff(parent::stickyAttributes(), ['queryNs']), ['includeFilter', 'excludeFilter']);
     }
 
     /**
@@ -298,6 +298,7 @@ class Generator extends GiiModelGenerator
     {
         $tableRelations = [];
         $this->tableUses = [];
+        $this->tableHasManyRelations = [];
         $modelClassTableNameMap = Helper::getModelClassTableNameMap();
         foreach (parent::generateRelations() as $tableName => $relations) {
             $tableRelations[$tableName] = [];
@@ -383,10 +384,19 @@ class Generator extends GiiModelGenerator
     public function render($template, $params = [])
     {
         $output = parent::render($template, $params);
-        if (array_key_exists('tableName', $params) && is_array($this->tableUses) && array_key_exists($params['tableName'], $this->tableUses)) {
-            $uses = array_unique($this->tableUses[$params['tableName']]);
-            Helper::sortUses($uses);
-            $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
+        if (array_key_exists('tableName', $params)) {
+            $tableName = $params['tableName'];
+            if (is_array($this->tableUses) && array_key_exists($tableName, $this->tableUses)) {
+                $uses = array_unique($this->tableUses[$tableName]);
+                Helper::sortUses($uses);
+                $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
+            }
+            if (is_array($this->tableHasManyRelations) && array_key_exists($tableName, $this->tableHasManyRelations)) {
+                $hasManyRelations = $this->tableHasManyRelations[$tableName];
+                foreach ($hasManyRelations as $relationName => $hasManyRelation) {
+
+                }
+            }
         }
         if (array_key_exists('className', $params)) {
             $nsClassName = $this->ns . '\\' . $params['className'];
