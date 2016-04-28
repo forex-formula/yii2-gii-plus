@@ -402,8 +402,10 @@ class Generator extends GiiModelGenerator
     {
         $model = new ' . $className . ';
 ';
-                    $code .= '        $model->id = $this->id;
+                    foreach ($foreignKey as $key1 => $key2) {
+                        $code .= '        $model->' . $key1 . ' = $this->' . $key2 . ';
 ';
+                    }
                     $code .= '        return $model;
     }
 ';

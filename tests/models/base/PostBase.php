@@ -85,7 +85,8 @@ class PostBase extends \yii\db\ActiveRecord
     public function newComments()
     {
         $model = new Comment;
-        $model->id = $this->id;
+        $model->post_id = $this->id;
+        $model->blog_id = $this->blog_id;
         return $model;
     }
 }

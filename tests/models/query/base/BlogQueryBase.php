@@ -38,7 +38,7 @@ class BlogQueryBase extends \yii\db\ActiveQuery
     public function newComments()
     {
         $model = new Comment;
-        $model->id = $this->id;
+        $model->blog_id = $this->id;
         return $model;
     }
 
@@ -48,7 +48,7 @@ class BlogQueryBase extends \yii\db\ActiveQuery
     public function newPosts()
     {
         $model = new Post;
-        $model->id = $this->id;
+        $model->blog_id = $this->id;
         return $model;
     }
 }

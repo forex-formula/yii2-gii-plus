@@ -107,7 +107,9 @@ class CommentBase extends \yii\db\ActiveRecord
     public function newComments()
     {
         $model = new Comment;
-        $model->id = $this->id;
+        $model->parent_id = $this->id;
+        $model->post_id = $this->post_id;
+        $model->blog_id = $this->blog_id;
         return $model;
     }
 }
