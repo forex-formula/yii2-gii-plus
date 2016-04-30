@@ -11,6 +11,8 @@ The following files will be generated:
   [unchanged] models/query/base/CommentQueryBase.php
   [unchanged] models/base/PostBase.php
   [unchanged] models/query/base/PostQueryBase.php
+  [unchanged] models/base/SequenceBase.php
+  [unchanged] models/query/base/SequenceQueryBase.php
 
 No files were chosen to be generated."
 ACTUAL1=`$DIR/yii gii/base_model --interactive=0 --overwrite=0`
@@ -31,6 +33,8 @@ The following files will be generated:
   [unchanged] models/query/CommentQuery.php
   [unchanged] models/Post.php
   [unchanged] models/query/PostQuery.php
+  [unchanged] models/Sequence.php
+  [unchanged] models/query/SequenceQuery.php
 
 No files were chosen to be generated."
 ACTUAL2=`$DIR/yii gii/custom_model --interactive=0 --overwrite=0`
