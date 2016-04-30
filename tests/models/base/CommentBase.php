@@ -40,7 +40,7 @@ class CommentBase extends \yii\db\ActiveRecord
             [['blog_id', 'post_id', 'text'], 'required'],
             [['blog_id', 'post_id', 'parent_id'], 'integer'],
             [['text'], 'string'],
-            [['parent_id', 'post_id', 'blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Comment::className(), 'targetAttribute' => ['parent_id' => 'id', 'post_id' => 'post_id', 'blog_id' => 'blog_id']],
+            [['parent_id', 'blog_id', 'post_id'], 'exist', 'skipOnError' => true, 'targetClass' => Comment::className(), 'targetAttribute' => ['parent_id' => 'id', 'blog_id' => 'blog_id', 'post_id' => 'post_id']],
             [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
             [['post_id', 'blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Post::className(), 'targetAttribute' => ['post_id' => 'id', 'blog_id' => 'blog_id']],
         ];
@@ -65,7 +65,7 @@ class CommentBase extends \yii\db\ActiveRecord
      */
     public function getParent()
     {
-        return $this->hasOne(Comment::className(), ['id' => 'parent_id', 'post_id' => 'post_id', 'blog_id' => 'blog_id']);
+        return $this->hasOne(Comment::className(), ['id' => 'parent_id', 'blog_id' => 'blog_id', 'post_id' => 'post_id']);
     }
 
     /**
@@ -73,7 +73,7 @@ class CommentBase extends \yii\db\ActiveRecord
      */
     public function getComments()
     {
-        return $this->hasMany(Comment::className(), ['parent_id' => 'id', 'post_id' => 'post_id', 'blog_id' => 'blog_id']);
+        return $this->hasMany(Comment::className(), ['parent_id' => 'id', 'blog_id' => 'blog_id', 'post_id' => 'post_id']);
     }
 
     /**
@@ -108,8 +108,8 @@ class CommentBase extends \yii\db\ActiveRecord
     {
         $model = new Comment;
         $model->parent_id = $this->id;
-        $model->post_id = $this->post_id;
         $model->blog_id = $this->blog_id;
+        $model->post_id = $this->post_id;
         return $model;
     }
 }
