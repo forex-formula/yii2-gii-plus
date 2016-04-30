@@ -75,4 +75,14 @@ class SequenceBase extends \yii\db\ActiveRecord
     {
         return new \app\models\query\SequenceQuery(get_called_class());
     }
+
+    /**
+     * @return Sequence
+     */
+    public function newSequence()
+    {
+        $model = new Sequence;
+        $model->parent_id = $this->id;
+        return $model;
+    }
 }

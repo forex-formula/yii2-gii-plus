@@ -311,7 +311,7 @@ class Generator extends GiiModelGenerator
                 if (($nsClassName !== false) && class_exists($nsClassName)) {
                     $relations[$tableName][$relationName] = [$code, $className, $hasMany];
                     $this->relationUses[$tableName][] = $nsClassName;
-                    if ($hasMany) {
+                    if ($hasMany || ($relationName == $className)) {
                         /* @var $nsClassName \yii\db\ActiveRecord */
                         foreach ($nsClassName::getTableSchema()->foreignKeys as $foreignKey) {
                             if ($foreignKey[0] == $tableName) {
