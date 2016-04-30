@@ -29,8 +29,8 @@ class m160209_192728_init extends Migration
         $this->addForeignKey('comment__blog_id', 'comment', 'blog_id', 'blog', 'id', 'RESTRICT', 'NO ACTION');
         $this->createIndex('id__blog_id', 'post', ['id', 'blog_id'], true);
         $this->addForeignKey('comment__post_id__blog_id', 'comment', ['post_id', 'blog_id'], 'post', ['id', 'blog_id'], 'RESTRICT', 'NO ACTION');
-        $this->createIndex('id__post_id__blog_id', 'comment', ['id', 'post_id', 'blog_id'], true);
-        $this->addForeignKey('comment__parent_id__post_id__blog_id', 'comment', ['parent_id', 'post_id', 'blog_id'], 'comment', ['id', 'post_id', 'blog_id'], 'RESTRICT', 'NO ACTION');
+        $this->createIndex('id__blog_id__post_id', 'comment', ['id', 'blog_id', 'post_id'], true);
+        $this->addForeignKey('comment__parent_id__blog_id__post_id', 'comment', ['parent_id', 'blog_id', 'post_id'], 'comment', ['id', 'blog_id', 'post_id'], 'RESTRICT', 'NO ACTION');
     }
 
     public function down()
