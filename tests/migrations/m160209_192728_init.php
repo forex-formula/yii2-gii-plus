@@ -35,7 +35,7 @@ class m160209_192728_init extends Migration
 
     public function down()
     {
-        $this->dropForeignKey('comment__parent_id__post_id__blog_id', 'comment');
+        $this->dropForeignKey('comment__parent_id__blog_id__post_id', 'comment');
         $this->dropForeignKey('comment__post_id__blog_id', 'comment');
         $this->dropForeignKey('comment__blog_id', 'comment');
         $this->dropForeignKey('post__blog_id', 'post');
