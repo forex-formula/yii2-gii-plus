@@ -410,7 +410,9 @@ class Generator extends GiiModelGenerator
                     $code .= '        return $model;
     }
 ';
-                    $output = preg_replace('~\}(\s*)$~', $code . '}\1', $output);
+                    if (strpos($output, $code) === false) {
+                        $output = preg_replace('~\}(\s*)$~', $code . '}\1', $output);
+                    }
                 }
             }
         }
