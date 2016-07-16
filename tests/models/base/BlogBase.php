@@ -3,6 +3,7 @@
 namespace app\models\base;
 
 use app\models\Comment;
+use yii\db\Expression;
 use app\models\Post;
 use Yii;
 
@@ -35,13 +36,13 @@ class BlogBase extends \yii\boost\db\ActiveRecord
     public function rules()
     {
         return [
+            [['created_at', 'updated_at'], 'default', 'value' => new Expression('CURRENT_TIMESTAMP')],
+            [['enabled', 'deleted'], 'default', 'value' => '0'],
             [['name'], 'required'],
             [['enabled', 'deleted'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['name'], 'string', 'max' => 50],
             [['name'], 'unique'],
-            [['enabled', 'deleted'], 'boolean'],
-            [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
         ];
     }
 

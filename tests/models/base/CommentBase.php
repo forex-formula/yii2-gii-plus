@@ -4,6 +4,7 @@ namespace app\models\base;
 
 use app\models\Blog;
 use app\models\Comment;
+use yii\db\Expression;
 use app\models\Post;
 use Yii;
 
@@ -41,6 +42,8 @@ class CommentBase extends \yii\boost\db\ActiveRecord
     public function rules()
     {
         return [
+            [['created_at', 'updated_at'], 'default', 'value' => new Expression('CURRENT_TIMESTAMP')],
+            [['enabled', 'deleted'], 'default', 'value' => '0'],
             [['parent_id'], 'default', 'value' => null],
             [['blog_id', 'post_id', 'text'], 'required'],
             [['blog_id', 'post_id', 'parent_id', 'enabled', 'deleted'], 'integer'],
@@ -49,8 +52,6 @@ class CommentBase extends \yii\boost\db\ActiveRecord
             [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
             [['parent_id', 'blog_id', 'post_id'], 'exist', 'skipOnError' => true, 'targetClass' => Comment::className(), 'targetAttribute' => ['parent_id' => 'id', 'blog_id' => 'blog_id', 'post_id' => 'post_id']],
             [['post_id', 'blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Post::className(), 'targetAttribute' => ['post_id' => 'id', 'blog_id' => 'blog_id']],
-            [['enabled', 'deleted'], 'boolean'],
-            [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
         ];
     }
 

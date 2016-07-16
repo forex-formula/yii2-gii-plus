@@ -3,7 +3,7 @@
 namespace yii\gii\plus\generators\base\model;
 
 use yii\base\ErrorException;
-use yii\db\Schema;
+use yii\db\Expression;
 use yii\gii\generators\model\Generator as GiiModelGenerator;
 use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
@@ -11,6 +11,7 @@ use yii\helpers\Inflector;
 use yii\web\JsExpression;
 use yii\helpers\Json;
 use ReflectionClass;
+use yii\db\Schema;
 use Yii;
 
 class Generator extends GiiModelGenerator
@@ -288,13 +289,22 @@ class Generator extends GiiModelGenerator
      */
     public function generateRules($table)
     {
+        $defaultExpressions = [];
+        $defaultValues = [];
         $defaultNullAttributes = [];
         $booleanAttributes = [];
         $dateAttributes = [];
         $timeAttributes = [];
         $datetimeAttributes = [];
         foreach ($table->columns as $column) {
-            if ($column->allowNull && is_null($column->defaultValue)) {
+            if (!is_null($column->defaultValue)) {
+                if ($column->defaultValue instanceof Expression) {
+                    $this->relationUses[$table->fullName][] = 'yii\db\Expression';
+                    $defaultExpressions[$column->defaultValue->expression][] = $column->name;
+                } else {
+                    $defaultValues[$column->defaultValue][] = $column->name;
+                }
+            } elseif ($column->allowNull && is_null($column->defaultValue)) {
                 $defaultNullAttributes[] = $column->name;
             } elseif (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
                 $booleanAttributes[] = $column->name;
@@ -307,6 +317,12 @@ class Generator extends GiiModelGenerator
             }
         }
         $rules = [];
+        foreach ($defaultExpressions as $defaultExpression => $attributes) {
+            $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'default\', \'value\' => new Expression(\'' . $defaultExpression . '\')]';
+        }
+        foreach ($defaultValues as $defaultValue => $attributes) {
+            $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'default\', \'value\' => \'' . $defaultValue . '\']';
+        }
         if (count($defaultNullAttributes)) {
             $rules[] = '[[\'' . implode('\', \'', $defaultNullAttributes) . '\'], \'default\', \'value\' => null]';
         }
