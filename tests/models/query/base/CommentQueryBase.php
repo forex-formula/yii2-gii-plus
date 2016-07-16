@@ -7,7 +7,7 @@ namespace app\models\query\base;
  *
  * @see \app\models\Comment
  */
-class CommentQueryBase extends \yii\db\ActiveQuery
+class CommentQueryBase extends \yii\boost\db\ActiveQuery
 {
     /*public function active()
     {

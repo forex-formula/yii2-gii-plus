@@ -15,13 +15,15 @@ use Yii;
  * @property integer $post_id
  * @property integer $parent_id
  * @property string $text
+ * @property integer $enabled
+ * @property integer $deleted
  *
  * @property Comment $parent
  * @property Comment[] $comments
  * @property Blog $blog
  * @property Post $post
  */
-class CommentBase extends \yii\db\ActiveRecord
+class CommentBase extends \yii\boost\db\ActiveRecord
 {
     /**
      * @inheritdoc
@@ -38,7 +40,7 @@ class CommentBase extends \yii\db\ActiveRecord
     {
         return [
             [['blog_id', 'post_id', 'text'], 'required'],
-            [['blog_id', 'post_id', 'parent_id'], 'integer'],
+            [['blog_id', 'post_id', 'parent_id', 'enabled', 'deleted'], 'integer'],
             [['text'], 'string'],
             [['parent_id', 'blog_id', 'post_id'], 'exist', 'skipOnError' => true, 'targetClass' => Comment::className(), 'targetAttribute' => ['parent_id' => 'id', 'blog_id' => 'blog_id', 'post_id' => 'post_id']],
             [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
@@ -53,10 +55,12 @@ class CommentBase extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'blog_id' => 'Blog ID',
-            'post_id' => 'Post ID',
-            'parent_id' => 'Parent ID',
-            'text' => 'Text',
+            'blog_id' => 'Блог',
+            'post_id' => 'Пост',
+            'parent_id' => 'Родительский комментарий',
+            'text' => 'Текст',
+            'enabled' => 'Включено',
+            'deleted' => 'Deleted',
         ];
     }
 

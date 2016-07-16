@@ -7,7 +7,7 @@ namespace app\models\query\base;
  *
  * @see \app\models\Sequence
  */
-class SequenceQueryBase extends \yii\db\ActiveQuery
+class SequenceQueryBase extends \yii\boost\db\ActiveQuery
 {
     /*public function active()
     {

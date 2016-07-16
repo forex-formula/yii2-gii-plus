@@ -7,7 +7,7 @@ namespace app\models\query\base;
  *
  * @see \app\models\Post
  */
-class PostQueryBase extends \yii\db\ActiveQuery
+class PostQueryBase extends \yii\boost\db\ActiveQuery
 {
     /*public function active()
     {

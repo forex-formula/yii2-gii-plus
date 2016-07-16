@@ -11,11 +11,13 @@ use Yii;
  *
  * @property integer $id
  * @property string $name
+ * @property integer $enabled
+ * @property integer $deleted
  *
  * @property Comment[] $comments
  * @property Post[] $posts
  */
-class BlogBase extends \yii\db\ActiveRecord
+class BlogBase extends \yii\boost\db\ActiveRecord
 {
     /**
      * @inheritdoc
@@ -32,7 +34,9 @@ class BlogBase extends \yii\db\ActiveRecord
     {
         return [
             [['name'], 'required'],
-            [['name'], 'string', 'max' => 255],
+            [['enabled', 'deleted'], 'integer'],
+            [['name'], 'string', 'max' => 50],
+            [['name'], 'unique'],
         ];
     }
 
@@ -43,7 +47,9 @@ class BlogBase extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => 'Название',
+            'enabled' => 'Включено',
+            'deleted' => 'Deleted',
         ];
     }
 

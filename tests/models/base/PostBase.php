@@ -13,11 +13,13 @@ use Yii;
  * @property integer $blog_id
  * @property string $name
  * @property string $text
+ * @property integer $enabled
+ * @property integer $deleted
  *
  * @property Comment[] $comments
  * @property Blog $blog
  */
-class PostBase extends \yii\db\ActiveRecord
+class PostBase extends \yii\boost\db\ActiveRecord
 {
     /**
      * @inheritdoc
@@ -34,9 +36,10 @@ class PostBase extends \yii\db\ActiveRecord
     {
         return [
             [['blog_id', 'name', 'text'], 'required'],
-            [['blog_id'], 'integer'],
+            [['blog_id', 'enabled', 'deleted'], 'integer'],
             [['text'], 'string'],
-            [['name'], 'string', 'max' => 255],
+            [['name'], 'string', 'max' => 50],
+            [['blog_id', 'name'], 'unique', 'targetAttribute' => ['blog_id', 'name'], 'message' => 'The combination of Блог and Название has already been taken.'],
             [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
         ];
     }
@@ -48,9 +51,11 @@ class PostBase extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'blog_id' => 'Blog ID',
-            'name' => 'Name',
-            'text' => 'Text',
+            'blog_id' => 'Блог',
+            'name' => 'Название',
+            'text' => 'Текст',
+            'enabled' => 'Включено',
+            'deleted' => 'Deleted',
         ];
     }
 

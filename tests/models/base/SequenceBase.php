@@ -9,13 +9,12 @@ use Yii;
  * This is the model class for table "sequence".
  *
  * @property integer $id
- * @property integer $parent_id
- * @property string $name
+ * @property integer $previous_id
  *
- * @property Sequence $parent
+ * @property Sequence $previous
  * @property Sequence $sequence
  */
-class SequenceBase extends \yii\db\ActiveRecord
+class SequenceBase extends \yii\boost\db\ActiveRecord
 {
     /**
      * @inheritdoc
@@ -31,11 +30,9 @@ class SequenceBase extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['parent_id'], 'integer'],
-            [['name'], 'required'],
-            [['name'], 'string', 'max' => 255],
-            [['parent_id'], 'unique'],
-            [['parent_id'], 'exist', 'skipOnError' => true, 'targetClass' => Sequence::className(), 'targetAttribute' => ['parent_id' => 'id']],
+            [['previous_id'], 'integer'],
+            [['previous_id'], 'unique'],
+            [['previous_id'], 'exist', 'skipOnError' => true, 'targetClass' => Sequence::className(), 'targetAttribute' => ['previous_id' => 'id']],
         ];
     }
 
@@ -46,17 +43,16 @@ class SequenceBase extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'parent_id' => 'Parent ID',
-            'name' => 'Name',
+            'previous_id' => 'Previous ID',
         ];
     }
 
     /**
      * @return \app\models\query\SequenceQuery
      */
-    public function getParent()
+    public function getPrevious()
     {
-        return $this->hasOne(Sequence::className(), ['id' => 'parent_id']);
+        return $this->hasOne(Sequence::className(), ['id' => 'previous_id']);
     }
 
     /**
@@ -64,7 +60,7 @@ class SequenceBase extends \yii\db\ActiveRecord
      */
     public function getSequence()
     {
-        return $this->hasOne(Sequence::className(), ['parent_id' => 'id']);
+        return $this->hasOne(Sequence::className(), ['previous_id' => 'id']);
     }
 
     /**
@@ -82,7 +78,7 @@ class SequenceBase extends \yii\db\ActiveRecord
     public function newSequence()
     {
         $model = new Sequence;
-        $model->parent_id = $this->id;
+        $model->previous_id = $this->id;
         return $model;
     }
 }

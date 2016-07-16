@@ -41,8 +41,8 @@ class m160209_192728_init extends Migration
         $this->createIndex(null, 'post', ['id', 'blog_id']);
         $this->addForeignKey(null, 'comment', ['post_id', 'blog_id'], 'post', ['id', 'blog_id'], static::RESTRICT, static::NO_ACTION);
 
-        $this->createIndex(null, 'comment', ['id', 'post_id']);
-        $this->addForeignKey(null, 'comment', ['parent_id', 'post_id'], 'comment', ['id', 'post_id'], static::RESTRICT, static::NO_ACTION);
+        $this->createIndex(null, 'comment', ['id', 'blog_id', 'post_id']);
+        $this->addForeignKey(null, 'comment', ['parent_id', 'blog_id', 'post_id'], 'comment', ['id', 'blog_id', 'post_id'], static::RESTRICT, static::NO_ACTION);
 
         $this->createTable('sequence', [
             'id' => $this->primaryKey()->unsigned(),
