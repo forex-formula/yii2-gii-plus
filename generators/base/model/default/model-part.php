@@ -13,7 +13,7 @@ use yii\helpers\Inflector;
 /* @var $relations array */
 /* @var $hasManyRelations array */
 
-if (is_array($hasManyRelations) && array_key_exists($tableName, $hasManyRelations)) {
+if (array_key_exists($tableName, $hasManyRelations)) {
     foreach ($hasManyRelations[$tableName] as $relationName => $hasManyRelation) {
         list ($nsClassName, $className, $foreignKey) = $hasManyRelation;
         $code = '

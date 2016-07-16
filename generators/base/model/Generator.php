@@ -338,12 +338,12 @@ class Generator extends GiiModelGenerator
     /**
      * @var array
      */
-    protected $relationUses;
+    protected $relationUses = [];
 
     /**
      * @var array
      */
-    protected $hasManyRelations;
+    protected $hasManyRelations = [];
 
     /**
      * @inheritdoc
@@ -440,13 +440,16 @@ class Generator extends GiiModelGenerator
         $output = parent::render($template, $params);
         switch ($template) {
             case 'model.php':
+                // fix uses
                 $tableName = $params['tableName'];
-                if (is_array($this->relationUses) && array_key_exists($tableName, $this->relationUses)) {
+                if (array_key_exists($tableName, $this->relationUses)) {
                     $uses = array_unique($this->relationUses[$tableName]);
                     Helper::sortUses($uses);
                     $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
                 }
-                //
+                // fix rules
+                $output = preg_replace('~\'targetClass\' \=\> (\w+)Base\:\:className\(\)~', '\'targetClass\' => \1::className()', $output);
+                // fix relations
                 $nsClassName = $this->ns . '\\' . $params['className'];
                 if (class_exists($nsClassName) && is_subclass_of($nsClassName, 'yii\db\ActiveRecord')) {
                     $model = new $nsClassName;
@@ -473,7 +476,7 @@ class Generator extends GiiModelGenerator
                 return $match[0];
             }
         }, $output);
-        $output = preg_replace_callback('~(@see |@return )\\\\((?:\w+\\\\)*\w+)\\\\base\\\\(\w+)Base~', function ($match) {
+        $output = preg_replace_callback('~(@see |@return |\[\[)\\\\((?:\w+\\\\)*\w+)\\\\base\\\\(\w+)Base~', function ($match) {
             $nsClassName = $match[2] . '\\' . $match[3];
             if (class_exists($nsClassName)) {
                 return $match[1] . '\\' . $nsClassName;
@@ -481,7 +484,6 @@ class Generator extends GiiModelGenerator
                 return $match[0];
             }
         }, $output);
-        $output = preg_replace('~\'targetClass\' \=\> (\w+)Base\:\:className\(\)~', '\'targetClass\' => \1::className()', $output);
         return $output;
     }
 }

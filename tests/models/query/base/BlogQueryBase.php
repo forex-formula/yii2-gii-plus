@@ -3,7 +3,7 @@
 namespace app\models\query\base;
 
 /**
- * This is the ActiveQuery class for [[\app\models\base\BlogBase]].
+ * This is the ActiveQuery class for [[\app\models\Blog]].
  *
  * @see \app\models\Blog
  */

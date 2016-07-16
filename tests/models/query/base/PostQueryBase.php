@@ -3,7 +3,7 @@
 namespace app\models\query\base;
 
 /**
- * This is the ActiveQuery class for [[\app\models\base\PostBase]].
+ * This is the ActiveQuery class for [[\app\models\Post]].
  *
  * @see \app\models\Post
  */

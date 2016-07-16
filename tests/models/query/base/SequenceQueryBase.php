@@ -3,7 +3,7 @@
 namespace app\models\query\base;
 
 /**
- * This is the ActiveQuery class for [[\app\models\base\SequenceBase]].
+ * This is the ActiveQuery class for [[\app\models\Sequence]].
  *
  * @see \app\models\Sequence
  */

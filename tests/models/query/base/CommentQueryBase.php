@@ -3,7 +3,7 @@
 namespace app\models\query\base;
 
 /**
- * This is the ActiveQuery class for [[\app\models\base\CommentBase]].
+ * This is the ActiveQuery class for [[\app\models\Comment]].
  *
  * @see \app\models\Comment
  */
