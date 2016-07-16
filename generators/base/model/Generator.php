@@ -10,7 +10,6 @@ use yii\helpers\Html;
 use yii\helpers\Inflector;
 use yii\web\JsExpression;
 use yii\helpers\Json;
-use ReflectionClass;
 use yii\db\Schema;
 use Yii;
 
@@ -49,15 +48,6 @@ class Generator extends GiiModelGenerator
         if (class_exists('yii\boost\db\ActiveQuery')) {
             $this->queryBaseClass = 'yii\boost\db\ActiveQuery';
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function defaultTemplate()
-    {
-        $class = new ReflectionClass(get_parent_class(__CLASS__));
-        return dirname($class->getFileName()) . '/default';
     }
 
     /**
