@@ -17,7 +17,7 @@ class m160209_192728_init extends Migration
         $this->createTableWithComment('post', [
             'id' => $this->primaryKey()->unsigned(),
             'blog_id' => $this->integer()->unsigned()->notNull()->comment('Блог'),
-            'name' => $this->string(50)->notNull()->comment('Название')->unique(),
+            'name' => $this->string(50)->notNull()->comment('Название'),
             'text' => $this->text()->notNull()->comment('Текст'),
             'enabled' => $this->boolean()->notNull()->defaultValue(0)->comment('Включено'),
             'deleted' => $this->boolean()->notNull()->defaultValue(0)
