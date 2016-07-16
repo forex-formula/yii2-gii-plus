@@ -327,7 +327,7 @@ class Generator extends GiiModelGenerator
             $rules[] = '[[\'' . implode('\', \'', $defaultNullAttributes) . '\'], \'default\', \'value\' => null]';
         }
         foreach (parent::generateRules($table) as $rule) {
-            if (!preg_match('~, \'safe\'\]$~', $rule)) {
+            if (!preg_match('~, \'(?:safe|boolean)\'\]$~', $rule)) {
                 $rules[] = $rule;
             }
         }
