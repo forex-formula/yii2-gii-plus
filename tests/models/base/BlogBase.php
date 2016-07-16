@@ -12,6 +12,8 @@ use Yii;
  * @property integer $id
  * @property string $name
  * @property integer $enabled
+ * @property string $created_at
+ * @property string $updated_at
  * @property integer $deleted
  *
  * @property Comment[] $comments
@@ -35,6 +37,7 @@ class BlogBase extends \yii\boost\db\ActiveRecord
         return [
             [['name'], 'required'],
             [['enabled', 'deleted'], 'integer'],
+            [['created_at', 'updated_at'], 'safe'],
             [['name'], 'string', 'max' => 50],
             [['name'], 'unique'],
         ];
@@ -49,6 +52,8 @@ class BlogBase extends \yii\boost\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Название',
             'enabled' => 'Включено',
+            'created_at' => 'Создано в',
+            'updated_at' => 'Обновлено в',
             'deleted' => 'Deleted',
         ];
     }

@@ -14,6 +14,8 @@ use Yii;
  * @property string $name
  * @property string $text
  * @property integer $enabled
+ * @property string $created_at
+ * @property string $updated_at
  * @property integer $deleted
  *
  * @property Comment[] $comments
@@ -38,6 +40,7 @@ class PostBase extends \yii\boost\db\ActiveRecord
             [['blog_id', 'name', 'text'], 'required'],
             [['blog_id', 'enabled', 'deleted'], 'integer'],
             [['text'], 'string'],
+            [['created_at', 'updated_at'], 'safe'],
             [['name'], 'string', 'max' => 50],
             [['blog_id', 'name'], 'unique', 'targetAttribute' => ['blog_id', 'name'], 'message' => 'The combination of Блог and Название has already been taken.'],
             [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
@@ -55,6 +58,8 @@ class PostBase extends \yii\boost\db\ActiveRecord
             'name' => 'Название',
             'text' => 'Текст',
             'enabled' => 'Включено',
+            'created_at' => 'Создано в',
+            'updated_at' => 'Обновлено в',
             'deleted' => 'Deleted',
         ];
     }

@@ -16,11 +16,13 @@ use Yii;
  * @property integer $parent_id
  * @property string $text
  * @property integer $enabled
+ * @property string $created_at
+ * @property string $updated_at
  * @property integer $deleted
  *
+ * @property Blog $blog
  * @property Comment $parent
  * @property Comment[] $comments
- * @property Blog $blog
  * @property Post $post
  */
 class CommentBase extends \yii\boost\db\ActiveRecord
@@ -42,8 +44,9 @@ class CommentBase extends \yii\boost\db\ActiveRecord
             [['blog_id', 'post_id', 'text'], 'required'],
             [['blog_id', 'post_id', 'parent_id', 'enabled', 'deleted'], 'integer'],
             [['text'], 'string'],
-            [['parent_id', 'blog_id', 'post_id'], 'exist', 'skipOnError' => true, 'targetClass' => Comment::className(), 'targetAttribute' => ['parent_id' => 'id', 'blog_id' => 'blog_id', 'post_id' => 'post_id']],
+            [['created_at', 'updated_at'], 'safe'],
             [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
+            [['parent_id', 'blog_id', 'post_id'], 'exist', 'skipOnError' => true, 'targetClass' => Comment::className(), 'targetAttribute' => ['parent_id' => 'id', 'blog_id' => 'blog_id', 'post_id' => 'post_id']],
             [['post_id', 'blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Post::className(), 'targetAttribute' => ['post_id' => 'id', 'blog_id' => 'blog_id']],
         ];
     }
@@ -60,8 +63,18 @@ class CommentBase extends \yii\boost\db\ActiveRecord
             'parent_id' => 'Родительский комментарий',
             'text' => 'Текст',
             'enabled' => 'Включено',
+            'created_at' => 'Создано в',
+            'updated_at' => 'Обновлено в',
             'deleted' => 'Deleted',
         ];
+    }
+
+    /**
+     * @return \app\models\query\BlogQuery
+     */
+    public function getBlog()
+    {
+        return $this->hasOne(Blog::className(), ['id' => 'blog_id']);
     }
 
     /**
@@ -78,14 +91,6 @@ class CommentBase extends \yii\boost\db\ActiveRecord
     public function getComments()
     {
         return $this->hasMany(Comment::className(), ['parent_id' => 'id', 'blog_id' => 'blog_id', 'post_id' => 'post_id']);
-    }
-
-    /**
-     * @return \app\models\query\BlogQuery
-     */
-    public function getBlog()
-    {
-        return $this->hasOne(Blog::className(), ['id' => 'blog_id']);
     }
 
     /**
