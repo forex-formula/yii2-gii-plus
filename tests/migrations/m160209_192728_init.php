@@ -52,7 +52,8 @@ class m160209_192728_init extends Migration
 
         $this->createTable('sequence', [
             'id' => $this->primaryKey(),
-            'previous_id' => $this->integer()->unsigned()->unique()
+            'previous_id' => $this->integer()->unsigned()->unique(),
+            'value' => $this->integer()->unsigned(),
         ]);
 
         $this->addForeignKey(null, 'sequence', 'previous_id', 'sequence', 'id');

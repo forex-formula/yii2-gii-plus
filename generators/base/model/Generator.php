@@ -283,6 +283,25 @@ class Generator extends GiiModelGenerator
     }
 
     /**
+     * @inheritdoc
+     */
+    public function generateRules($table)
+    {
+        $defaultNullAttributes = [];
+        foreach ($table->columns as $column) {
+            if ($column->allowNull && is_null($column->defaultValue)) {
+                $defaultNullAttributes[] = $column->name;
+            }
+        }
+        $rules = [];
+        if ($defaultNullAttributes) {
+            $rules[] = '[[\'' . implode('\', \'', $defaultNullAttributes) . '\'], \'default\', \'value\' => null]';
+        }
+        $rules = array_merge($rules, parent::generateRules($table));
+        return $rules;
+    }
+
+    /**
      * @var array
      */
     protected $relationUses;

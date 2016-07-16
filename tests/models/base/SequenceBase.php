@@ -10,6 +10,7 @@ use Yii;
  *
  * @property integer $id
  * @property integer $previous_id
+ * @property integer $value
  *
  * @property Sequence $previous
  * @property Sequence $sequence
@@ -30,7 +31,8 @@ class SequenceBase extends \yii\boost\db\ActiveRecord
     public function rules()
     {
         return [
-            [['previous_id'], 'integer'],
+            [['previous_id', 'value'], 'default', 'value' => null],
+            [['previous_id', 'value'], 'integer'],
             [['previous_id'], 'unique'],
             [['previous_id'], 'exist', 'skipOnError' => true, 'targetClass' => Sequence::className(), 'targetAttribute' => ['previous_id' => 'id']],
         ];
@@ -44,6 +46,7 @@ class SequenceBase extends \yii\boost\db\ActiveRecord
         return [
             'id' => 'ID',
             'previous_id' => 'Previous ID',
+            'value' => 'Value',
         ];
     }
 

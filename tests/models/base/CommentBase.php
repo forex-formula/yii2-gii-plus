@@ -41,6 +41,7 @@ class CommentBase extends \yii\boost\db\ActiveRecord
     public function rules()
     {
         return [
+            [['parent_id'], 'default', 'value' => null],
             [['blog_id', 'post_id', 'text'], 'required'],
             [['blog_id', 'post_id', 'parent_id', 'enabled', 'deleted'], 'integer'],
             [['text'], 'string'],
