@@ -41,6 +41,7 @@ class BlogBase extends \yii\boost\db\ActiveRecord
             [['name'], 'string', 'max' => 50],
             [['name'], 'unique'],
             [['enabled', 'deleted'], 'boolean'],
+            [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
         ];
     }
 

@@ -290,12 +290,20 @@ class Generator extends GiiModelGenerator
     {
         $defaultNullAttributes = [];
         $booleanAttributes = [];
+        $dateAttributes = [];
+        $timeAttributes = [];
+        $datetimeAttributes = [];
         foreach ($table->columns as $column) {
             if ($column->allowNull && is_null($column->defaultValue)) {
                 $defaultNullAttributes[] = $column->name;
-            }
-            if (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1)) {
+            } elseif (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
                 $booleanAttributes[] = $column->name;
+            } elseif ($column->type == Schema::TYPE_DATE) {
+                $dateAttributes[] = $column->name;
+            } elseif ($column->type == Schema::TYPE_TIME) {
+                $timeAttributes[] = $column->name;
+            } elseif (in_array($column->type, [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
+                $datetimeAttributes[] = $column->name;
             }
         }
         $rules = [];
@@ -305,6 +313,15 @@ class Generator extends GiiModelGenerator
         $rules = array_merge($rules, parent::generateRules($table));
         if (count($booleanAttributes)) {
             $rules[] = '[[\'' . implode('\', \'', $booleanAttributes) . '\'], \'boolean\']';
+        }
+        if (count($dateAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $dateAttributes) . '\'], \'date\', \'format\' => \'php:Y-m-d\']';
+        }
+        if (count($timeAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $timeAttributes) . '\'], \'date\', \'format\' => \'php:H:i:s\']';
+        }
+        if (count($datetimeAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $datetimeAttributes) . '\'], \'date\', \'format\' => \'php:Y-m-d H:i:s\']';
         }
         return $rules;
     }
