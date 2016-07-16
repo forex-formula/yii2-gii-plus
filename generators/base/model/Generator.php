@@ -7,7 +7,6 @@ use yii\db\Expression;
 use yii\gii\generators\model\Generator as GiiModelGenerator;
 use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
-use yii\helpers\Inflector;
 use yii\web\JsExpression;
 use yii\helpers\Json;
 use yii\db\Schema;
@@ -439,36 +438,20 @@ class Generator extends GiiModelGenerator
     public function render($template, $params = [])
     {
         $output = parent::render($template, $params);
-        if (array_key_exists('tableName', $params) && !array_key_exists('modelClassName', $params)) {
-            $tableName = $params['tableName'];
-            if (is_array($this->relationUses) && array_key_exists($tableName, $this->relationUses)) {
-                $uses = array_unique($this->relationUses[$tableName]);
-                Helper::sortUses($uses);
-                $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
-            }
-            if (is_array($this->hasManyRelations) && array_key_exists($tableName, $this->hasManyRelations)) {
-                foreach ($this->hasManyRelations[$tableName] as $relationName => $hasManyRelation) {
-                    list ($nsClassName, $className, $foreignKey) = $hasManyRelation;
-                    $code = '
-    /**
-     * @return ' . $className . '
-     */
-    public function new' . Inflector::singularize($relationName) . '()
-    {
-        $model = new ' . $className . ';
-';
-                    foreach ($foreignKey as $key1 => $key2) {
-                        $code .= '        $model->' . $key1 . ' = $this->' . $key2 . ';
-';
-                    }
-                    $code .= '        return $model;
-    }
-';
-                    if (strpos($output, $code) === false) {
-                        $output = preg_replace('~\}(\s*)$~', $code . '}\1', $output);
-                    }
+        switch ($template) {
+            case 'model.php':
+                $tableName = $params['tableName'];
+                if (is_array($this->relationUses) && array_key_exists($tableName, $this->relationUses)) {
+                    $uses = array_unique($this->relationUses[$tableName]);
+                    Helper::sortUses($uses);
+                    $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
                 }
-            }
+                $params['hasManyRelations'] = $this->hasManyRelations;
+                $output = preg_replace('~\}(\s*)$~', parent::render('model-part.php', $params) . '}\1', $output);
+                break;
+            case 'query.php':
+                $output = preg_replace('~\}(\s*)$~', parent::render('query-part.php', $params) . '}\1', $output);
+                break;
         }
         if (array_key_exists('className', $params)) {
             $nsClassName = $this->ns . '\\' . $params['className'];
