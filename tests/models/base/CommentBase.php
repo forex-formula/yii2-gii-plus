@@ -49,6 +49,7 @@ class CommentBase extends \yii\boost\db\ActiveRecord
             [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
             [['parent_id', 'blog_id', 'post_id'], 'exist', 'skipOnError' => true, 'targetClass' => Comment::className(), 'targetAttribute' => ['parent_id' => 'id', 'blog_id' => 'blog_id', 'post_id' => 'post_id']],
             [['post_id', 'blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Post::className(), 'targetAttribute' => ['post_id' => 'id', 'blog_id' => 'blog_id']],
+            [['enabled', 'deleted'], 'boolean'],
         ];
     }
 

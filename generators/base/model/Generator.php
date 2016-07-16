@@ -3,6 +3,7 @@
 namespace yii\gii\plus\generators\base\model;
 
 use yii\base\ErrorException;
+use yii\db\Schema;
 use yii\gii\generators\model\Generator as GiiModelGenerator;
 use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
@@ -288,16 +289,23 @@ class Generator extends GiiModelGenerator
     public function generateRules($table)
     {
         $defaultNullAttributes = [];
+        $booleanAttributes = [];
         foreach ($table->columns as $column) {
             if ($column->allowNull && is_null($column->defaultValue)) {
                 $defaultNullAttributes[] = $column->name;
             }
+            if (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1)) {
+                $booleanAttributes[] = $column->name;
+            }
         }
         $rules = [];
-        if ($defaultNullAttributes) {
+        if (count($defaultNullAttributes)) {
             $rules[] = '[[\'' . implode('\', \'', $defaultNullAttributes) . '\'], \'default\', \'value\' => null]';
         }
         $rules = array_merge($rules, parent::generateRules($table));
+        if (count($booleanAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $booleanAttributes) . '\'], \'boolean\']';
+        }
         return $rules;
     }
 

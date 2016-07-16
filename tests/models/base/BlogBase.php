@@ -40,6 +40,7 @@ class BlogBase extends \yii\boost\db\ActiveRecord
             [['created_at', 'updated_at'], 'safe'],
             [['name'], 'string', 'max' => 50],
             [['name'], 'unique'],
+            [['enabled', 'deleted'], 'boolean'],
         ];
     }
 
