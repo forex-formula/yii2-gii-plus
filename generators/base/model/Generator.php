@@ -446,25 +446,24 @@ class Generator extends GiiModelGenerator
                     Helper::sortUses($uses);
                     $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
                 }
+                //
+                $nsClassName = $this->ns . '\\' . $params['className'];
+                if (class_exists($nsClassName) && is_subclass_of($nsClassName, 'yii\db\ActiveRecord')) {
+                    $model = new $nsClassName;
+                    $output = preg_replace_callback('~@return \\\\(yii\\\\db\\\\ActiveQuery)\s+\*/\s+public function ([^\(]+)\(\)~', function ($match) use ($model) {
+                        if (method_exists($model, $match[2])) {
+                            return str_replace($match[1], get_class(call_user_func([$model, $match[2]])), $match[0]);
+                        } else {
+                            return $match[0];
+                        }
+                    }, $output);
+                }
                 $params['hasManyRelations'] = $this->hasManyRelations;
                 $output = preg_replace('~\}(\s*)$~', parent::render('model-part.php', $params) . '}\1', $output);
                 break;
             case 'query.php':
                 $output = preg_replace('~\}(\s*)$~', parent::render('query-part.php', $params) . '}\1', $output);
                 break;
-        }
-        if (array_key_exists('className', $params)) {
-            $nsClassName = $this->ns . '\\' . $params['className'];
-            if (class_exists($nsClassName) && is_subclass_of($nsClassName, 'yii\db\ActiveRecord')) {
-                $model = new $nsClassName;
-                $output = preg_replace_callback('~@return \\\\(yii\\\\db\\\\ActiveQuery)\s+\*/\s+public function ([^\(]+)\(\)~', function ($match) use ($model) {
-                    if (method_exists($model, $match[2])) {
-                        return str_replace($match[1], get_class(call_user_func([$model, $match[2]])), $match[0]);
-                    } else {
-                        return $match[0];
-                    }
-                }, $output);
-            }
         }
         $output = preg_replace_callback('~(@return |return new )\\\\((?:\w+\\\\)*\w+\\\\query)\\\\base\\\\(\w+Query)Base~', function ($match) {
             $nsClassName = $match[2] . '\\' . $match[3];
