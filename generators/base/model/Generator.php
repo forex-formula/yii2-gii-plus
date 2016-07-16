@@ -116,7 +116,7 @@ class Generator extends GiiModelGenerator
      */
     public function requiredTemplates()
     {
-        return ['model.php', 'query.php'];
+        return ['model.php', 'model-part.php', 'query.php', 'query-part.php'];
     }
 
     /**
