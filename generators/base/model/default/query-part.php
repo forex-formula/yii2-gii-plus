@@ -15,6 +15,20 @@ use yii\db\Schema;
 /* @var $relations array */
 /* @var $modelClassName string */
 
+// deleted filter
+$column = $tableSchema->getColumn('deleted');
+if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+    $code = '
+    public function init()
+    {
+        parent::init();
+        $this->andWhere([\'[[' . $column->name . ']]\' => 0]);
+    }
+';
+    echo $code;
+}
+
+// primary key
 $primaryKey = $tableSchema->primaryKey;
 if (count($primaryKey)) {
     $primaryKeyPhpTypeMap = array_flip($primaryKey);
@@ -145,7 +159,7 @@ try {
 }
 
 // boolean filters
-$booleanAttributes = ['enabled', 'active'];
+$booleanAttributes = ['enabled', 'active', 'activated', 'approved'];
 foreach ($booleanAttributes as $booleanAttribute) {
     $column = $tableSchema->getColumn($booleanAttribute);
     if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {

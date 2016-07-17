@@ -32,6 +32,12 @@ class PostQueryBase extends \yii\boost\db\ActiveQuery
         return parent::one($db);
     }
 
+    public function init()
+    {
+        parent::init();
+        $this->andWhere(['[[deleted]]' => 0]);
+    }
+
     /**
      * @param integer $id
      * @return self
