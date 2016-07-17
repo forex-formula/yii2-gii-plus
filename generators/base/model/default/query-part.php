@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Inflector;
+use yii\base\NotSupportedException;
 
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\base\model\Generator */
@@ -17,7 +18,7 @@ $primaryKey = $tableSchema->primaryKey;
 if (count($primaryKey)) {
     $primaryKeyPhpTypeMap = array_flip($primaryKey);
     foreach ($tableSchema->columns as $column) {
-        if ($column->isPrimaryKey) {
+        if (array_key_exists($column->name, $primaryKeyPhpTypeMap)) {
             $primaryKeyPhpTypeMap[$column->name] = $column->phpType;
         }
     }
@@ -88,4 +89,56 @@ if (count($primaryKey)) {
 ';
     }
     echo $code;
+}
+
+// unique indexes
+try {
+    $uniqueIndexes = $generator->getDbConnection()->getSchema()->findUniqueIndexes($tableSchema);
+    foreach ($uniqueIndexes as $uniqueKey) {
+        $uniqueKeyPhpTypeMap = array_flip($uniqueKey);
+        foreach ($tableSchema->columns as $column) {
+            if (array_key_exists($column->name, $uniqueKeyPhpTypeMap)) {
+                $uniqueKeyPhpTypeMap[$column->name] = $column->phpType;
+            }
+        }
+        if (count($uniqueKey) == 1) {
+            $uniqueKeyArg = [Inflector::variablize($uniqueKey[0])];
+            $code = '
+    /**
+     * @param ' . $uniqueKeyPhpTypeMap[$uniqueKey[0]] . ' $' . $uniqueKeyArg[0] . '
+     * @return self
+     */
+    public function ' . $uniqueKeyArg[0] . '($' . $uniqueKeyArg[0] . ')
+    {
+        return $this->andWhere([\'[[' . $uniqueKey[0] . ']]\' => $' . $uniqueKeyArg[0] . ']);
+    }
+';
+        } else {
+            $uniqueKeyArg = [];
+            $code = '
+    /**
+';
+            for ($i = 0; $i < count($uniqueKey); $i++) {
+                $uniqueKeyArg[$i] = Inflector::variablize($uniqueKey[$i]);
+                $code .= '     * @param ' . $uniqueKeyPhpTypeMap[$uniqueKey[$i]] . ' $' . $uniqueKeyArg[$i] . '
+';
+            }
+            $code .= '     * @return self
+     */
+    public function ' . Inflector::variablize(implode('_', $uniqueKey)) . '($' . implode(', $', $uniqueKeyArg) . ')
+    {
+        return $this->andWhere([
+';
+            for ($i = 0; $i < count($uniqueKey); $i++) {
+                $code .= '            \'[[' . $uniqueKey[$i] . ']]\' => $' . $uniqueKeyArg[$i] . (($i < count($uniqueKey) - 1) ? ',' : '') . '
+';
+            }
+            $code .= '        ]);
+    }
+';
+        }
+        echo $code;
+    }
+} catch (NotSupportedException $e) {
+    // do nothing
 }

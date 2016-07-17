@@ -49,4 +49,13 @@ class SequenceQueryBase extends \yii\boost\db\ActiveQuery
     {
         return $this->andWhere(['[[id]]' => $id]);
     }
+
+    /**
+     * @param integer $previousId
+     * @return self
+     */
+    public function previousId($previousId)
+    {
+        return $this->andWhere(['[[previous_id]]' => $previousId]);
+    }
 }

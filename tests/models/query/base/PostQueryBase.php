@@ -49,4 +49,17 @@ class PostQueryBase extends \yii\boost\db\ActiveQuery
     {
         return $this->andWhere(['[[id]]' => $id]);
     }
+
+    /**
+     * @param integer $blogId
+     * @param string $name
+     * @return self
+     */
+    public function blogIdName($blogId, $name)
+    {
+        return $this->andWhere([
+            '[[blog_id]]' => $blogId,
+            '[[name]]' => $name
+        ]);
+    }
 }
