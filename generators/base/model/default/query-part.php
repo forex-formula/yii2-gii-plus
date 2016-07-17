@@ -14,46 +14,78 @@ use yii\helpers\Inflector;
 /* @var $modelClassName string */
 
 $primaryKey = $tableSchema->primaryKey;
-$primaryKeyPhpTypeMap = array_flip($primaryKey);
-foreach ($tableSchema->columns as $column) {
-    if ($column->isPrimaryKey) {
-        $primaryKeyPhpTypeMap[$column->name] = $column->phpType;
+if (count($primaryKey)) {
+    $primaryKeyPhpTypeMap = array_flip($primaryKey);
+    foreach ($tableSchema->columns as $column) {
+        if ($column->isPrimaryKey) {
+            $primaryKeyPhpTypeMap[$column->name] = $column->phpType;
+        }
     }
-}
-
-if (count($primaryKey) == 1) {
-    $code = '
+    if (count($primaryKey) == 1) {
+        $primaryKeyArg = [Inflector::variablize($primaryKey[0])];
+        $code = '
     /**
-     * @param ' . $primaryKeyPhpTypeMap[$primaryKey[0]] . ' $' . Inflector::variablize($primaryKey[0]) . '
+     * @param ' . $primaryKeyPhpTypeMap[$primaryKey[0]] . ' $' . $primaryKeyArg[0] . '
      * @return self
      */
-    public function pk($' . Inflector::variablize($primaryKey[0]) . ')
+    public function pk($' . $primaryKeyArg[0] . ')
     {
-        return $this->andWhere([\'[[' . $primaryKey[0] . ']]\' => $' . Inflector::variablize($primaryKey[0]) . ']);
+        return $this->andWhere([\'[[' . $primaryKey[0] . ']]\' => $' . $primaryKeyArg[0] . ']);
     }
 ';
-} else {
-    $code = '
+        $code .= '
+    /**
+     * @param ' . $primaryKeyPhpTypeMap[$primaryKey[0]] . ' $' . $primaryKeyArg[0] . '
+     * @return self
+     */
+    public function ' . $primaryKeyArg[0] . '($' . $primaryKeyArg[0] . ')
+    {
+        return $this->andWhere([\'[[' . $primaryKey[0] . ']]\' => $' . $primaryKeyArg[0] . ']);
+    }
+';
+    } else {
+        $primaryKeyArg = [];
+        $code = '
     /**
 ';
-    $primaryKeyArgs = [];
-    for ($i = 0; $i < count($primaryKey); $i++) {
-        $primaryKeyArgs[$i] = Inflector::variablize($primaryKey[$i]);
-        $code .= '     * @param ' . $primaryKeyPhpTypeMap[$primaryKey[$i]] . ' $' . $primaryKeyArgs[$i] . '
+        for ($i = 0; $i < count($primaryKey); $i++) {
+            $primaryKeyArg[$i] = Inflector::variablize($primaryKey[$i]);
+            $code .= '     * @param ' . $primaryKeyPhpTypeMap[$primaryKey[$i]] . ' $' . $primaryKeyArg[$i] . '
 ';
-    }
-    $code .= '     * @return self
+        }
+        $code .= '     * @return self
      */
-    public function pk($' . implode(', $', $primaryKeyArgs) . ')
+    public function pk($' . implode(', $', $primaryKeyArg) . ')
     {
         return $this->andWhere([
 ';
-    for ($i = 0; $i < count($primaryKey); $i++) {
-        $code .= '            \'[[' . $primaryKey[$i] . ']]\' => $' . $primaryKeyArgs[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
+        for ($i = 0; $i < count($primaryKey); $i++) {
+            $code .= '            \'[[' . $primaryKey[$i] . ']]\' => $' . $primaryKeyArg[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
+';
+        }
+        $code .= '        ]);
+    }
+';
+        $code .= '
+    /**
+';
+        for ($i = 0; $i < count($primaryKey); $i++) {
+            $code .= '     * @param ' . $primaryKeyPhpTypeMap[$primaryKey[$i]] . ' $' . $primaryKeyArg[$i] . '
+';
+        }
+        $code .= '     * @return self
+     */
+    public function ' . Inflector::variablize(implode('_', $primaryKey)) . '($' . implode(', $', $primaryKeyArg) . ')
+    {
+        return $this->andWhere([
+';
+        for ($i = 0; $i < count($primaryKey); $i++) {
+            $code .= '            \'[[' . $primaryKey[$i] . ']]\' => $' . $primaryKeyArg[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
+';
+        }
+        $code .= '        ]);
+    }
 ';
     }
-    $code .= '        ]);
-    }
-';
+    echo $code;
 }
-echo $code;

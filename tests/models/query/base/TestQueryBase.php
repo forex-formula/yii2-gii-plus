@@ -44,4 +44,17 @@ class TestQueryBase extends \yii\boost\db\ActiveQuery
             '[[tiny_id]]' => $tinyId
         ]);
     }
+
+    /**
+     * @param integer $smallId
+     * @param integer $tinyId
+     * @return self
+     */
+    public function smallIdTinyId($smallId, $tinyId)
+    {
+        return $this->andWhere([
+            '[[small_id]]' => $smallId,
+            '[[tiny_id]]' => $tinyId
+        ]);
+    }
 }
