@@ -62,4 +62,12 @@ class PostQueryBase extends \yii\boost\db\ActiveQuery
             '[[name]]' => $name
         ]);
     }
+
+    /**
+     * @return self
+     */
+    public function enabled()
+    {
+        return $this->andWhere(['[[enabled]]' => 1]);
+    }
 }

@@ -58,4 +58,12 @@ class BlogQueryBase extends \yii\boost\db\ActiveQuery
     {
         return $this->andWhere(['[[name]]' => $name]);
     }
+
+    /**
+     * @return self
+     */
+    public function enabled()
+    {
+        return $this->andWhere(['[[enabled]]' => 1]);
+    }
 }

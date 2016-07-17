@@ -49,4 +49,12 @@ class CommentQueryBase extends \yii\boost\db\ActiveQuery
     {
         return $this->andWhere(['[[id]]' => $id]);
     }
+
+    /**
+     * @return self
+     */
+    public function enabled()
+    {
+        return $this->andWhere(['[[enabled]]' => 1]);
+    }
 }

@@ -2,6 +2,7 @@
 
 use yii\helpers\Inflector;
 use yii\base\NotSupportedException;
+use yii\db\Schema;
 
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\base\model\Generator */
@@ -141,4 +142,22 @@ try {
     }
 } catch (NotSupportedException $e) {
     // do nothing
+}
+
+// boolean filters
+$booleanAttributes = ['enabled', 'active'];
+foreach ($booleanAttributes as $booleanAttribute) {
+    $column = $tableSchema->getColumn($booleanAttribute);
+    if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+        $code = '
+    /**
+     * @return self
+     */
+    public function ' . $column->name . '()
+    {
+        return $this->andWhere([\'[[' . $column->name . ']]\' => 1]);
+    }
+';
+        echo $code;
+    }
 }
