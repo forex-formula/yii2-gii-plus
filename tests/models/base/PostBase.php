@@ -46,6 +46,8 @@ class PostBase extends \yii\boost\db\ActiveRecord
             [['name'], 'string', 'max' => 50],
             [['blog_id', 'name'], 'unique', 'targetAttribute' => ['blog_id', 'name'], 'message' => 'The combination of Блог and Название has already been taken.'],
             [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
+            [['enabled', 'deleted'], 'boolean'],
+            [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
         ];
     }
 

@@ -256,7 +256,7 @@ class Generator extends GiiModelGenerator
     /**
      * @var bool
      */
-    protected $relationsDone;
+    protected $relationsDone = false;
 
     /**
      * @inheritdoc
@@ -293,9 +293,10 @@ class Generator extends GiiModelGenerator
                 } else {
                     $defaultValues[$column->defaultValue][] = $column->name;
                 }
-            } elseif ($column->allowNull && is_null($column->defaultValue)) {
+            } elseif ($column->allowNull) {
                 $defaultNullAttributes[] = $column->name;
-            } elseif (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+            }
+            if (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
                 $booleanAttributes[] = $column->name;
             } elseif ($column->type == Schema::TYPE_DATE) {
                 $dateAttributes[] = $column->name;
