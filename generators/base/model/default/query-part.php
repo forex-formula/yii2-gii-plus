@@ -128,17 +128,21 @@ try {
         }
         if (count($uniqueKey) == 1) {
             $uniqueKeyArg = [Inflector::variablize($uniqueKey[0])];
+            $methodName = $uniqueKeyArg[0];
+            $methods[] = $methodName;
             $code = '
     /**
      * @param ' . $uniqueKeyPhpTypeMap[$uniqueKey[0]] . ' $' . $uniqueKeyArg[0] . '
      * @return self
      */
-    public function ' . $uniqueKeyArg[0] . '($' . $uniqueKeyArg[0] . ')
+    public function ' . $methodName . '($' . $uniqueKeyArg[0] . ')
     {
         return $this->andWhere([\'[[' . $uniqueKey[0] . ']]\' => $' . $uniqueKeyArg[0] . ']);
     }
 ';
         } else {
+            $methodName = Inflector::variablize(implode('_', $uniqueKey));
+            $methods[] = $methodName;
             $uniqueKeyArg = [];
             $code = '
     /**
@@ -150,7 +154,7 @@ try {
             }
             $code .= '     * @return self
      */
-    public function ' . Inflector::variablize(implode('_', $uniqueKey)) . '($' . implode(', $', $uniqueKeyArg) . ')
+    public function ' . $methodName . '($' . implode(', $', $uniqueKeyArg) . ')
     {
         return $this->andWhere([
 ';
