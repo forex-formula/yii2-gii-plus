@@ -53,12 +53,12 @@ class BlogBase extends \yii\boost\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'name' => 'Название',
-            'enabled' => 'Включено',
-            'created_at' => 'Создано в',
-            'updated_at' => 'Обновлено в',
-            'deleted' => 'Deleted',
+            'id' => Yii::t('app', 'ID'),
+            'name' => Yii::t('app', 'Название'),
+            'enabled' => Yii::t('app', 'Включено'),
+            'created_at' => Yii::t('app', 'Создано в'),
+            'updated_at' => Yii::t('app', 'Обновлено в'),
+            'deleted' => Yii::t('app', 'Deleted'),
         ];
     }
 
@@ -85,6 +85,14 @@ class BlogBase extends \yii\boost\db\ActiveRecord
     public static function find()
     {
         return new \app\models\query\BlogQuery(get_called_class());
+    }
+
+    /**
+     * @return string
+     */
+    public function modelLabel()
+    {
+        return Yii::t('app', 'Blog');
     }
 
     /**

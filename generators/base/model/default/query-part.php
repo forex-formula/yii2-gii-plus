@@ -158,10 +158,10 @@ try {
     // do nothing
 }
 
-// boolean filters
-$booleanAttributes = ['enabled', 'active', 'activated', 'approved'];
-foreach ($booleanAttributes as $booleanAttribute) {
-    $column = $tableSchema->getColumn($booleanAttribute);
+// enabled filters
+$enabledAttributes = ['enabled', 'active', 'activated', 'approved'];
+foreach ($enabledAttributes as $enabledAttribute) {
+    $column = $tableSchema->getColumn($enabledAttribute);
     if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
         $code = '
     /**

@@ -13,6 +13,27 @@ use yii\helpers\Inflector;
 /* @var $relations array */
 /* @var $hasManyRelations array */
 
+// model label
+$modelLabel = Inflector::titleize($tableName);
+$code = '
+    /**
+     * @return string
+     */
+    public function modelLabel()
+    {
+';
+if ($generator->enableI18N) {
+    $code .= '        return Yii::t(\'' . $generator->messageCategory . '\', \'' . $modelLabel . '\');
+';
+} else {
+    $code .= '        return \'' . $modelLabel . '\';
+';
+}
+$code .= '    }
+';
+echo $code;
+
+// relations
 if (array_key_exists($tableName, $hasManyRelations)) {
     foreach ($hasManyRelations[$tableName] as $relationName => $hasManyRelation) {
         list ($nsClassName, $className, $foreignKey) = $hasManyRelation;

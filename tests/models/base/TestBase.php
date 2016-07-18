@@ -37,8 +37,8 @@ class TestBase extends \yii\boost\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'small_id' => 'Small ID',
-            'tiny_id' => 'Tiny ID',
+            'small_id' => Yii::t('app', 'Small ID'),
+            'tiny_id' => Yii::t('app', 'Tiny ID'),
         ];
     }
 
@@ -49,5 +49,13 @@ class TestBase extends \yii\boost\db\ActiveRecord
     public static function find()
     {
         return new \app\models\query\TestQuery(get_called_class());
+    }
+
+    /**
+     * @return string
+     */
+    public function modelLabel()
+    {
+        return Yii::t('app', 'Test');
     }
 }

@@ -44,9 +44,9 @@ class SequenceBase extends \yii\boost\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'previous_id' => 'Previous ID',
-            'value' => 'Value',
+            'id' => Yii::t('app', 'ID'),
+            'previous_id' => Yii::t('app', 'Previous ID'),
+            'value' => Yii::t('app', 'Value'),
         ];
     }
 
@@ -73,6 +73,14 @@ class SequenceBase extends \yii\boost\db\ActiveRecord
     public static function find()
     {
         return new \app\models\query\SequenceQuery(get_called_class());
+    }
+
+    /**
+     * @return string
+     */
+    public function modelLabel()
+    {
+        return Yii::t('app', 'Sequence');
     }
 
     /**

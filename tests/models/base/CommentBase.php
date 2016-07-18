@@ -62,15 +62,15 @@ class CommentBase extends \yii\boost\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'blog_id' => 'Блог',
-            'post_id' => 'Пост',
-            'parent_id' => 'Родительский комментарий',
-            'text' => 'Текст',
-            'enabled' => 'Включено',
-            'created_at' => 'Создано в',
-            'updated_at' => 'Обновлено в',
-            'deleted' => 'Deleted',
+            'id' => Yii::t('app', 'ID'),
+            'blog_id' => Yii::t('app', 'Блог'),
+            'post_id' => Yii::t('app', 'Пост'),
+            'parent_id' => Yii::t('app', 'Родительский комментарий'),
+            'text' => Yii::t('app', 'Текст'),
+            'enabled' => Yii::t('app', 'Включено'),
+            'created_at' => Yii::t('app', 'Создано в'),
+            'updated_at' => Yii::t('app', 'Обновлено в'),
+            'deleted' => Yii::t('app', 'Deleted'),
         ];
     }
 
@@ -113,6 +113,14 @@ class CommentBase extends \yii\boost\db\ActiveRecord
     public static function find()
     {
         return new \app\models\query\CommentQuery(get_called_class());
+    }
+
+    /**
+     * @return string
+     */
+    public function modelLabel()
+    {
+        return Yii::t('app', 'Comment');
     }
 
     /**
