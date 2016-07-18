@@ -32,6 +32,7 @@ $methods = [];
 
 // primary key
 $primaryKey = $tableSchema->primaryKey;
+$primaryKeyPhpTypeMap = [];
 if (count($primaryKey)) {
     $primaryKeyPhpTypeMap = array_flip($primaryKey);
     foreach ($tableSchema->columns as $column) {
@@ -117,6 +118,7 @@ if (count($primaryKey)) {
 }
 
 // unique indexes
+$uniqueKeyPhpTypeMap = [];
 try {
     $uniqueIndexes = $generator->getDbConnection()->getSchema()->findUniqueIndexes($tableSchema);
     foreach ($uniqueIndexes as $uniqueKey) {
@@ -170,6 +172,27 @@ try {
     }
 } catch (NotSupportedException $e) {
     // do nothing
+}
+
+// primary/unique keys
+$keyPhpTypeMap = array_merge($primaryKeyPhpTypeMap, $uniqueKeyPhpTypeMap);
+foreach ($keyPhpTypeMap as $key => $phpType) {
+    $keyArg = Inflector::variablize($key);
+    $methodName = $keyArg;
+    if (!in_array($methodName, $methods)) {
+        $methods[] = $methodName;
+        $code = '
+    /**
+     * @param ' . $phpType . ' $' . $keyArg . '
+     * @return self
+     */
+    public function ' . $methodName . '($' . $keyArg . ')
+    {
+        return $this->andWhere([\'[[' . $key . ']]\' => $' . $keyArg . ']);
+    }
+';
+        echo $code;
+    }
 }
 
 // enabled filters
