@@ -40,8 +40,8 @@ class TestQueryBase extends \yii\boost\db\ActiveQuery
     public function pk($smallId, $tinyId)
     {
         return $this->andWhere([
-            '[[small_id]]' => $smallId,
-            '[[tiny_id]]' => $tinyId
+            $this->a('[[small_id]]') => $smallId,
+            $this->a('[[tiny_id]]') => $tinyId
         ]);
     }
 
@@ -53,8 +53,8 @@ class TestQueryBase extends \yii\boost\db\ActiveQuery
     public function smallIdTinyId($smallId, $tinyId)
     {
         return $this->andWhere([
-            '[[small_id]]' => $smallId,
-            '[[tiny_id]]' => $tinyId
+            $this->a('[[small_id]]') => $smallId,
+            $this->a('[[tiny_id]]') => $tinyId
         ]);
     }
 
@@ -64,7 +64,7 @@ class TestQueryBase extends \yii\boost\db\ActiveQuery
      */
     public function smallId($smallId)
     {
-        return $this->andWhere(['[[small_id]]' => $smallId]);
+        return $this->andWhere([$this->a('[[small_id]]') => $smallId]);
     }
 
     /**
@@ -73,6 +73,6 @@ class TestQueryBase extends \yii\boost\db\ActiveQuery
      */
     public function tinyId($tinyId)
     {
-        return $this->andWhere(['[[tiny_id]]' => $tinyId]);
+        return $this->andWhere([$this->a('[[tiny_id]]') => $tinyId]);
     }
 }
