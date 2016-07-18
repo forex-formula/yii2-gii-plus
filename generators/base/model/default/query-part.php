@@ -28,6 +28,8 @@ if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALL
     echo $code;
 }
 
+$methods = [];
+
 // primary key
 $primaryKey = $tableSchema->primaryKey;
 if (count($primaryKey)) {
@@ -38,28 +40,34 @@ if (count($primaryKey)) {
         }
     }
     if (count($primaryKey) == 1) {
+        $methodName = 'pk';
+        $methods[] = $methodName;
         $primaryKeyArg = [Inflector::variablize($primaryKey[0])];
         $code = '
     /**
      * @param ' . $primaryKeyPhpTypeMap[$primaryKey[0]] . ' $' . $primaryKeyArg[0] . '
      * @return self
      */
-    public function pk($' . $primaryKeyArg[0] . ')
+    public function ' . $methodName . '($' . $primaryKeyArg[0] . ')
     {
         return $this->andWhere([\'[[' . $primaryKey[0] . ']]\' => $' . $primaryKeyArg[0] . ']);
     }
 ';
+        $methodName = $primaryKeyArg[0];
+        $methods[] = $methodName;
         $code .= '
     /**
      * @param ' . $primaryKeyPhpTypeMap[$primaryKey[0]] . ' $' . $primaryKeyArg[0] . '
      * @return self
      */
-    public function ' . $primaryKeyArg[0] . '($' . $primaryKeyArg[0] . ')
+    public function ' . $methodName . '($' . $primaryKeyArg[0] . ')
     {
         return $this->andWhere([\'[[' . $primaryKey[0] . ']]\' => $' . $primaryKeyArg[0] . ']);
     }
 ';
     } else {
+        $methodName = 'pk';
+        $methods[] = $methodName;
         $primaryKeyArg = [];
         $code = '
     /**
@@ -71,7 +79,7 @@ if (count($primaryKey)) {
         }
         $code .= '     * @return self
      */
-    public function pk($' . implode(', $', $primaryKeyArg) . ')
+    public function ' . $methodName . '($' . implode(', $', $primaryKeyArg) . ')
     {
         return $this->andWhere([
 ';
@@ -82,6 +90,8 @@ if (count($primaryKey)) {
         $code .= '        ]);
     }
 ';
+        $methodName = Inflector::variablize(implode('_', $primaryKey));
+        $methods[] = $methodName;
         $code .= '
     /**
 ';
@@ -91,7 +101,7 @@ if (count($primaryKey)) {
         }
         $code .= '     * @return self
      */
-    public function ' . Inflector::variablize(implode('_', $primaryKey)) . '($' . implode(', $', $primaryKeyArg) . ')
+    public function ' . $methodName . '($' . implode(', $', $primaryKeyArg) . ')
     {
         return $this->andWhere([
 ';
