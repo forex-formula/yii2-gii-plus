@@ -163,13 +163,15 @@ $enabledAttributes = ['enabled', 'active', 'activated', 'approved'];
 foreach ($enabledAttributes as $enabledAttribute) {
     $column = $tableSchema->getColumn($enabledAttribute);
     if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+        $enabledAttributeArg = Inflector::variablize($enabledAttribute);
         $code = '
     /**
+     * @param int|bool $' . $enabledAttributeArg . '
      * @return self
      */
-    public function ' . $column->name . '()
+    public function ' . $column->name . '($' . $enabledAttributeArg . ' = true)
     {
-        return $this->andWhere([\'[[' . $column->name . ']]\' => 1]);
+        return $this->andWhere([\'[[' . $column->name . ']]\' => $' . $enabledAttributeArg . ' ? 1 : 0]);
     }
 ';
         echo $code;

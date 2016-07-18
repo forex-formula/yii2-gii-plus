@@ -66,10 +66,11 @@ class BlogQueryBase extends \yii\boost\db\ActiveQuery
     }
 
     /**
+     * @param int|bool $enabled
      * @return self
      */
-    public function enabled()
+    public function enabled($enabled = true)
     {
-        return $this->andWhere(['[[enabled]]' => 1]);
+        return $this->andWhere(['[[enabled]]' => $enabled ? 1 : 0]);
     }
 }
