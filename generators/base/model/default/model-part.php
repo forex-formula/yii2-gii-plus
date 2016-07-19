@@ -15,6 +15,18 @@ use yii\helpers\Inflector;
 
 // model label
 $modelLabel = Inflector::titleize($tableName);
+if ($generator->generateLabelsFromComments) {
+    $db = $generator->getDbConnection();
+    if ($db->getDriverName() == 'mysql') {
+        $row = $db->createCommand('SHOW CREATE TABLE ' . $db->quoteTableName($tableName))->queryOne();
+        if (is_array($row) && (count($row) == 2) && preg_match('~\)([^\)]*)$~', array_values($row)[1], $match)) {
+            $tableOptions = $match[1];
+            if (preg_match('~COMMENT\s*\=?\s*\'([^\']+)\'~i', $tableOptions, $match)) {
+                $modelLabel = $match[1];
+            }
+        }
+    }
+}
 $code = '
     /**
      * @return string

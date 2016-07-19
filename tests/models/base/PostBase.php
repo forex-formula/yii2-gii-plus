@@ -98,7 +98,7 @@ class PostBase extends \yii\boost\db\ActiveRecord
      */
     public function modelLabel()
     {
-        return Yii::t('app', 'Post');
+        return Yii::t('app', 'Пост');
     }
 
     /**

@@ -92,7 +92,7 @@ class BlogBase extends \yii\boost\db\ActiveRecord
      */
     public function modelLabel()
     {
-        return Yii::t('app', 'Blog');
+        return Yii::t('app', 'Блог');
     }
 
     /**

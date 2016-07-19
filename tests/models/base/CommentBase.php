@@ -120,7 +120,7 @@ class CommentBase extends \yii\boost\db\ActiveRecord
      */
     public function modelLabel()
     {
-        return Yii::t('app', 'Comment');
+        return Yii::t('app', 'Комментарий');
     }
 
     /**
