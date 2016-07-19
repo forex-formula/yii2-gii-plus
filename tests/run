@@ -13,9 +13,11 @@ The following files will be generated:
   [unchanged] models/query/base/PostQueryBase.php
   [unchanged] models/base/SequenceBase.php
   [unchanged] models/query/base/SequenceQueryBase.php
+  [unchanged] models/base/TestBase.php
+  [unchanged] models/query/base/TestQueryBase.php
 
 No files were chosen to be generated."
-ACTUAL1=`$DIR/yii gii/base_model --interactive=0 --overwrite=0`
+ACTUAL1=`$DIR/yii gii/base_model --enableI18N=1 --interactive=0 --overwrite=0`
 
 if [ "$EXPECTED1" = "$ACTUAL1" ]; then
     echo '1 passed'
@@ -35,6 +37,8 @@ The following files will be generated:
   [unchanged] models/query/PostQuery.php
   [unchanged] models/Sequence.php
   [unchanged] models/query/SequenceQuery.php
+  [unchanged] models/Test.php
+  [unchanged] models/query/TestQuery.php
 
 No files were chosen to be generated."
 ACTUAL2=`$DIR/yii gii/custom_model --interactive=0 --overwrite=0`
