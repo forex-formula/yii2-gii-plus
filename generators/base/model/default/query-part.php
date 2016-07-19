@@ -187,18 +187,18 @@ foreach ($keyAttributes as $attribute) {
 
 // enabled filters
 $enabledAttributes = ['enabled', 'active', 'activated', 'approved'];
-foreach ($enabledAttributes as $enabledAttribute) {
-    $column = $tableSchema->getColumn($enabledAttribute);
+foreach ($enabledAttributes as $attribute) {
+    $column = $tableSchema->getColumn($attribute);
     if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
-        $enabledAttributeArg = Inflector::variablize($enabledAttribute);
+        $attributeArg = Inflector::variablize($attribute);
         $code = '
     /**
-     * @param int|bool $' . $enabledAttributeArg . '
+     * @param int|bool $' . $attributeArg . '
      * @return self
      */
-    public function ' . $column->name . '($' . $enabledAttributeArg . ' = true)
+    public function ' . $attribute . '($' . $attributeArg . ' = true)
     {
-        return $this->andWhere([$this->a(\'[[' . $column->name . ']]\') => $' . $enabledAttributeArg . ' ? 1 : 0]);
+        return $this->andWhere([$this->a(\'[[' . $attribute . ']]\') => $' . $attributeArg . ' ? 1 : 0]);
     }
 ';
         echo $code;
