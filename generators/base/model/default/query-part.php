@@ -70,23 +70,23 @@ if (count($primaryKey)) {
     } else {
         $methodName = 'pk';
         $methods[] = $methodName;
-        $primaryKeyArg = [];
+        $attributeArgs = [];
         $code = '
     /**
 ';
-        for ($i = 0; $i < count($primaryKey); $i++) {
-            $primaryKeyArg[$i] = Inflector::variablize($primaryKey[$i]);
-            $code .= '     * @param ' . $primaryKeyPhpTypeMap[$primaryKey[$i]] . ' $' . $primaryKeyArg[$i] . '
+        foreach ($primaryKey as $i => $attribute) {
+            $attributeArgs[$i] = Inflector::variablize($attribute);
+            $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
 ';
         }
         $code .= '     * @return self
      */
-    public function ' . $methodName . '($' . implode(', $', $primaryKeyArg) . ')
+    public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
     {
         return $this->andWhere([
 ';
-        for ($i = 0; $i < count($primaryKey); $i++) {
-            $code .= '            $this->a(\'[[' . $primaryKey[$i] . ']]\') => $' . $primaryKeyArg[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
+        foreach ($primaryKey as $i => $attribute) {
+            $code .= '            $this->a(\'[[' . $attribute . ']]\') => $' . $attributeArgs[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
 ';
         }
         $code .= '        ]);
@@ -97,18 +97,18 @@ if (count($primaryKey)) {
         $code .= '
     /**
 ';
-        for ($i = 0; $i < count($primaryKey); $i++) {
-            $code .= '     * @param ' . $primaryKeyPhpTypeMap[$primaryKey[$i]] . ' $' . $primaryKeyArg[$i] . '
+        foreach ($primaryKey as $i => $attribute) {
+            $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
 ';
         }
         $code .= '     * @return self
      */
-    public function ' . $methodName . '($' . implode(', $', $primaryKeyArg) . ')
+    public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
     {
         return $this->andWhere([
 ';
-        for ($i = 0; $i < count($primaryKey); $i++) {
-            $code .= '            $this->a(\'[[' . $primaryKey[$i] . ']]\') => $' . $primaryKeyArg[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
+        foreach ($primaryKey as $i => $attribute) {
+            $code .= '            $this->a(\'[[' . $attribute . ']]\') => $' . $attributeArgs[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
 ';
         }
         $code .= '        ]);
