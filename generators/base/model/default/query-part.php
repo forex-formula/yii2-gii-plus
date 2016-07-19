@@ -41,29 +41,30 @@ if (count($primaryKey)) {
         }
     }
     if (count($primaryKey) == 1) {
+        $attribute = $primaryKey[0];
+        $attributeArg = Inflector::variablize($attribute);
         $methodName = 'pk';
         $methods[] = $methodName;
-        $primaryKeyArg = [Inflector::variablize($primaryKey[0])];
         $code = '
     /**
-     * @param ' . $primaryKeyPhpTypeMap[$primaryKey[0]] . ' $' . $primaryKeyArg[0] . '
+     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
      * @return self
      */
-    public function ' . $methodName . '($' . $primaryKeyArg[0] . ')
+    public function ' . $methodName . '($' . $attributeArg . ')
     {
-        return $this->andWhere([$this->a(\'[[' . $primaryKey[0] . ']]\') => $' . $primaryKeyArg[0] . ']);
+        return $this->andWhere([$this->a(\'[[' . $attribute . ']]\') => $' . $attributeArg . ']);
     }
 ';
-        $methodName = $primaryKeyArg[0];
+        $methodName = $attributeArg;
         $methods[] = $methodName;
         $code .= '
     /**
-     * @param ' . $primaryKeyPhpTypeMap[$primaryKey[0]] . ' $' . $primaryKeyArg[0] . '
+     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
      * @return self
      */
-    public function ' . $methodName . '($' . $primaryKeyArg[0] . ')
+    public function ' . $methodName . '($' . $attributeArg . ')
     {
-        return $this->andWhere([$this->a(\'[[' . $primaryKey[0] . ']]\') => $' . $primaryKeyArg[0] . ']);
+        return $this->andWhere([$this->a(\'[[' . $attribute . ']]\') => $' . $attributeArg . ']);
     }
 ';
     } else {
