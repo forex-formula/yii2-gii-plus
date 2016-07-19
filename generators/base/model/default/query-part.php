@@ -147,23 +147,23 @@ try {
         } else {
             $methodName = Inflector::variablize(implode('_', $uniqueKey));
             $methods[] = $methodName;
-            $uniqueKeyArg = [];
+            $attributeArgs = [];
             $code = '
     /**
 ';
-            for ($i = 0; $i < count($uniqueKey); $i++) {
-                $uniqueKeyArg[$i] = Inflector::variablize($uniqueKey[$i]);
-                $code .= '     * @param ' . $uniqueKeyPhpTypeMap[$uniqueKey[$i]] . ' $' . $uniqueKeyArg[$i] . '
+            foreach ($uniqueKey as $i => $attribute) {
+                $attributeArgs[$i] = Inflector::variablize($attribute);
+                $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
 ';
             }
             $code .= '     * @return self
      */
-    public function ' . $methodName . '($' . implode(', $', $uniqueKeyArg) . ')
+    public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
     {
         return $this->andWhere([
 ';
-            for ($i = 0; $i < count($uniqueKey); $i++) {
-                $code .= '            $this->a(\'[[' . $uniqueKey[$i] . ']]\') => $' . $uniqueKeyArg[$i] . (($i < count($uniqueKey) - 1) ? ',' : '') . '
+            foreach ($uniqueKey as $i => $attribute) {
+                $code .= '            $this->a(\'[[' . $attribute . ']]\') => $' . $attributeArgs[$i] . (($i < count($uniqueKey) - 1) ? ',' : '') . '
 ';
             }
             $code .= '        ]);
