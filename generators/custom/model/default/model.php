@@ -16,9 +16,7 @@ use yii\gii\plus\helpers\Helper;
 /* @var $baseQueryClass string */
 
 $uses = [
-    $baseModelClass,
-    $queryClass,
-    'Yii'
+    $baseModelClass
 ];
 Helper::sortUses($uses);
 
@@ -32,14 +30,4 @@ use <?= implode(';' . "\n" . 'use ', $uses) ?>;
 class <?= $modelName ?> extends <?= $baseModelName ?>
 
 {
-
-    /**
-     * @inheritdoc
-     * @return <?= $queryName ?>
-
-     */
-    public static function find()
-    {
-        return Yii::createObject(<?= $queryName ?>::className(), [get_called_class()]);
-    }
 }
