@@ -36,10 +36,10 @@ $primaryKey = $tableSchema->primaryKey;
 if (count($primaryKey)) {
     $keyAttributes = $primaryKey;
     if (count($primaryKey) == 1) {
-        $attribute = $primaryKey[0];
-        $attributeArg = Inflector::variablize($attribute);
         $methodName = 'pk';
         $methods[] = $methodName;
+        $attribute = $primaryKey[0];
+        $attributeArg = Inflector::variablize($attribute);
         $code = '
     /**
      * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
