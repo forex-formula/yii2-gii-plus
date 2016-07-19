@@ -9,10 +9,6 @@ namespace app\models\query\base;
  */
 class CommentQueryBase extends \yii\boost\db\ActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
 
     /**
      * @inheritdoc

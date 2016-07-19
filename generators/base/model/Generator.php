@@ -474,6 +474,14 @@ class Generator extends GiiModelGenerator
                 $output = preg_replace('~\}(\s*)$~', parent::render('model-part.php', $params) . '}\1', $output);
                 break;
             case 'query.php':
+                $code = <<<CODE
+    /*public function active()
+    {
+        return \$this->andWhere('[[status]]=1');
+    }*/
+
+CODE;
+                $output = str_replace($code, '', $output);
                 $output = preg_replace('~\}(\s*)$~', parent::render('query-part.php', $params) . '}\1', $output);
                 break;
         }
