@@ -1,6 +1,8 @@
 <?php
 
 use yii\helpers\Inflector;
+use yii\base\NotSupportedException;
+use yii\db\Schema;
 
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\base\model\Generator */
@@ -45,6 +47,21 @@ echo $code;
 
 // display field
 $displayField = $tableSchema->primaryKey;
+try {
+    $uniqueIndexes = $db->getSchema()->findUniqueIndexes($tableSchema);
+    foreach ($uniqueIndexes as $uniqueKey) {
+        $uniqueKeyTypeMap = [];
+        foreach ($uniqueKey as $attribute) {
+            $uniqueKeyTypeMap[$attribute] = $tableSchema->getColumn($attribute)->type;
+        }
+        if (in_array(Schema::TYPE_CHAR, $uniqueKeyTypeMap) || in_array(Schema::TYPE_STRING, $uniqueKeyTypeMap)) {
+            $displayField = $uniqueKey;
+            break;
+        }
+    }
+} catch (NotSupportedException $e) {
+    // do nothing
+}
 if (count($displayField)) {
     $code = '
     /**

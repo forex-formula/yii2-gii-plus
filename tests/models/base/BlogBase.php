@@ -100,7 +100,7 @@ class BlogBase extends \yii\boost\db\ActiveRecord
      */
     public function displayField()
     {
-        return ['id'];
+        return ['name'];
     }
 
     /**
