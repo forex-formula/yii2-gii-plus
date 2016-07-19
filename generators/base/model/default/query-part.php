@@ -191,7 +191,10 @@ foreach ($enabledAttributes as $attribute) {
     $column = $tableSchema->getColumn($attribute);
     if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
         $attributeArg = Inflector::variablize($attribute);
-        $code = '
+        $methodName = $attributeArg;
+        if (!in_array($methodName, $methods)) {
+            $methods[] = $methodName;
+            $code = '
     /**
      * @param int|bool $' . $attributeArg . '
      * @return self
@@ -201,6 +204,7 @@ foreach ($enabledAttributes as $attribute) {
         return $this->andWhere([$this->a(\'[[' . $attribute . ']]\') => $' . $attributeArg . ' ? 1 : 0]);
     }
 ';
-        echo $code;
+            echo $code;
+        }
     }
 }
