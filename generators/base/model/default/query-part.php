@@ -130,17 +130,18 @@ try {
             }
         }
         if (count($uniqueKey) == 1) {
-            $uniqueKeyArg = [Inflector::variablize($uniqueKey[0])];
-            $methodName = $uniqueKeyArg[0];
+            $attribute = $uniqueKey[0];
+            $attributeArg = Inflector::variablize($attribute);
+            $methodName = $attributeArg;
             $methods[] = $methodName;
             $code = '
     /**
-     * @param ' . $uniqueKeyPhpTypeMap[$uniqueKey[0]] . ' $' . $uniqueKeyArg[0] . '
+     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
      * @return self
      */
-    public function ' . $methodName . '($' . $uniqueKeyArg[0] . ')
+    public function ' . $methodName . '($' . $attributeArg . ')
     {
-        return $this->andWhere([$this->a(\'[[' . $uniqueKey[0] . ']]\') => $' . $uniqueKeyArg[0] . ']);
+        return $this->andWhere([$this->a(\'[[' . $attribute . ']]\') => $' . $attributeArg . ']);
     }
 ';
         } else {
