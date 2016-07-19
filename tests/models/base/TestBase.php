@@ -58,4 +58,12 @@ class TestBase extends \yii\boost\db\ActiveRecord
     {
         return Yii::t('app', 'Test');
     }
+
+    /**
+     * @return string[]
+     */
+    public function displayField()
+    {
+        return ['small_id', 'tiny_id'];
+    }
 }

@@ -84,6 +84,14 @@ class SequenceBase extends \yii\boost\db\ActiveRecord
     }
 
     /**
+     * @return string[]
+     */
+    public function displayField()
+    {
+        return ['id'];
+    }
+
+    /**
      * @return Sequence
      */
     public function newSequence()

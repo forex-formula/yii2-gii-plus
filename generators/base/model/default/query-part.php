@@ -122,7 +122,7 @@ $uniqueKeyPhpTypeMap = [];
 try {
     $uniqueIndexes = $generator->getDbConnection()->getSchema()->findUniqueIndexes($tableSchema);
     foreach ($uniqueIndexes as $uniqueKey) {
-        $uniqueKeyPhpTypeMap = array_flip($uniqueKey);
+        $uniqueKeyPhpTypeMap = array_merge($uniqueKeyPhpTypeMap, array_flip($uniqueKey));
         foreach ($tableSchema->columns as $column) {
             if (array_key_exists($column->name, $uniqueKeyPhpTypeMap)) {
                 $uniqueKeyPhpTypeMap[$column->name] = $column->phpType;

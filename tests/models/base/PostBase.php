@@ -102,6 +102,14 @@ class PostBase extends \yii\boost\db\ActiveRecord
     }
 
     /**
+     * @return string[]
+     */
+    public function displayField()
+    {
+        return ['id'];
+    }
+
+    /**
      * @return Comment
      */
     public function newComment()
