@@ -28,18 +28,13 @@ if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALL
     echo $code;
 }
 
+$keyAttributes = [];
 $methods = [];
 
 // primary key
 $primaryKey = $tableSchema->primaryKey;
-$primaryKeyPhpTypeMap = [];
 if (count($primaryKey)) {
-    $primaryKeyPhpTypeMap = array_flip($primaryKey);
-    foreach ($tableSchema->columns as $column) {
-        if (array_key_exists($column->name, $primaryKeyPhpTypeMap)) {
-            $primaryKeyPhpTypeMap[$column->name] = $column->phpType;
-        }
-    }
+    $keyAttributes = $primaryKey;
     if (count($primaryKey) == 1) {
         $attribute = $primaryKey[0];
         $attributeArg = Inflector::variablize($attribute);
@@ -119,16 +114,10 @@ if (count($primaryKey)) {
 }
 
 // unique indexes
-$uniqueKeyPhpTypeMap = [];
 try {
     $uniqueIndexes = $generator->getDbConnection()->getSchema()->findUniqueIndexes($tableSchema);
     foreach ($uniqueIndexes as $uniqueKey) {
-        $uniqueKeyPhpTypeMap = array_merge($uniqueKeyPhpTypeMap, array_flip($uniqueKey));
-        foreach ($tableSchema->columns as $column) {
-            if (array_key_exists($column->name, $uniqueKeyPhpTypeMap)) {
-                $uniqueKeyPhpTypeMap[$column->name] = $column->phpType;
-            }
-        }
+        $keyAttributes = array_merge($keyAttributes, $uniqueKey);
         if (count($uniqueKey) == 1) {
             $attribute = $uniqueKey[0];
             $attributeArg = Inflector::variablize($attribute);
@@ -177,20 +166,19 @@ try {
 }
 
 // primary/unique keys
-$keyPhpTypeMap = array_merge($primaryKeyPhpTypeMap, $uniqueKeyPhpTypeMap);
-foreach ($keyPhpTypeMap as $key => $phpType) {
-    $keyArg = Inflector::variablize($key);
-    $methodName = $keyArg;
+foreach ($keyAttributes as $attribute) {
+    $attributeArg = Inflector::variablize($attribute);
+    $methodName = $attributeArg;
     if (!in_array($methodName, $methods)) {
         $methods[] = $methodName;
         $code = '
     /**
-     * @param ' . $phpType . ' $' . $keyArg . '
+     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
      * @return self
      */
-    public function ' . $methodName . '($' . $keyArg . ')
+    public function ' . $methodName . '($' . $attributeArg . ')
     {
-        return $this->andWhere([$this->a(\'[[' . $key . ']]\') => $' . $keyArg . ']);
+        return $this->andWhere([$this->a(\'[[' . $attribute . ']]\') => $' . $attributeArg . ']);
     }
 ';
         echo $code;
