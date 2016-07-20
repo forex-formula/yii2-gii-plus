@@ -31,7 +31,7 @@ class BlogQueryBase extends \yii\boost\db\ActiveQuery
     public function init()
     {
         parent::init();
-        $this->andWhere([$this->a('[[deleted]]') => 0]);
+        $this->andWhere([$this->a('deleted') => 0]);
     }
 
     /**
@@ -40,7 +40,7 @@ class BlogQueryBase extends \yii\boost\db\ActiveQuery
      */
     public function pk($id)
     {
-        return $this->andWhere([$this->a('[[id]]') => $id]);
+        return $this->andWhere([$this->a('id') => $id]);
     }
 
     /**
@@ -49,7 +49,7 @@ class BlogQueryBase extends \yii\boost\db\ActiveQuery
      */
     public function id($id)
     {
-        return $this->andWhere([$this->a('[[id]]') => $id]);
+        return $this->andWhere([$this->a('id') => $id]);
     }
 
     /**
@@ -58,7 +58,7 @@ class BlogQueryBase extends \yii\boost\db\ActiveQuery
      */
     public function name($name)
     {
-        return $this->andWhere([$this->a('[[name]]') => $name]);
+        return $this->andWhere([$this->a('name') => $name]);
     }
 
     /**
@@ -67,6 +67,6 @@ class BlogQueryBase extends \yii\boost\db\ActiveQuery
      */
     public function enabled($enabled = true)
     {
-        return $this->andWhere([$this->a('[[enabled]]') => $enabled ? 1 : 0]);
+        return $this->andWhere([$this->a('enabled') => $enabled ? 1 : 0]);
     }
 }

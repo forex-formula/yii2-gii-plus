@@ -31,7 +31,7 @@ class PostQueryBase extends \yii\boost\db\ActiveQuery
     public function init()
     {
         parent::init();
-        $this->andWhere([$this->a('[[deleted]]') => 0]);
+        $this->andWhere([$this->a('deleted') => 0]);
     }
 
     /**
@@ -40,7 +40,7 @@ class PostQueryBase extends \yii\boost\db\ActiveQuery
      */
     public function pk($id)
     {
-        return $this->andWhere([$this->a('[[id]]') => $id]);
+        return $this->andWhere([$this->a('id') => $id]);
     }
 
     /**
@@ -49,7 +49,7 @@ class PostQueryBase extends \yii\boost\db\ActiveQuery
      */
     public function id($id)
     {
-        return $this->andWhere([$this->a('[[id]]') => $id]);
+        return $this->andWhere([$this->a('id') => $id]);
     }
 
     /**
@@ -60,8 +60,8 @@ class PostQueryBase extends \yii\boost\db\ActiveQuery
     public function blogIdName($blogId, $name)
     {
         return $this->andWhere([
-            $this->a('[[blog_id]]') => $blogId,
-            $this->a('[[name]]') => $name
+            $this->a('blog_id') => $blogId,
+            $this->a('name') => $name
         ]);
     }
 
@@ -71,7 +71,7 @@ class PostQueryBase extends \yii\boost\db\ActiveQuery
      */
     public function blogId($blogId)
     {
-        return $this->andWhere([$this->a('[[blog_id]]') => $blogId]);
+        return $this->andWhere([$this->a('blog_id') => $blogId]);
     }
 
     /**
@@ -80,7 +80,7 @@ class PostQueryBase extends \yii\boost\db\ActiveQuery
      */
     public function name($name)
     {
-        return $this->andWhere([$this->a('[[name]]') => $name]);
+        return $this->andWhere([$this->a('name') => $name]);
     }
 
     /**
@@ -89,6 +89,6 @@ class PostQueryBase extends \yii\boost\db\ActiveQuery
      */
     public function enabled($enabled = true)
     {
-        return $this->andWhere([$this->a('[[enabled]]') => $enabled ? 1 : 0]);
+        return $this->andWhere([$this->a('enabled') => $enabled ? 1 : 0]);
     }
 }

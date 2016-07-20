@@ -22,7 +22,7 @@ if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALL
     public function init()
     {
         parent::init();
-        $this->andWhere([$this->a(\'[[' . $column->name . ']]\') => 0]);
+        $this->andWhere([$this->a(\'' . $column->name . '\') => 0]);
     }
 ';
     echo $code;
@@ -47,7 +47,7 @@ if (count($primaryKey)) {
      */
     public function ' . $methodName . '($' . $attributeArg . ')
     {
-        return $this->andWhere([$this->a(\'[[' . $attribute . ']]\') => $' . $attributeArg . ']);
+        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
     }
 ';
         $methodName = $attributeArg;
@@ -59,7 +59,7 @@ if (count($primaryKey)) {
      */
     public function ' . $methodName . '($' . $attributeArg . ')
     {
-        return $this->andWhere([$this->a(\'[[' . $attribute . ']]\') => $' . $attributeArg . ']);
+        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
     }
 ';
     } else {
@@ -81,7 +81,7 @@ if (count($primaryKey)) {
         return $this->andWhere([
 ';
         foreach ($primaryKey as $i => $attribute) {
-            $code .= '            $this->a(\'[[' . $attribute . ']]\') => $' . $attributeArgs[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
+            $code .= '            $this->a(\'' . $attribute . '\') => $' . $attributeArgs[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
 ';
         }
         $code .= '        ]);
@@ -103,7 +103,7 @@ if (count($primaryKey)) {
         return $this->andWhere([
 ';
         foreach ($primaryKey as $i => $attribute) {
-            $code .= '            $this->a(\'[[' . $attribute . ']]\') => $' . $attributeArgs[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
+            $code .= '            $this->a(\'' . $attribute . '\') => $' . $attributeArgs[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
 ';
         }
         $code .= '        ]);
@@ -130,7 +130,7 @@ try {
      */
     public function ' . $methodName . '($' . $attributeArg . ')
     {
-        return $this->andWhere([$this->a(\'[[' . $attribute . ']]\') => $' . $attributeArg . ']);
+        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
     }
 ';
         } else {
@@ -152,7 +152,7 @@ try {
         return $this->andWhere([
 ';
             foreach ($uniqueKey as $i => $attribute) {
-                $code .= '            $this->a(\'[[' . $attribute . ']]\') => $' . $attributeArgs[$i] . (($i < count($uniqueKey) - 1) ? ',' : '') . '
+                $code .= '            $this->a(\'' . $attribute . '\') => $' . $attributeArgs[$i] . (($i < count($uniqueKey) - 1) ? ',' : '') . '
 ';
             }
             $code .= '        ]);
@@ -178,7 +178,7 @@ foreach ($keyAttributes as $attribute) {
      */
     public function ' . $methodName . '($' . $attributeArg . ')
     {
-        return $this->andWhere([$this->a(\'[[' . $attribute . ']]\') => $' . $attributeArg . ']);
+        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
     }
 ';
         echo $code;
@@ -201,7 +201,7 @@ foreach ($enabledAttributes as $attribute) {
      */
     public function ' . $attribute . '($' . $attributeArg . ' = true)
     {
-        return $this->andWhere([$this->a(\'[[' . $attribute . ']]\') => $' . $attributeArg . ' ? 1 : 0]);
+        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ' ? 1 : 0]);
     }
 ';
             echo $code;

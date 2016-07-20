@@ -34,7 +34,7 @@ class SequenceQueryBase extends \yii\boost\db\ActiveQuery
      */
     public function pk($id)
     {
-        return $this->andWhere([$this->a('[[id]]') => $id]);
+        return $this->andWhere([$this->a('id') => $id]);
     }
 
     /**
@@ -43,7 +43,7 @@ class SequenceQueryBase extends \yii\boost\db\ActiveQuery
      */
     public function id($id)
     {
-        return $this->andWhere([$this->a('[[id]]') => $id]);
+        return $this->andWhere([$this->a('id') => $id]);
     }
 
     /**
@@ -52,6 +52,6 @@ class SequenceQueryBase extends \yii\boost\db\ActiveQuery
      */
     public function previousId($previousId)
     {
-        return $this->andWhere([$this->a('[[previous_id]]') => $previousId]);
+        return $this->andWhere([$this->a('previous_id') => $previousId]);
     }
 }
