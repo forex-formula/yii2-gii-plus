@@ -3,6 +3,7 @@
 namespace app\models\base;
 
 use app\models\Comment;
+use yii\db\Expression;
 use app\models\Post;
 use Yii;
 
@@ -11,11 +12,15 @@ use Yii;
  *
  * @property integer $id
  * @property string $name
+ * @property integer $enabled
+ * @property string $created_at
+ * @property string $updated_at
+ * @property integer $deleted
  *
  * @property Comment[] $comments
  * @property Post[] $posts
  */
-class BlogBase extends \yii\db\ActiveRecord
+class BlogBase extends \yii\boost\db\ActiveRecord
 {
     /**
      * @inheritdoc
@@ -31,8 +36,14 @@ class BlogBase extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['created_at', 'updated_at'], 'default', 'value' => new Expression('CURRENT_TIMESTAMP')],
+            [['enabled', 'deleted'], 'default', 'value' => '0'],
             [['name'], 'required'],
-            [['name'], 'string', 'max' => 255],
+            [['enabled', 'deleted'], 'integer'],
+            [['name'], 'string', 'max' => 50],
+            [['name'], 'unique'],
+            [['enabled', 'deleted'], 'boolean'],
+            [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
         ];
     }
 
@@ -42,8 +53,12 @@ class BlogBase extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'name' => 'Name',
+            'id' => Yii::t('app', 'ID'),
+            'name' => Yii::t('app', 'Название'),
+            'enabled' => Yii::t('app', 'Включено'),
+            'created_at' => Yii::t('app', 'Создано в'),
+            'updated_at' => Yii::t('app', 'Обновлено в'),
+            'deleted' => Yii::t('app', 'Deleted'),
         ];
     }
 
@@ -70,6 +85,22 @@ class BlogBase extends \yii\db\ActiveRecord
     public static function find()
     {
         return new \app\models\query\BlogQuery(get_called_class());
+    }
+
+    /**
+     * @return string
+     */
+    public function modelLabel()
+    {
+        return Yii::t('app', 'Блог');
+    }
+
+    /**
+     * @return string[]
+     */
+    public function displayField()
+    {
+        return ['name'];
     }
 
     /**

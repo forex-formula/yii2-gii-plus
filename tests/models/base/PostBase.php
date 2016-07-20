@@ -4,6 +4,7 @@ namespace app\models\base;
 
 use app\models\Blog;
 use app\models\Comment;
+use yii\db\Expression;
 use Yii;
 
 /**
@@ -13,11 +14,15 @@ use Yii;
  * @property integer $blog_id
  * @property string $name
  * @property string $text
+ * @property integer $enabled
+ * @property string $created_at
+ * @property string $updated_at
+ * @property integer $deleted
  *
  * @property Comment[] $comments
  * @property Blog $blog
  */
-class PostBase extends \yii\db\ActiveRecord
+class PostBase extends \yii\boost\db\ActiveRecord
 {
     /**
      * @inheritdoc
@@ -33,11 +38,16 @@ class PostBase extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['created_at', 'updated_at'], 'default', 'value' => new Expression('CURRENT_TIMESTAMP')],
+            [['enabled', 'deleted'], 'default', 'value' => '0'],
             [['blog_id', 'name', 'text'], 'required'],
-            [['blog_id'], 'integer'],
+            [['blog_id', 'enabled', 'deleted'], 'integer'],
             [['text'], 'string'],
-            [['name'], 'string', 'max' => 255],
+            [['name'], 'string', 'max' => 50],
+            [['blog_id', 'name'], 'unique', 'targetAttribute' => ['blog_id', 'name'], 'message' => 'The combination of Блог and Название has already been taken.'],
             [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
+            [['enabled', 'deleted'], 'boolean'],
+            [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
         ];
     }
 
@@ -47,10 +57,14 @@ class PostBase extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'blog_id' => 'Blog ID',
-            'name' => 'Name',
-            'text' => 'Text',
+            'id' => Yii::t('app', 'ID'),
+            'blog_id' => Yii::t('app', 'Блог'),
+            'name' => Yii::t('app', 'Название'),
+            'text' => Yii::t('app', 'Текст'),
+            'enabled' => Yii::t('app', 'Включено'),
+            'created_at' => Yii::t('app', 'Создано в'),
+            'updated_at' => Yii::t('app', 'Обновлено в'),
+            'deleted' => Yii::t('app', 'Deleted'),
         ];
     }
 
@@ -77,6 +91,22 @@ class PostBase extends \yii\db\ActiveRecord
     public static function find()
     {
         return new \app\models\query\PostQuery(get_called_class());
+    }
+
+    /**
+     * @return string
+     */
+    public function modelLabel()
+    {
+        return Yii::t('app', 'Пост');
+    }
+
+    /**
+     * @return string[]
+     */
+    public function displayField()
+    {
+        return ['blog_id', 'name'];
     }
 
     /**

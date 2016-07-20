@@ -3,16 +3,12 @@
 namespace app\models\query\base;
 
 /**
- * This is the ActiveQuery class for [[\app\models\base\SequenceBase]].
+ * This is the ActiveQuery class for [[\app\models\Sequence]].
  *
  * @see \app\models\Sequence
  */
-class SequenceQueryBase extends \yii\db\ActiveQuery
+class SequenceQueryBase extends \yii\boost\db\ActiveQuery
 {
-    /*public function active()
-    {
-        return $this->andWhere('[[status]]=1');
-    }*/
 
     /**
      * @inheritdoc
@@ -30,5 +26,32 @@ class SequenceQueryBase extends \yii\db\ActiveQuery
     public function one($db = null)
     {
         return parent::one($db);
+    }
+
+    /**
+     * @param integer $id
+     * @return self
+     */
+    public function pk($id)
+    {
+        return $this->andWhere([$this->a('id') => $id]);
+    }
+
+    /**
+     * @param integer $id
+     * @return self
+     */
+    public function id($id)
+    {
+        return $this->andWhere([$this->a('id') => $id]);
+    }
+
+    /**
+     * @param integer $previousId
+     * @return self
+     */
+    public function previousId($previousId)
+    {
+        return $this->andWhere([$this->a('previous_id') => $previousId]);
     }
 }

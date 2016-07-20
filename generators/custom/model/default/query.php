@@ -1,5 +1,7 @@
 <?php
 
+use yii\gii\plus\helpers\Helper;
+
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\custom\model\Generator */
 /* @var $ns string */
@@ -13,12 +15,17 @@
 /* @var $baseQueryName string */
 /* @var $baseQueryClass string */
 
+$uses = [
+    $baseQueryClass
+];
+Helper::sortUses($uses);
+
 echo '<?php', "\n";
 ?>
 
 namespace <?= $queryNs ?>;
 
-use <?= $baseQueryClass ?>;
+use <?= implode(';' . "\n" . 'use ', $uses) ?>;
 
 class <?= $queryName ?> extends <?= $baseQueryName ?>
 

@@ -3,13 +3,13 @@
 namespace yii\gii\plus\generators\base\model;
 
 use yii\base\ErrorException;
+use yii\db\Expression;
 use yii\gii\generators\model\Generator as GiiModelGenerator;
 use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
-use yii\helpers\Inflector;
 use yii\web\JsExpression;
 use yii\helpers\Json;
-use ReflectionClass;
+use yii\db\Schema;
 use Yii;
 
 class Generator extends GiiModelGenerator
@@ -47,15 +47,6 @@ class Generator extends GiiModelGenerator
         if (class_exists('yii\boost\db\ActiveQuery')) {
             $this->queryBaseClass = 'yii\boost\db\ActiveQuery';
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function defaultTemplate()
-    {
-        $class = new ReflectionClass(get_parent_class(__CLASS__));
-        return dirname($class->getFileName()) . '/default';
     }
 
     /**
@@ -125,7 +116,7 @@ class Generator extends GiiModelGenerator
      */
     public function requiredTemplates()
     {
-        return ['model.php', 'query.php'];
+        return ['model.php', 'model-part.php', 'query.php', 'query-part.php'];
     }
 
     /**
@@ -265,7 +256,7 @@ class Generator extends GiiModelGenerator
     /**
      * @var bool
      */
-    protected $relationsDone;
+    protected $relationsDone = false;
 
     /**
      * @inheritdoc
@@ -283,14 +274,77 @@ class Generator extends GiiModelGenerator
     }
 
     /**
-     * @var array
+     * @inheritdoc
      */
-    protected $relationUses;
+    public function generateRules($table)
+    {
+        $defaultExpressions = [];
+        $defaultValues = [];
+        $defaultNullAttributes = [];
+        $booleanAttributes = [];
+        $dateAttributes = [];
+        $timeAttributes = [];
+        $datetimeAttributes = [];
+        foreach ($table->columns as $column) {
+            if (!is_null($column->defaultValue)) {
+                if ($column->defaultValue instanceof Expression) {
+                    $this->relationUses[$table->fullName][] = 'yii\db\Expression';
+                    $defaultExpressions[$column->defaultValue->expression][] = $column->name;
+                } else {
+                    $defaultValues[$column->defaultValue][] = $column->name;
+                }
+            } elseif ($column->allowNull) {
+                $defaultNullAttributes[] = $column->name;
+            }
+            if (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+                $booleanAttributes[] = $column->name;
+            } elseif ($column->type == Schema::TYPE_DATE) {
+                $dateAttributes[] = $column->name;
+            } elseif ($column->type == Schema::TYPE_TIME) {
+                $timeAttributes[] = $column->name;
+            } elseif (in_array($column->type, [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
+                $datetimeAttributes[] = $column->name;
+            }
+        }
+        $rules = [];
+        foreach ($defaultExpressions as $defaultExpression => $attributes) {
+            $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'default\', \'value\' => new Expression(\'' . $defaultExpression . '\')]';
+        }
+        foreach ($defaultValues as $defaultValue => $attributes) {
+            $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'default\', \'value\' => \'' . $defaultValue . '\']';
+        }
+        if (count($defaultNullAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $defaultNullAttributes) . '\'], \'default\', \'value\' => null]';
+        }
+        foreach (parent::generateRules($table) as $rule) {
+            if (!preg_match('~, \'(?:safe|boolean)\'\]$~', $rule)) {
+                $rules[] = $rule;
+            }
+        }
+        if (count($booleanAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $booleanAttributes) . '\'], \'boolean\']';
+        }
+        if (count($dateAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $dateAttributes) . '\'], \'date\', \'format\' => \'php:Y-m-d\']';
+        }
+        if (count($timeAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $timeAttributes) . '\'], \'date\', \'format\' => \'php:H:i:s\']';
+        }
+        if (count($datetimeAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $datetimeAttributes) . '\'], \'date\', \'format\' => \'php:Y-m-d H:i:s\']';
+        }
+        return $rules;
+    }
 
     /**
      * @var array
      */
-    protected $hasManyRelations;
+    protected $relationUses = [];
+
+    /**
+     * @var array
+     */
+    protected $hasManyRelations = [];
 
     /**
      * @inheritdoc
@@ -382,52 +436,54 @@ class Generator extends GiiModelGenerator
     /**
      * @inheritdoc
      */
+    public function getDbConnection()
+    {
+        return parent::getDbConnection();
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function render($template, $params = [])
     {
         $output = parent::render($template, $params);
-        if (array_key_exists('tableName', $params) && !array_key_exists('modelClassName', $params)) {
-            $tableName = $params['tableName'];
-            if (is_array($this->relationUses) && array_key_exists($tableName, $this->relationUses)) {
-                $uses = array_unique($this->relationUses[$tableName]);
-                Helper::sortUses($uses);
-                $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
-            }
-            if (is_array($this->hasManyRelations) && array_key_exists($tableName, $this->hasManyRelations)) {
-                foreach ($this->hasManyRelations[$tableName] as $relationName => $hasManyRelation) {
-                    list ($nsClassName, $className, $foreignKey) = $hasManyRelation;
-                    $code = '
-    /**
-     * @return ' . $className . '
-     */
-    public function new' . Inflector::singularize($relationName) . '()
-    {
-        $model = new ' . $className . ';
-';
-                    foreach ($foreignKey as $key1 => $key2) {
-                        $code .= '        $model->' . $key1 . ' = $this->' . $key2 . ';
-';
-                    }
-                    $code .= '        return $model;
-    }
-';
-                    if (strpos($output, $code) === false) {
-                        $output = preg_replace('~\}(\s*)$~', $code . '}\1', $output);
-                    }
+        switch ($template) {
+            case 'model.php':
+                // fix uses
+                $tableName = $params['tableName'];
+                if (array_key_exists($tableName, $this->relationUses)) {
+                    $uses = array_unique($this->relationUses[$tableName]);
+                    Helper::sortUses($uses);
+                    $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
                 }
-            }
-        }
-        if (array_key_exists('className', $params)) {
-            $nsClassName = $this->ns . '\\' . $params['className'];
-            if (class_exists($nsClassName) && is_subclass_of($nsClassName, 'yii\db\ActiveRecord')) {
-                $model = new $nsClassName;
-                $output = preg_replace_callback('~@return \\\\(yii\\\\db\\\\ActiveQuery)\s+\*/\s+public function ([^\(]+)\(\)~', function ($match) use ($model) {
-                    if (method_exists($model, $match[2])) {
-                        return str_replace($match[1], get_class(call_user_func([$model, $match[2]])), $match[0]);
-                    } else {
-                        return $match[0];
-                    }
-                }, $output);
-            }
+                // fix rules
+                $output = preg_replace('~\'targetClass\' \=\> (\w+)Base\:\:className\(\)~', '\'targetClass\' => \1::className()', $output);
+                // fix relations
+                $nsClassName = $this->ns . '\\' . $params['className'];
+                if (class_exists($nsClassName) && is_subclass_of($nsClassName, 'yii\db\ActiveRecord')) {
+                    $model = new $nsClassName;
+                    $output = preg_replace_callback('~@return \\\\(yii\\\\db\\\\ActiveQuery)\s+\*/\s+public function ([^\(]+)\(\)~', function ($match) use ($model) {
+                        if (method_exists($model, $match[2])) {
+                            return str_replace($match[1], get_class(call_user_func([$model, $match[2]])), $match[0]);
+                        } else {
+                            return $match[0];
+                        }
+                    }, $output);
+                }
+                $params['hasManyRelations'] = $this->hasManyRelations;
+                $output = preg_replace('~\}(\s*)$~', parent::render('model-part.php', $params) . '}\1', $output);
+                break;
+            case 'query.php':
+                $code = <<<CODE
+    /*public function active()
+    {
+        return \$this->andWhere('[[status]]=1');
+    }*/
+
+CODE;
+                $output = str_replace($code, '', $output);
+                $output = preg_replace('~\}(\s*)$~', parent::render('query-part.php', $params) . '}\1', $output);
+                break;
         }
         $output = preg_replace_callback('~(@return |return new )\\\\((?:\w+\\\\)*\w+\\\\query)\\\\base\\\\(\w+Query)Base~', function ($match) {
             $nsClassName = $match[2] . '\\' . $match[3];
@@ -437,7 +493,7 @@ class Generator extends GiiModelGenerator
                 return $match[0];
             }
         }, $output);
-        $output = preg_replace_callback('~(@see |@return )\\\\((?:\w+\\\\)*\w+)\\\\base\\\\(\w+)Base~', function ($match) {
+        $output = preg_replace_callback('~(@see |@return |\[\[)\\\\((?:\w+\\\\)*\w+)\\\\base\\\\(\w+)Base~', function ($match) {
             $nsClassName = $match[2] . '\\' . $match[3];
             if (class_exists($nsClassName)) {
                 return $match[1] . '\\' . $nsClassName;
@@ -445,7 +501,6 @@ class Generator extends GiiModelGenerator
                 return $match[0];
             }
         }, $output);
-        $output = preg_replace('~\'targetClass\' \=\> (\w+)Base\:\:className\(\)~', '\'targetClass\' => \1::className()', $output);
         return $output;
     }
 }
