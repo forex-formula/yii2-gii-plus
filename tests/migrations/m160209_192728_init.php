@@ -54,7 +54,7 @@ class m160209_192728_init extends Migration
             'id' => $this->primaryKey(),
             'previous_id' => $this->integer()->unsigned()->unique(),
             'value' => $this->integer()->unsigned(),
-            'expires_at' => $this->timestamp()->null()
+            'value_expires_at' => $this->timestamp()->null()
         ]);
 
         $this->addForeignKey(null, 'sequence', 'previous_id', 'sequence', 'id');

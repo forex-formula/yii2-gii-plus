@@ -287,19 +287,20 @@ foreach ($tableSchema->columns as $column) {
     public function ' . $methodName . '($' . $attributeArg . ' = true)
     {
 ';
+            $func = ($column->type == Schema::TYPE_DATE) ? 'CURDATE' : 'NOW';
             if ($column->allowNull) {
                 $code .= '        $columnName = $this->a(\'' . $column->name . '\');        
         if ($' . $attributeArg . ') {
-            return $this->andWhere($columnName . \' IS NULL OR \' . $columnName . \' > NOW()\');
+            return $this->andWhere($columnName . \' IS NULL OR \' . $columnName . \' > ' . $func . '()\');
         } else {
-            return $this->andWhere($columnName . \' IS NOT NULL AND \' . $columnName . \' <= NOW()\');
+            return $this->andWhere($columnName . \' IS NOT NULL AND \' . $columnName . \' <= ' . $func . '()\');
         }
 ';
             } else {
                 $code .= '        if ($' . $attributeArg . ') {
-            return $this->andWhere($this->a(\'' . $column->name . '\') . \' > NOW()\');
+            return $this->andWhere($this->a(\'' . $column->name . '\') . \' > ' . $func . '()\');
         } else {
-            return $this->andWhere($this->a(\'' . $column->name . '\') . \' <= NOW()\');
+            return $this->andWhere($this->a(\'' . $column->name . '\') . \' <= ' . $func . '()\');
         }
 ';
             }
