@@ -248,8 +248,7 @@ foreach ($keyAttributes as $attribute) {
 $booleanAttributes = [
     'enabled',
     'active',
-    'activated',
-    'approved'
+    'activated'
 ];
 foreach ($booleanAttributes as $attribute) {
     $column = $tableSchema->getColumn($attribute);
