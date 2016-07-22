@@ -244,16 +244,10 @@ foreach ($keyAttributes as $attribute) {
     }
 }
 
-// enabled
-$booleanAttributes = [
-    'enabled',
-    'active',
-    'activated'
-];
-foreach ($booleanAttributes as $attribute) {
-    $column = $tableSchema->getColumn($attribute);
-    if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
-        $attributeArg = Inflector::variablize($attribute);
+// boolean
+foreach ($tableSchema->columns as $column) {
+    if (($column->name != 'deleted') && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+        $attributeArg = Inflector::variablize($column->name);
         $methodName = $attributeArg;
         if (!in_array($methodName, $methods)) {
             $methods[] = $methodName;
@@ -264,7 +258,7 @@ foreach ($booleanAttributes as $attribute) {
      */
     public function ' . $methodName . '($' . $attributeArg . ' = true)
     {
-        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ' ? 1 : 0]);
+        return $this->andWhere([$this->a(\'' . $column->name . '\') => $' . $attributeArg . ' ? 1 : 0]);
     }
 ';
             echo $code;
