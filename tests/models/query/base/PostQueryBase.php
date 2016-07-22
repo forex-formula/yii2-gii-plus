@@ -54,6 +54,15 @@ class PostQueryBase extends \yii\boost\db\ActiveQuery
 
     /**
      * @param integer $blogId
+     * @return self
+     */
+    public function blogId($blogId)
+    {
+        return $this->andWhere([$this->a('blog_id') => $blogId]);
+    }
+
+    /**
+     * @param integer $blogId
      * @param string $name
      * @return self
      */
@@ -63,15 +72,6 @@ class PostQueryBase extends \yii\boost\db\ActiveQuery
             $this->a('blog_id') => $blogId,
             $this->a('name') => $name
         ]);
-    }
-
-    /**
-     * @param integer $blogId
-     * @return self
-     */
-    public function blogId($blogId)
-    {
-        return $this->andWhere([$this->a('blog_id') => $blogId]);
     }
 
     /**

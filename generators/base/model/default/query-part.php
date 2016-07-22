@@ -113,6 +113,60 @@ if (count($primaryKey)) {
     echo $code;
 }
 
+// foreign keys
+foreach ($tableSchema->foreignKeys as $foreignKey) {
+    unset($foreignKey[0]);
+    $foreignKey = array_keys($foreignKey);
+    $keyAttributes = array_merge($keyAttributes, $foreignKey);
+    if (count($foreignKey) == 1) {
+        $attribute = $foreignKey[0];
+        $attributeArg = Inflector::variablize($attribute);
+        $methodName = $attributeArg;
+        if (!in_array($methodName, $methods)) {
+            $methods[] = $methodName;
+            $code = '
+    /**
+     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
+     * @return self
+     */
+    public function ' . $methodName . '($' . $attributeArg . ')
+    {
+        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
+    }
+';
+            echo $code;
+        }
+    } else {
+        $methodName = Inflector::variablize(implode('_', $foreignKey));
+        if (!in_array($methodName, $methods)) {
+            $methods[] = $methodName;
+            $attributeArgs = [];
+            $code = '
+    /**
+';
+            foreach ($foreignKey as $i => $attribute) {
+                $attributeArgs[$i] = Inflector::variablize($attribute);
+                $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
+';
+            }
+            $code .= '     * @return self
+     */
+    public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
+    {
+        return $this->andWhere([
+';
+            foreach ($foreignKey as $i => $attribute) {
+                $code .= '            $this->a(\'' . $attribute . '\') => $' . $attributeArgs[$i] . (($i < count($foreignKey) - 1) ? ',' : '') . '
+';
+            }
+            $code .= '        ]);
+    }
+';
+            echo $code;
+        }
+    }
+}
+
 // unique indexes
 try {
     $uniqueIndexes = $generator->getDbConnection()->getSchema()->findUniqueIndexes($tableSchema);
@@ -170,61 +224,7 @@ try {
     // do nothing
 }
 
-// foreign keys
-foreach ($tableSchema->foreignKeys as $foreignKey) {
-    unset($foreignKey[0]);
-    $foreignKey = array_keys($foreignKey);
-    $keyAttributes = array_merge($keyAttributes, $foreignKey);
-    if (count($foreignKey) == 1) {
-        $attribute = $foreignKey[0];
-        $attributeArg = Inflector::variablize($attribute);
-        $methodName = $attributeArg;
-        if (!in_array($methodName, $methods)) {
-            $methods[] = $methodName;
-            $code = '
-    /**
-     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
-     * @return self
-     */
-    public function ' . $methodName . '($' . $attributeArg . ')
-    {
-        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
-    }
-';
-            echo $code;
-        }
-    } else {
-        $methodName = Inflector::variablize(implode('_', $foreignKey));
-        if (!in_array($methodName, $methods)) {
-            $methods[] = $methodName;
-            $attributeArgs = [];
-            $code = '
-    /**
-';
-            foreach ($foreignKey as $i => $attribute) {
-                $attributeArgs[$i] = Inflector::variablize($attribute);
-                $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
-';
-            }
-            $code .= '     * @return self
-     */
-    public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
-    {
-        return $this->andWhere([
-';
-            foreach ($foreignKey as $i => $attribute) {
-                $code .= '            $this->a(\'' . $attribute . '\') => $' . $attributeArgs[$i] . (($i < count($foreignKey) - 1) ? ',' : '') . '
-';
-            }
-            $code .= '        ]);
-    }
-';
-            echo $code;
-        }
-    }
-}
-
-// primary/unique/foreign keys
+// primary/foreign/unique keys
 foreach ($keyAttributes as $attribute) {
     $attributeArg = Inflector::variablize($attribute);
     $methodName = $attributeArg;
