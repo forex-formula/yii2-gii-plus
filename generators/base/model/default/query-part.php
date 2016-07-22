@@ -15,7 +15,7 @@ use yii\db\Schema;
 /* @var $relations array */
 /* @var $modelClassName string */
 
-// deleted filter
+// deleted
 $column = $tableSchema->getColumn('deleted');
 if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
     $code = '
@@ -244,7 +244,7 @@ foreach ($keyAttributes as $attribute) {
     }
 }
 
-// boolean filters
+// enabled
 $booleanAttributes = [
     'enabled',
     'active',
@@ -262,10 +262,48 @@ foreach ($booleanAttributes as $attribute) {
      * @param int|bool $' . $attributeArg . '
      * @return self
      */
-    public function ' . $attribute . '($' . $attributeArg . ' = true)
+    public function ' . $methodName . '($' . $attributeArg . ' = true)
     {
         return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ' ? 1 : 0]);
     }
+';
+            echo $code;
+        }
+    }
+}
+
+// expires_at
+foreach ($tableSchema->columns as $column) {
+    if (preg_match('~(?:^|_)expires_at$~', $column->name) && in_array($column->type, [Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
+        $attributeArg = Inflector::variablize(str_replace('expires_at', 'not_expired', $column->name));
+        $methodName = $attributeArg;
+        if (!in_array($methodName, $methods)) {
+            $methods[] = $methodName;
+            $code = '
+    /**
+     * @param bool $' . $attributeArg . '
+     * @return self
+     */
+    public function ' . $methodName . '($' . $attributeArg . ' = true)
+    {
+';
+            if ($column->allowNull) {
+                $code .= '        $columnName = $this->a(\'' . $column->name . '\');        
+        if ($' . $attributeArg . ') {
+            return $this->andWhere($columnName . \' IS NULL OR \' . $columnName . \' > NOW()\');
+        } else {
+            return $this->andWhere($columnName . \' IS NOT NULL AND \' . $columnName . \' <= NOW()\');
+        }
+';
+            } else {
+                $code .= '        if ($' . $attributeArg . ') {
+            return $this->andWhere($this->a(\'' . $column->name . '\') . \' > NOW()\');
+        } else {
+            return $this->andWhere($this->a(\'' . $column->name . '\') . \' <= NOW()\');
+        }
+';
+            }
+            $code .= '    }
 ';
             echo $code;
         }

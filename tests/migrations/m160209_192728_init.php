@@ -54,13 +54,14 @@ class m160209_192728_init extends Migration
             'id' => $this->primaryKey(),
             'previous_id' => $this->integer()->unsigned()->unique(),
             'value' => $this->integer()->unsigned(),
+            'expires_at' => $this->timestamp()->null()
         ]);
 
         $this->addForeignKey(null, 'sequence', 'previous_id', 'sequence', 'id');
 
         $this->createTable('test', [
             'small_id' => $this->smallInteger()->unsigned(),
-            'tiny_id' => $this->tinyInteger()->unsigned(),
+            'tiny_id' => $this->tinyInteger()->unsigned()
         ]);
         $this->addPrimaryKey(null, 'test', ['small_id', 'tiny_id']);
     }

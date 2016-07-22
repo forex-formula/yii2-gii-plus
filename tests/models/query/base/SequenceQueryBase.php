@@ -54,4 +54,17 @@ class SequenceQueryBase extends \yii\boost\db\ActiveQuery
     {
         return $this->andWhere([$this->a('previous_id') => $previousId]);
     }
+
+    /**
+     * @param bool $notExpired
+     * @return self
+     */
+    public function notExpired($notExpired = true)
+    {
+        if ($notExpired) {
+            return $this->andWhere($this->a('expires_at') . ' > NOW()');
+        } else {
+            return $this->andWhere($this->a('expires_at') . ' <= NOW()');
+        }
+    }
 }

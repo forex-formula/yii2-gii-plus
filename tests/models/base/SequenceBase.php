@@ -2,6 +2,7 @@
 
 namespace app\models\base;
 
+use yii\db\Expression;
 use app\models\Sequence;
 use Yii;
 
@@ -11,6 +12,7 @@ use Yii;
  * @property integer $id
  * @property integer $previous_id
  * @property integer $value
+ * @property string $expires_at
  *
  * @property Sequence $previous
  * @property Sequence $sequence
@@ -34,6 +36,8 @@ class SequenceBase extends \yii\boost\db\ActiveRecord
             [['previous_id', 'value'], 'integer'],
             [['previous_id'], 'unique'],
             [['previous_id'], 'exist', 'skipOnError' => true, 'targetClass' => Sequence::className(), 'targetAttribute' => ['previous_id' => 'id']],
+            [['expires_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
+            [['expires_at'], 'default', 'value' => new Expression('CURRENT_TIMESTAMP')],
             [['previous_id', 'value'], 'default', 'value' => null],
         ];
     }
@@ -47,6 +51,7 @@ class SequenceBase extends \yii\boost\db\ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'previous_id' => Yii::t('app', 'Previous ID'),
             'value' => Yii::t('app', 'Value'),
+            'expires_at' => Yii::t('app', 'Expires At'),
         ];
     }
 
