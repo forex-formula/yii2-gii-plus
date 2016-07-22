@@ -31,10 +31,10 @@ class SequenceBase extends \yii\boost\db\ActiveRecord
     public function rules()
     {
         return [
-            [['previous_id', 'value'], 'default', 'value' => null],
             [['previous_id', 'value'], 'integer'],
             [['previous_id'], 'unique'],
             [['previous_id'], 'exist', 'skipOnError' => true, 'targetClass' => Sequence::className(), 'targetAttribute' => ['previous_id' => 'id']],
+            [['previous_id', 'value'], 'default', 'value' => null],
         ];
     }
 

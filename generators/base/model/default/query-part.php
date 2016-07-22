@@ -133,6 +133,7 @@ try {
         return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
     }
 ';
+            echo $code;
         } else {
             $methodName = Inflector::variablize(implode('_', $uniqueKey));
             $methods[] = $methodName;
@@ -158,8 +159,8 @@ try {
             $code .= '        ]);
     }
 ';
+            echo $code;
         }
-        echo $code;
     }
 } catch (NotSupportedException $e) {
     // do nothing
@@ -186,7 +187,12 @@ foreach ($keyAttributes as $attribute) {
 }
 
 // enabled filters
-$enabledAttributes = ['enabled', 'active', 'activated', 'approved'];
+$enabledAttributes = [
+    'enabled',
+    'active',
+    'activated',
+    'approved'
+];
 foreach ($enabledAttributes as $attribute) {
     $column = $tableSchema->getColumn($attribute);
     if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
