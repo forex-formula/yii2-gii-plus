@@ -53,6 +53,61 @@ class CommentQueryBase extends \yii\boost\db\ActiveQuery
     }
 
     /**
+     * @param integer $blogId
+     * @return self
+     */
+    public function blogId($blogId)
+    {
+        return $this->andWhere([$this->a('blog_id') => $blogId]);
+    }
+
+    /**
+     * @param integer $parentId
+     * @param integer $blogId
+     * @param integer $postId
+     * @return self
+     */
+    public function parentIdBlogIdPostId($parentId, $blogId, $postId)
+    {
+        return $this->andWhere([
+            $this->a('parent_id') => $parentId,
+            $this->a('blog_id') => $blogId,
+            $this->a('post_id') => $postId
+        ]);
+    }
+
+    /**
+     * @param integer $postId
+     * @param integer $blogId
+     * @return self
+     */
+    public function postIdBlogId($postId, $blogId)
+    {
+        return $this->andWhere([
+            $this->a('post_id') => $postId,
+            $this->a('blog_id') => $blogId
+        ]);
+    }
+
+    /**
+     * @param integer $parentId
+     * @return self
+     */
+    public function parentId($parentId)
+    {
+        return $this->andWhere([$this->a('parent_id') => $parentId]);
+    }
+
+    /**
+     * @param integer $postId
+     * @return self
+     */
+    public function postId($postId)
+    {
+        return $this->andWhere([$this->a('post_id') => $postId]);
+    }
+
+    /**
      * @param int|bool $enabled
      * @return self
      */

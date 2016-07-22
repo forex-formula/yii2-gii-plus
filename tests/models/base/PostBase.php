@@ -38,8 +38,6 @@ class PostBase extends \yii\boost\db\ActiveRecord
     public function rules()
     {
         return [
-            [['created_at', 'updated_at'], 'default', 'value' => new Expression('CURRENT_TIMESTAMP')],
-            [['enabled', 'deleted'], 'default', 'value' => '0'],
             [['blog_id', 'name', 'text'], 'required'],
             [['blog_id', 'enabled', 'deleted'], 'integer'],
             [['text'], 'string'],
@@ -48,6 +46,8 @@ class PostBase extends \yii\boost\db\ActiveRecord
             [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
             [['enabled', 'deleted'], 'boolean'],
             [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
+            [['created_at', 'updated_at'], 'default', 'value' => new Expression('CURRENT_TIMESTAMP')],
+            [['enabled', 'deleted'], 'default', 'value' => '0'],
         ];
     }
 

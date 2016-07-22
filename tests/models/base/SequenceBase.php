@@ -11,6 +11,7 @@ use Yii;
  * @property integer $id
  * @property integer $previous_id
  * @property integer $value
+ * @property string $value_expires_at
  *
  * @property Sequence $previous
  * @property Sequence $sequence
@@ -31,10 +32,11 @@ class SequenceBase extends \yii\boost\db\ActiveRecord
     public function rules()
     {
         return [
-            [['previous_id', 'value'], 'default', 'value' => null],
             [['previous_id', 'value'], 'integer'],
             [['previous_id'], 'unique'],
             [['previous_id'], 'exist', 'skipOnError' => true, 'targetClass' => Sequence::className(), 'targetAttribute' => ['previous_id' => 'id']],
+            [['value_expires_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
+            [['previous_id', 'value', 'value_expires_at'], 'default', 'value' => null],
         ];
     }
 
@@ -47,6 +49,7 @@ class SequenceBase extends \yii\boost\db\ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'previous_id' => Yii::t('app', 'Previous ID'),
             'value' => Yii::t('app', 'Value'),
+            'value_expires_at' => Yii::t('app', 'Value Expires At'),
         ];
     }
 
