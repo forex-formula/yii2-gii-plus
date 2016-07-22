@@ -122,8 +122,9 @@ try {
             $attribute = $uniqueKey[0];
             $attributeArg = Inflector::variablize($attribute);
             $methodName = $attributeArg;
-            $methods[] = $methodName;
-            $code = '
+            if (!in_array($methodName, $methods)) {
+                $methods[] = $methodName;
+                $code = '
     /**
      * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
      * @return self
@@ -133,33 +134,36 @@ try {
         return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
     }
 ';
-            echo $code;
+                echo $code;
+            }
         } else {
             $methodName = Inflector::variablize(implode('_', $uniqueKey));
-            $methods[] = $methodName;
-            $attributeArgs = [];
-            $code = '
+            if (!in_array($methodName, $methods)) {
+                $methods[] = $methodName;
+                $attributeArgs = [];
+                $code = '
     /**
 ';
-            foreach ($uniqueKey as $i => $attribute) {
-                $attributeArgs[$i] = Inflector::variablize($attribute);
-                $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
+                foreach ($uniqueKey as $i => $attribute) {
+                    $attributeArgs[$i] = Inflector::variablize($attribute);
+                    $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
 ';
-            }
-            $code .= '     * @return self
+                }
+                $code .= '     * @return self
      */
     public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
     {
         return $this->andWhere([
 ';
-            foreach ($uniqueKey as $i => $attribute) {
-                $code .= '            $this->a(\'' . $attribute . '\') => $' . $attributeArgs[$i] . (($i < count($uniqueKey) - 1) ? ',' : '') . '
+                foreach ($uniqueKey as $i => $attribute) {
+                    $code .= '            $this->a(\'' . $attribute . '\') => $' . $attributeArgs[$i] . (($i < count($uniqueKey) - 1) ? ',' : '') . '
 ';
-            }
-            $code .= '        ]);
+                }
+                $code .= '        ]);
     }
 ';
-            echo $code;
+                echo $code;
+            }
         }
     }
 } catch (NotSupportedException $e) {
