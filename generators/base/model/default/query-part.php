@@ -244,14 +244,14 @@ foreach ($keyAttributes as $attribute) {
     }
 }
 
-// enabled filters
-$enabledAttributes = [
+// boolean filters
+$booleanAttributes = [
     'enabled',
     'active',
     'activated',
     'approved'
 ];
-foreach ($enabledAttributes as $attribute) {
+foreach ($booleanAttributes as $attribute) {
     $column = $tableSchema->getColumn($attribute);
     if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
         $attributeArg = Inflector::variablize($attribute);
