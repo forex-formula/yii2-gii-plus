@@ -62,7 +62,7 @@ class TestBase extends \yii\boost\db\ActiveRecord
     /**
      * @return string[]
      */
-    public function displayField()
+    public static function displayField()
     {
         return ['small_id', 'tiny_id'];
     }

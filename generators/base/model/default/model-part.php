@@ -67,7 +67,7 @@ if (count($displayField)) {
     /**
      * @return string[]
      */
-    public function displayField()
+    public static function displayField()
     {
         return [\'' . implode('\', \'', $displayField) . '\'];
     }

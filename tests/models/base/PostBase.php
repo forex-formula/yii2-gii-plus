@@ -104,7 +104,7 @@ class PostBase extends \yii\boost\db\ActiveRecord
     /**
      * @return string[]
      */
-    public function displayField()
+    public static function displayField()
     {
         return ['blog_id', 'name'];
     }
