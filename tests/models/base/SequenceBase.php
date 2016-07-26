@@ -32,10 +32,10 @@ class SequenceBase extends \yii\boost\db\ActiveRecord
     public function rules()
     {
         return [
-            [['previous_id', 'value'], 'integer'],
+            [['previous_id', 'value'], 'integer', 'min' => 0],
+            [['value_expires_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['previous_id'], 'unique'],
             [['previous_id'], 'exist', 'skipOnError' => true, 'targetClass' => Sequence::className(), 'targetAttribute' => ['previous_id' => 'id']],
-            [['value_expires_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['previous_id', 'value', 'value_expires_at'], 'default', 'value' => null],
         ];
     }

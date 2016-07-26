@@ -31,7 +31,7 @@ class CommentQueryBase extends \yii\boost\db\ActiveQuery
     public function init()
     {
         parent::init();
-        $this->andWhere([$this->a('deleted') => 0]);
+        $this->where([$this->a('deleted') => 0]);
     }
 
     /**

@@ -22,7 +22,7 @@ if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALL
     public function init()
     {
         parent::init();
-        $this->andWhere([$this->a(\'' . $column->name . '\') => 0]);
+        $this->where([$this->a(\'' . $column->name . '\') => 0]);
     }
 ';
     echo $code;

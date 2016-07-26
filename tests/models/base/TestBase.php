@@ -26,8 +26,8 @@ class TestBase extends \yii\boost\db\ActiveRecord
     public function rules()
     {
         return [
+            [['small_id', 'tiny_id'], 'integer', 'min' => 0],
             [['small_id', 'tiny_id'], 'required'],
-            [['small_id', 'tiny_id'], 'integer'],
         ];
     }
 
