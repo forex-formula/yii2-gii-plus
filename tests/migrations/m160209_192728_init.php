@@ -53,7 +53,7 @@ class m160209_192728_init extends Migration
         $this->createTable('sequence', [
             'id' => $this->primaryKey(),
             'previous_id' => $this->integer()->unsigned()->unique(),
-            'value' => $this->integer()->unsigned(),
+            'value' => $this->double()->unsigned(),
             'value_expires_at' => $this->timestamp()->null()
         ]);
 

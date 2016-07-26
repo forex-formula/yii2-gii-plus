@@ -281,6 +281,8 @@ class Generator extends GiiModelGenerator
         $booleanAttributes = [];
         $integerAttributes = [];
         $uIntegerAttributes = [];
+        $numberAttributes = [];
+        $uNumberAttributes = [];
         $dateAttributes = [];
         $timeAttributes = [];
         $datetimeAttributes = [];
@@ -298,6 +300,12 @@ class Generator extends GiiModelGenerator
                     $uIntegerAttributes[] = $column->name;
                 } else {
                     $integerAttributes[] = $column->name;
+                }
+            } elseif (in_array($column->type, [Schema::TYPE_FLOAT, Schema::TYPE_DOUBLE, Schema::TYPE_DECIMAL, Schema::TYPE_MONEY])) {
+                if ($column->unsigned) {
+                    $uNumberAttributes[] = $column->name;
+                } else {
+                    $numberAttributes[] = $column->name;
                 }
             } elseif ($column->type == Schema::TYPE_DATE) {
                 $dateAttributes[] = $column->name;
@@ -327,6 +335,12 @@ class Generator extends GiiModelGenerator
         if (count($uIntegerAttributes)) {
             $rules[] = '[[\'' . implode('\', \'', $uIntegerAttributes) . '\'], \'integer\', \'min\' => 0]';
         }
+        if (count($numberAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $numberAttributes) . '\'], \'number\']';
+        }
+        if (count($uNumberAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $uNumberAttributes) . '\'], \'number\', \'min\' => 0]';
+        }
         if (count($dateAttributes)) {
             $rules[] = '[[\'' . implode('\', \'', $dateAttributes) . '\'], \'date\', \'format\' => \'php:Y-m-d\']';
         }
@@ -337,7 +351,7 @@ class Generator extends GiiModelGenerator
             $rules[] = '[[\'' . implode('\', \'', $datetimeAttributes) . '\'], \'date\', \'format\' => \'php:Y-m-d H:i:s\']';
         }
         foreach (parent::generateRules($table) as $rule) {
-            if (!preg_match('~, \'(?:safe|boolean|integer)\'\]$~', $rule)) {
+            if (!preg_match('~, \'(?:safe|boolean|integer|number)\'\]$~', $rule)) {
                 $rules[] = $rule;
             }
         }
