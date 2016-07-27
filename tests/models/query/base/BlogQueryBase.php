@@ -53,6 +53,15 @@ class BlogQueryBase extends \yii\boost\db\ActiveQuery
     }
 
     /**
+     * @param integer $blogTypeId
+     * @return self
+     */
+    public function blogTypeId($blogTypeId)
+    {
+        return $this->andWhere([$this->a('blog_type_id') => $blogTypeId]);
+    }
+
+    /**
      * @param string $name
      * @return self
      */

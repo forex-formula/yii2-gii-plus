@@ -386,7 +386,8 @@ class Generator extends GiiModelGenerator
         $this->relationUses = [];
         $this->hasManyRelations = [];
         $modelClassTableNameMap = Helper::getModelClassTableNameMap();
-        foreach (parent::generateRelations() as $tableName => $tableRelations) {
+        $generatedRelations = parent::generateRelations();
+        foreach ($generatedRelations as $tableName => $tableRelations) {
             $relations[$tableName] = [];
             $this->relationUses[$tableName] = ['Yii'];
             $this->hasManyRelations[$tableName] = [];
@@ -402,6 +403,26 @@ class Generator extends GiiModelGenerator
                             if ($foreignKey[0] == $tableName) {
                                 unset($foreignKey[0]);
                                 $this->hasManyRelations[$tableName][$relationName] = [$nsClassName, $className, $foreignKey];
+                            }
+                        }
+                    }
+                    //
+                    if (!$hasMany && ($relationName != $className)) {
+                        $subTableName = $nsClassName::getTableSchema()->fullName;
+                        foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
+                            list ($subCode, $subClassName, $subHasMany) = $subRelation;
+                            $subNsClassName = array_search(array_search($subClassName, $this->classNames), $modelClassTableNameMap);
+                            if (($subNsClassName !== false) && class_exists($subNsClassName)) {
+                                if (!$subHasMany && ($subRelationName != $subClassName) && ($subRelationName != $className)) {
+
+                                    if (!array_key_exists($subRelationName, $generatedRelations[$tableName])) {
+
+$relations[$tableName][$subRelationName] = [$subCode, $subClassName, $subHasMany];
+$this->relationUses[$tableName][] = $subNsClassName;
+
+                                    }
+
+                                }
                             }
                         }
                     }

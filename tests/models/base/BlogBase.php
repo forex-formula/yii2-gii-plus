@@ -2,6 +2,7 @@
 
 namespace app\models\base;
 
+use app\models\BlogType;
 use app\models\Comment;
 use yii\db\Expression;
 use app\models\Post;
@@ -11,12 +12,14 @@ use Yii;
  * This is the model class for table "blog".
  *
  * @property integer $id
+ * @property integer $blog_type_id
  * @property string $name
  * @property integer $enabled
  * @property string $created_at
  * @property string $updated_at
  * @property integer $deleted
  *
+ * @property BlogType $blogType
  * @property Comment[] $comments
  * @property Post[] $posts
  */
@@ -37,10 +40,12 @@ class BlogBase extends \yii\boost\db\ActiveRecord
     {
         return [
             [['enabled', 'deleted'], 'boolean'],
+            [['blog_type_id'], 'integer', 'min' => 0],
             [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
-            [['name'], 'required'],
+            [['blog_type_id', 'name'], 'required'],
             [['name'], 'string', 'max' => 50],
             [['name'], 'unique'],
+            [['blog_type_id'], 'exist', 'skipOnError' => true, 'targetClass' => BlogType::className(), 'targetAttribute' => ['blog_type_id' => 'id']],
             [['created_at', 'updated_at'], 'default', 'value' => new Expression('CURRENT_TIMESTAMP')],
             [['enabled', 'deleted'], 'default', 'value' => '0'],
         ];
@@ -53,12 +58,21 @@ class BlogBase extends \yii\boost\db\ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
+            'blog_type_id' => Yii::t('app', 'Тип блога'),
             'name' => Yii::t('app', 'Название'),
             'enabled' => Yii::t('app', 'Включено'),
             'created_at' => Yii::t('app', 'Создано в'),
             'updated_at' => Yii::t('app', 'Обновлено в'),
             'deleted' => Yii::t('app', 'Deleted'),
         ];
+    }
+
+    /**
+     * @return \app\models\query\BlogTypeQuery
+     */
+    public function getBlogType()
+    {
+        return $this->hasOne(BlogType::className(), ['id' => 'blog_type_id']);
     }
 
     /**

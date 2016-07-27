@@ -7,14 +7,22 @@ class m160209_192728_init extends Migration
 
     public function up()
     {
+        $this->createTableWithComment('blog_type', [
+            'id' => $this->primaryKey(),
+            'name' => $this->string(50)->notNull()->comment('Название')->unique(),
+        ], 'Тип блога');
+
         $this->createTableWithComment('blog', [
             'id' => $this->primaryKey(),
+            'blog_type_id' => $this->integer()->unsigned()->notNull()->comment('Тип блога'),
             'name' => $this->string(50)->notNull()->comment('Название')->unique(),
             'enabled' => $this->enabledShortcut()->comment('Включено'),
             'created_at' => $this->createdAtShortcut()->comment('Создано в'),
             'updated_at' => $this->updatedAtShortcut()->comment('Обновлено в'),
             'deleted' => $this->deletedShortcut()
         ], 'Блог');
+
+        $this->addForeignKey(null, 'blog', 'blog_type_id', 'blog_type', 'id');
 
         $this->createTableWithComment('post', [
             'id' => $this->primaryKey(),
