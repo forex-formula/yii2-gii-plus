@@ -3,6 +3,7 @@
 namespace app\models\base;
 
 use app\models\Blog;
+use app\models\BlogType;
 use app\models\Comment;
 use yii\db\Expression;
 use app\models\Post;
@@ -22,6 +23,7 @@ use Yii;
  * @property integer $deleted
  *
  * @property Blog $blog
+ * @property BlogType $blogType
  * @property Comment $parent
  * @property Comment[] $comments
  * @property Post $post
@@ -80,6 +82,15 @@ class CommentBase extends \yii\boost\db\ActiveRecord
     public function getBlog()
     {
         return $this->hasOne(Blog::className(), ['id' => 'blog_id']);
+    }
+
+    /**
+     * @return \app\models\query\BlogTypeQuery
+     */
+    public function getBlogType()
+    {
+        return $this->hasOne(BlogType::className(), ['id' => 'blog_type_id'])
+            ->viaTable('blog via_blog', ['blog_id' => 'id']);
     }
 
     /**

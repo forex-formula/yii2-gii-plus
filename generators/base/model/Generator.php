@@ -406,22 +406,28 @@ class Generator extends GiiModelGenerator
                             }
                         }
                     }
-                    //
-                    if (!$hasMany && ($relationName != $className)) {
+                    // via relations
+                    if (!$hasMany) {
                         $subTableName = $nsClassName::getTableSchema()->fullName;
-                        foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
-                            list ($subCode, $subClassName, $subHasMany) = $subRelation;
-                            $subNsClassName = array_search(array_search($subClassName, $this->classNames), $modelClassTableNameMap);
-                            if (($subNsClassName !== false) && class_exists($subNsClassName)) {
-                                if (!$subHasMany && ($subRelationName != $subClassName) && ($subRelationName != $className)) {
-
-                                    if (!array_key_exists($subRelationName, $generatedRelations[$tableName])) {
-
-$relations[$tableName][$subRelationName] = [$subCode, $subClassName, $subHasMany];
-$this->relationUses[$tableName][] = $subNsClassName;
-
+                        if ($tableName != $subTableName) {
+                            $viaLink = '';
+                            foreach ($this->getDbConnection()->getTableSchema($tableName)->foreignKeys as $foreignKey) {
+                                if ($foreignKey[0] == $subTableName) {
+                                    unset($foreignKey[0]);
+                                    $viaLink = $this->generateRelationLink($foreignKey);
+                                }
+                            }
+                            foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
+                                list ($subCode, $subClassName, $subHasMany) = $subRelation;
+                                $subNsClassName = array_search(array_search($subClassName, $this->classNames), $modelClassTableNameMap);
+                                if (($subNsClassName !== false) && class_exists($subNsClassName)) {
+                                    if (!$subHasMany && ($subRelationName != $className)) {
+                                        if (!array_key_exists($subRelationName, $generatedRelations[$tableName])) {
+                                            $subCode = preg_replace('~;$~', "\n" . '            ->viaTable(\'' . $subTableName . ' via_' . $subTableName . '\', ' . $viaLink . ');', $subCode);
+                                            $relations[$tableName][$subRelationName] = [$subCode, $subClassName, $subHasMany];
+                                            $this->relationUses[$tableName][] = $subNsClassName;
+                                        }
                                     }
-
                                 }
                             }
                         }
