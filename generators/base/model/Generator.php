@@ -382,12 +382,14 @@ class Generator extends GiiModelGenerator
      */
     protected function generateRelations()
     {
+        $db = $this->getDbConnection();
         $relations = [];
         $this->relationUses = [];
         $this->hasManyRelations = [];
         $modelClassTableNameMap = Helper::getModelClassTableNameMap();
         $generatedRelations = parent::generateRelations();
         foreach ($generatedRelations as $tableName => $tableRelations) {
+            $tableSchema = $db->getTableSchema($tableName);
             $relations[$tableName] = [];
             $this->relationUses[$tableName] = ['Yii'];
             $this->hasManyRelations[$tableName] = [];
@@ -403,6 +405,7 @@ class Generator extends GiiModelGenerator
                             if ($foreignKey[0] == $tableName) {
                                 unset($foreignKey[0]);
                                 $this->hasManyRelations[$tableName][$relationName] = [$nsClassName, $className, $foreignKey];
+                                break;
                             }
                         }
                     }
@@ -410,11 +413,12 @@ class Generator extends GiiModelGenerator
                     if (!$hasMany) {
                         $subTableName = $nsClassName::getTableSchema()->fullName;
                         if ($tableName != $subTableName) {
-                            $viaLink = '';
-                            foreach ($this->getDbConnection()->getTableSchema($tableName)->foreignKeys as $foreignKey) {
+                            $viaLink = '[]';
+                            foreach ($tableSchema->foreignKeys as $foreignKey) {
                                 if ($foreignKey[0] == $subTableName) {
                                     unset($foreignKey[0]);
                                     $viaLink = $this->generateRelationLink($foreignKey);
+                                    break;
                                 }
                             }
                             foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
