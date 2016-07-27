@@ -31,7 +31,7 @@ class BlogQueryBase extends \yii\boost\db\ActiveQuery
     public function init()
     {
         parent::init();
-        $this->andWhere([$this->a('deleted') => 0]);
+        $this->where(new \yii\boost\db\Expression('{a}.deleted = 0', [], ['query' => $this]));
     }
 
     /**
@@ -50,6 +50,15 @@ class BlogQueryBase extends \yii\boost\db\ActiveQuery
     public function id($id)
     {
         return $this->andWhere([$this->a('id') => $id]);
+    }
+
+    /**
+     * @param integer $blogTypeId
+     * @return self
+     */
+    public function blogTypeId($blogTypeId)
+    {
+        return $this->andWhere([$this->a('blog_type_id') => $blogTypeId]);
     }
 
     /**

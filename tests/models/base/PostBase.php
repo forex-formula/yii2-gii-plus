@@ -3,6 +3,7 @@
 namespace app\models\base;
 
 use app\models\Blog;
+use app\models\BlogType;
 use app\models\Comment;
 use yii\db\Expression;
 use Yii;
@@ -21,6 +22,7 @@ use Yii;
  *
  * @property Comment[] $comments
  * @property Blog $blog
+ * @property BlogType $blogType
  */
 class PostBase extends \yii\boost\db\ActiveRecord
 {
@@ -38,14 +40,14 @@ class PostBase extends \yii\boost\db\ActiveRecord
     public function rules()
     {
         return [
+            [['enabled', 'deleted'], 'boolean'],
+            [['blog_id'], 'integer', 'min' => 0],
+            [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['blog_id', 'name', 'text'], 'required'],
-            [['blog_id', 'enabled', 'deleted'], 'integer'],
             [['text'], 'string'],
             [['name'], 'string', 'max' => 50],
             [['blog_id', 'name'], 'unique', 'targetAttribute' => ['blog_id', 'name'], 'message' => 'The combination of Блог and Название has already been taken.'],
             [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
-            [['enabled', 'deleted'], 'boolean'],
-            [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['created_at', 'updated_at'], 'default', 'value' => new Expression('CURRENT_TIMESTAMP')],
             [['enabled', 'deleted'], 'default', 'value' => '0'],
         ];
@@ -85,6 +87,15 @@ class PostBase extends \yii\boost\db\ActiveRecord
     }
 
     /**
+     * @return \app\models\query\BlogTypeQuery
+     */
+    public function getBlogType()
+    {
+        return $this->hasOne(BlogType::className(), ['id' => 'blog_type_id'])
+            ->viaTable('blog via_blog', ['blog_id' => 'id']);
+    }
+
+    /**
      * @inheritdoc
      * @return \app\models\query\PostQuery the active query used by this AR class.
      */
@@ -104,7 +115,7 @@ class PostBase extends \yii\boost\db\ActiveRecord
     /**
      * @return string[]
      */
-    public function displayField()
+    public static function displayField()
     {
         return ['blog_id', 'name'];
     }

@@ -279,6 +279,10 @@ class Generator extends GiiModelGenerator
     public function generateRules($table)
     {
         $booleanAttributes = [];
+        $integerAttributes = [];
+        $uIntegerAttributes = [];
+        $numberAttributes = [];
+        $uNumberAttributes = [];
         $dateAttributes = [];
         $timeAttributes = [];
         $datetimeAttributes = [];
@@ -286,8 +290,23 @@ class Generator extends GiiModelGenerator
         $defaultValues = [];
         $defaultNullAttributes = [];
         foreach ($table->columns as $column) {
+            if ($column->autoIncrement) {
+                continue;
+            }
             if (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
                 $booleanAttributes[] = $column->name;
+            } elseif (in_array($column->type, [Schema::TYPE_SMALLINT, Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
+                if ($column->unsigned) {
+                    $uIntegerAttributes[] = $column->name;
+                } else {
+                    $integerAttributes[] = $column->name;
+                }
+            } elseif (in_array($column->type, [Schema::TYPE_FLOAT, Schema::TYPE_DOUBLE, Schema::TYPE_DECIMAL, Schema::TYPE_MONEY])) {
+                if ($column->unsigned) {
+                    $uNumberAttributes[] = $column->name;
+                } else {
+                    $numberAttributes[] = $column->name;
+                }
             } elseif ($column->type == Schema::TYPE_DATE) {
                 $dateAttributes[] = $column->name;
             } elseif ($column->type == Schema::TYPE_TIME) {
@@ -307,13 +326,20 @@ class Generator extends GiiModelGenerator
             }
         }
         $rules = [];
-        foreach (parent::generateRules($table) as $rule) {
-            if (!preg_match('~, \'(?:safe|boolean)\'\]$~', $rule)) {
-                $rules[] = $rule;
-            }
-        }
         if (count($booleanAttributes)) {
             $rules[] = '[[\'' . implode('\', \'', $booleanAttributes) . '\'], \'boolean\']';
+        }
+        if (count($integerAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $integerAttributes) . '\'], \'integer\']';
+        }
+        if (count($uIntegerAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $uIntegerAttributes) . '\'], \'integer\', \'min\' => 0]';
+        }
+        if (count($numberAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $numberAttributes) . '\'], \'number\']';
+        }
+        if (count($uNumberAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $uNumberAttributes) . '\'], \'number\', \'min\' => 0]';
         }
         if (count($dateAttributes)) {
             $rules[] = '[[\'' . implode('\', \'', $dateAttributes) . '\'], \'date\', \'format\' => \'php:Y-m-d\']';
@@ -323,6 +349,11 @@ class Generator extends GiiModelGenerator
         }
         if (count($datetimeAttributes)) {
             $rules[] = '[[\'' . implode('\', \'', $datetimeAttributes) . '\'], \'date\', \'format\' => \'php:Y-m-d H:i:s\']';
+        }
+        foreach (parent::generateRules($table) as $rule) {
+            if (!preg_match('~, \'(?:safe|boolean|integer|number)\'\]$~', $rule)) {
+                $rules[] = $rule;
+            }
         }
         foreach ($defaultExpressions as $defaultExpression => $attributes) {
             $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'default\', \'value\' => new Expression(\'' . $defaultExpression . '\')]';
@@ -351,11 +382,14 @@ class Generator extends GiiModelGenerator
      */
     protected function generateRelations()
     {
+        $db = $this->getDbConnection();
         $relations = [];
         $this->relationUses = [];
         $this->hasManyRelations = [];
         $modelClassTableNameMap = Helper::getModelClassTableNameMap();
-        foreach (parent::generateRelations() as $tableName => $tableRelations) {
+        $generatedRelations = parent::generateRelations();
+        foreach ($generatedRelations as $tableName => $tableRelations) {
+            $tableSchema = $db->getTableSchema($tableName);
             $relations[$tableName] = [];
             $this->relationUses[$tableName] = ['Yii'];
             $this->hasManyRelations[$tableName] = [];
@@ -371,6 +405,34 @@ class Generator extends GiiModelGenerator
                             if ($foreignKey[0] == $tableName) {
                                 unset($foreignKey[0]);
                                 $this->hasManyRelations[$tableName][$relationName] = [$nsClassName, $className, $foreignKey];
+                                break;
+                            }
+                        }
+                    }
+                    // via relations
+                    if (!$hasMany) {
+                        $subTableName = $nsClassName::getTableSchema()->fullName;
+                        if ($tableName != $subTableName) {
+                            $viaLink = '[]';
+                            foreach ($tableSchema->foreignKeys as $foreignKey) {
+                                if ($foreignKey[0] == $subTableName) {
+                                    unset($foreignKey[0]);
+                                    $viaLink = $this->generateRelationLink($foreignKey);
+                                    break;
+                                }
+                            }
+                            foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
+                                list ($subCode, $subClassName, $subHasMany) = $subRelation;
+                                $subNsClassName = array_search(array_search($subClassName, $this->classNames), $modelClassTableNameMap);
+                                if (($subNsClassName !== false) && class_exists($subNsClassName)) {
+                                    if (!$subHasMany && ($subRelationName != $className)) {
+                                        if (!array_key_exists($subRelationName, $generatedRelations[$tableName])) {
+                                            $subCode = preg_replace('~;$~', "\n" . '            ->viaTable(\'' . $subTableName . ' via_' . $subTableName . '\', ' . $viaLink . ');', $subCode);
+                                            $relations[$tableName][$subRelationName] = [$subCode, $subClassName, $subHasMany];
+                                            $this->relationUses[$tableName][] = $subNsClassName;
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

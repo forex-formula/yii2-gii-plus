@@ -26,8 +26,8 @@ class TestBase extends \yii\boost\db\ActiveRecord
     public function rules()
     {
         return [
+            [['small_id', 'tiny_id'], 'integer', 'min' => 0],
             [['small_id', 'tiny_id'], 'required'],
-            [['small_id', 'tiny_id'], 'integer'],
         ];
     }
 
@@ -62,7 +62,7 @@ class TestBase extends \yii\boost\db\ActiveRecord
     /**
      * @return string[]
      */
-    public function displayField()
+    public static function displayField()
     {
         return ['small_id', 'tiny_id'];
     }

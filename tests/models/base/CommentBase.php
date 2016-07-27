@@ -3,6 +3,7 @@
 namespace app\models\base;
 
 use app\models\Blog;
+use app\models\BlogType;
 use app\models\Comment;
 use yii\db\Expression;
 use app\models\Post;
@@ -22,6 +23,7 @@ use Yii;
  * @property integer $deleted
  *
  * @property Blog $blog
+ * @property BlogType $blogType
  * @property Comment $parent
  * @property Comment[] $comments
  * @property Post $post
@@ -42,14 +44,14 @@ class CommentBase extends \yii\boost\db\ActiveRecord
     public function rules()
     {
         return [
+            [['enabled', 'deleted'], 'boolean'],
+            [['blog_id', 'post_id', 'parent_id'], 'integer', 'min' => 0],
+            [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['blog_id', 'post_id', 'text'], 'required'],
-            [['blog_id', 'post_id', 'parent_id', 'enabled', 'deleted'], 'integer'],
             [['text'], 'string'],
             [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
             [['parent_id', 'blog_id', 'post_id'], 'exist', 'skipOnError' => true, 'targetClass' => Comment::className(), 'targetAttribute' => ['parent_id' => 'id', 'blog_id' => 'blog_id', 'post_id' => 'post_id']],
             [['post_id', 'blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Post::className(), 'targetAttribute' => ['post_id' => 'id', 'blog_id' => 'blog_id']],
-            [['enabled', 'deleted'], 'boolean'],
-            [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['created_at', 'updated_at'], 'default', 'value' => new Expression('CURRENT_TIMESTAMP')],
             [['enabled', 'deleted'], 'default', 'value' => '0'],
             [['parent_id'], 'default', 'value' => null],
@@ -80,6 +82,15 @@ class CommentBase extends \yii\boost\db\ActiveRecord
     public function getBlog()
     {
         return $this->hasOne(Blog::className(), ['id' => 'blog_id']);
+    }
+
+    /**
+     * @return \app\models\query\BlogTypeQuery
+     */
+    public function getBlogType()
+    {
+        return $this->hasOne(BlogType::className(), ['id' => 'blog_type_id'])
+            ->viaTable('blog via_blog', ['blog_id' => 'id']);
     }
 
     /**
@@ -126,7 +137,7 @@ class CommentBase extends \yii\boost\db\ActiveRecord
     /**
      * @return string[]
      */
-    public function displayField()
+    public static function displayField()
     {
         return ['id'];
     }
