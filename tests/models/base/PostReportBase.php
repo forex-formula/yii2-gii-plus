@@ -2,6 +2,8 @@
 
 namespace app\models\base;
 
+use app\models\Blog;
+use app\models\BlogType;
 use Yii;
 
 /**
@@ -15,6 +17,9 @@ use Yii;
  * @property string $created_at
  * @property string $updated_at
  * @property integer $deleted
+ *
+ * @property Blog $blog
+ * @property BlogType $blogType
  */
 class PostReportBase extends \yii\boost\db\ActiveRecord
 {
@@ -38,6 +43,7 @@ class PostReportBase extends \yii\boost\db\ActiveRecord
             [['blog_id', 'name', 'text'], 'required'],
             [['text'], 'string'],
             [['name'], 'string', 'max' => 50],
+            [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
             [['id', 'enabled', 'deleted'], 'default', 'value' => '0'],
             [['created_at', 'updated_at'], 'default', 'value' => '0000-00-00 00:00:00'],
         ];
@@ -58,6 +64,23 @@ class PostReportBase extends \yii\boost\db\ActiveRecord
             'updated_at' => Yii::t('app', 'Обновлено в'),
             'deleted' => Yii::t('app', 'Deleted'),
         ];
+    }
+
+    /**
+     * @return \app\models\query\BlogQuery
+     */
+    public function getBlog()
+    {
+        return $this->hasOne(Blog::className(), ['id' => 'blog_id']);
+    }
+
+    /**
+     * @return \app\models\query\BlogTypeQuery
+     */
+    public function getBlogType()
+    {
+        return $this->hasOne(BlogType::className(), ['id' => 'blog_type_id'])
+            ->viaTable('blog via_blog', ['id' => 'blog_id']);
     }
 
     /**

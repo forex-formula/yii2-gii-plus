@@ -28,4 +28,19 @@ class Schema extends YiiMysqlSchema
         }
         return false;
     }
+
+    /**
+     * @inheritdoc
+     */
+    protected function findConstraints($table)
+    {
+        parent::findConstraints($table);
+        if (!count($table->foreignKeys)) {
+            foreach ($table->getColumnNames() as $columnName) {
+                if (preg_match('~^((?:pk_)?(\w+)_id)$~', $columnName, $match) && $this->getTableSchema($match[2])) {
+                    $table->foreignKeys[] = [$match[2], $match[1] => 'id'];
+                }
+            }
+        }
+    }
 }

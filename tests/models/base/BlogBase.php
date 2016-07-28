@@ -6,6 +6,7 @@ use app\models\BlogType;
 use app\models\Comment;
 use yii\db\Expression;
 use app\models\Post;
+use app\models\PostReport;
 use Yii;
 
 /**
@@ -22,6 +23,7 @@ use Yii;
  * @property BlogType $blogType
  * @property Comment[] $comments
  * @property Post[] $posts
+ * @property PostReport[] $postReports
  */
 class BlogBase extends \yii\boost\db\ActiveRecord
 {
@@ -92,6 +94,14 @@ class BlogBase extends \yii\boost\db\ActiveRecord
     }
 
     /**
+     * @return \app\models\query\PostReportQuery
+     */
+    public function getPostReports()
+    {
+        return $this->hasMany(PostReport::className(), ['blog_id' => 'id']);
+    }
+
+    /**
      * @inheritdoc
      * @return \app\models\query\BlogQuery the active query used by this AR class.
      */
@@ -140,6 +150,16 @@ class BlogBase extends \yii\boost\db\ActiveRecord
     public function newPost()
     {
         $model = new Post;
+        $model->blog_id = $this->id;
+        return $model;
+    }
+
+    /**
+     * @return PostReport
+     */
+    public function newPostReport()
+    {
+        $model = new PostReport;
         $model->blog_id = $this->id;
         return $model;
     }
