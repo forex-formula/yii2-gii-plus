@@ -417,7 +417,7 @@ class Generator extends GiiModelGenerator
                             foreach ($tableSchema->foreignKeys as $foreignKey) {
                                 if ($foreignKey[0] == $subTableName) {
                                     unset($foreignKey[0]);
-                                    $viaLink = $this->generateRelationLink($foreignKey);
+                                    $viaLink = $this->generateRelationLink(array_flip($foreignKey));
                                     break;
                                 }
                             }
