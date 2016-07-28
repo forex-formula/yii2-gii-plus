@@ -38,12 +38,13 @@ class m160209_192728_init extends Migration
 
         $this->addForeignKey(null, 'post', 'blog_id', 'blog', 'id');
 
+        $db = $this->getDb();
         $sql = <<<SQL
 CREATE VIEW `post_report` AS
 SELECT *
 FROM `post`;
 SQL;
-        $this->getDb()->createCommand($sql)->execute();
+        $db->createCommand($sql)->execute();
 
         $this->createTableWithComment('comment', [
             'id' => $this->primaryKey(),
@@ -87,7 +88,7 @@ SELECT
     t.tiny_id AS pk_tiny_id
 FROM `test` t;
 SQL;
-        $this->getDb()->createCommand($sql)->execute();
+        $db->createCommand($sql)->execute();
     }
 
     public function down()
