@@ -38,6 +38,11 @@ class m160209_192728_init extends Migration
 
         $this->addForeignKey(null, 'post', 'blog_id', 'blog', 'id');
 
+        $sql = <<<SQL
+CREATE VIEW `post_report` AS SELECT * FROM `post`;
+SQL;
+        $this->getDb()->createCommand($sql)->execute();
+
         $this->createTableWithComment('comment', [
             'id' => $this->primaryKey(),
             'blog_id' => $this->integer()->unsigned()->notNull()->comment('Блог'),
