@@ -35,6 +35,24 @@ class PostReportQueryBase extends \yii\boost\db\ActiveQuery
     }
 
     /**
+     * @param integer $id
+     * @return self
+     */
+    public function pk($id)
+    {
+        return $this->andWhere([$this->a('id') => $id]);
+    }
+
+    /**
+     * @param integer $id
+     * @return self
+     */
+    public function id($id)
+    {
+        return $this->andWhere([$this->a('id') => $id]);
+    }
+
+    /**
      * @param int|bool $enabled
      * @return self
      */

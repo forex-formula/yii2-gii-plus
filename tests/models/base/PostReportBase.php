@@ -76,4 +76,20 @@ class PostReportBase extends \yii\boost\db\ActiveRecord
     {
         return Yii::t('app', 'Post report');
     }
+
+    /**
+     * @inheritdoc
+     */
+    public static function primaryKey()
+    {
+        return ['id'];
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function displayField()
+    {
+        return ['id'];
+    }
 }

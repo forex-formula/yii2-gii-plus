@@ -58,4 +58,20 @@ class TestReportBase extends \yii\boost\db\ActiveRecord
     {
         return Yii::t('app', 'Test report');
     }
+
+    /**
+     * @inheritdoc
+     */
+    public static function primaryKey()
+    {
+        return ['pk_small_id', 'pk_tiny_id'];
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function displayField()
+    {
+        return ['pk_small_id', 'pk_tiny_id'];
+    }
 }

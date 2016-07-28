@@ -27,4 +27,48 @@ class TestReportQueryBase extends \yii\boost\db\ActiveQuery
     {
         return parent::one($db);
     }
+
+    /**
+     * @param integer $pkSmallId
+     * @param integer $pkTinyId
+     * @return self
+     */
+    public function pk($pkSmallId, $pkTinyId)
+    {
+        return $this->andWhere([
+            $this->a('pk_small_id') => $pkSmallId,
+            $this->a('pk_tiny_id') => $pkTinyId
+        ]);
+    }
+
+    /**
+     * @param integer $pkSmallId
+     * @param integer $pkTinyId
+     * @return self
+     */
+    public function pkSmallIdPkTinyId($pkSmallId, $pkTinyId)
+    {
+        return $this->andWhere([
+            $this->a('pk_small_id') => $pkSmallId,
+            $this->a('pk_tiny_id') => $pkTinyId
+        ]);
+    }
+
+    /**
+     * @param integer $pkSmallId
+     * @return self
+     */
+    public function pkSmallId($pkSmallId)
+    {
+        return $this->andWhere([$this->a('pk_small_id') => $pkSmallId]);
+    }
+
+    /**
+     * @param integer $pkTinyId
+     * @return self
+     */
+    public function pkTinyId($pkTinyId)
+    {
+        return $this->andWhere([$this->a('pk_tiny_id') => $pkTinyId]);
+    }
 }
