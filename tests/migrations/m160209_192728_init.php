@@ -66,6 +66,13 @@ SQL;
         $this->createIndex(null, 'comment', ['id', 'blog_id', 'post_id']);
         $this->addForeignKey(null, 'comment', ['parent_id', 'blog_id', 'post_id'], 'comment', ['id', 'blog_id', 'post_id']);
 
+        $sql = <<<SQL
+CREATE VIEW `comment_report` AS
+SELECT *
+FROM `comment`;
+SQL;
+        $db->createCommand($sql)->execute();
+
         $this->createTable('sequence', [
             'id' => $this->primaryKey(),
             'previous_id' => $this->integer()->unsigned()->unique(),
