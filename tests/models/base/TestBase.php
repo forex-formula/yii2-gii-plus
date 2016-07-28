@@ -60,6 +60,14 @@ class TestBase extends \yii\boost\db\ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     */
+    public static function primaryKey()
+    {
+        return ['small_id', 'tiny_id'];
+    }
+
+    /**
      * @return string[]
      */
     public static function displayField()

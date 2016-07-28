@@ -72,6 +72,14 @@ class BlogTypeBase extends \yii\boost\db\ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     */
+    public static function primaryKey()
+    {
+        return ['id'];
+    }
+
+    /**
      * @return string[]
      */
     public static function displayField()

@@ -39,7 +39,9 @@ class m160209_192728_init extends Migration
         $this->addForeignKey(null, 'post', 'blog_id', 'blog', 'id');
 
         $sql = <<<SQL
-CREATE VIEW `post_report` AS SELECT * FROM `post`;
+CREATE VIEW `post_report` AS
+SELECT *
+FROM `post`;
 SQL;
         $this->getDb()->createCommand($sql)->execute();
 
@@ -77,6 +79,15 @@ SQL;
             'tiny_id' => $this->tinyInteger()->unsigned()
         ]);
         $this->addPrimaryKey(null, 'test', ['small_id', 'tiny_id']);
+
+        $sql = <<<SQL
+CREATE VIEW `test_report` AS
+SELECT
+    t.small_id AS pk_small_id,
+    t.tiny_id AS pk_tiny_id
+FROM `test` t;
+SQL;
+        $this->getDb()->createCommand($sql)->execute();
     }
 
     public function down()
