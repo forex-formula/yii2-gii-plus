@@ -4,8 +4,10 @@ namespace app\models\base;
 
 use app\models\BlogType;
 use app\models\Comment;
+use app\models\CommentReport;
 use yii\db\Expression;
 use app\models\Post;
+use app\models\PostReport;
 use Yii;
 
 /**
@@ -21,7 +23,9 @@ use Yii;
  *
  * @property BlogType $blogType
  * @property Comment[] $comments
+ * @property CommentReport[] $commentReports
  * @property Post[] $posts
+ * @property PostReport[] $postReports
  */
 class BlogBase extends \yii\boost\db\ActiveRecord
 {
@@ -84,11 +88,27 @@ class BlogBase extends \yii\boost\db\ActiveRecord
     }
 
     /**
+     * @return \app\models\query\CommentReportQuery
+     */
+    public function getCommentReports()
+    {
+        return $this->hasMany(CommentReport::className(), ['blog_id' => 'id']);
+    }
+
+    /**
      * @return \app\models\query\PostQuery
      */
     public function getPosts()
     {
         return $this->hasMany(Post::className(), ['blog_id' => 'id']);
+    }
+
+    /**
+     * @return \app\models\query\PostReportQuery
+     */
+    public function getPostReports()
+    {
+        return $this->hasMany(PostReport::className(), ['blog_id' => 'id']);
     }
 
     /**
@@ -106,6 +126,14 @@ class BlogBase extends \yii\boost\db\ActiveRecord
     public function modelLabel()
     {
         return Yii::t('app', 'Блог');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function primaryKey()
+    {
+        return ['id'];
     }
 
     /**
@@ -127,11 +155,31 @@ class BlogBase extends \yii\boost\db\ActiveRecord
     }
 
     /**
+     * @return CommentReport
+     */
+    public function newCommentReport()
+    {
+        $model = new CommentReport;
+        $model->blog_id = $this->id;
+        return $model;
+    }
+
+    /**
      * @return Post
      */
     public function newPost()
     {
         $model = new Post;
+        $model->blog_id = $this->id;
+        return $model;
+    }
+
+    /**
+     * @return PostReport
+     */
+    public function newPostReport()
+    {
+        $model = new PostReport;
         $model->blog_id = $this->id;
         return $model;
     }

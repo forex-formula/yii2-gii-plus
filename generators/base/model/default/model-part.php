@@ -18,7 +18,7 @@ use yii\db\Schema;
 // model label
 $modelLabel = Inflector::titleize($tableName);
 $db = $generator->getDbConnection();
-if ($generator->generateLabelsFromComments && ($db->getDriverName() == 'mysql')) {
+if ($generator->generateLabelsFromComments && in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
     $row = $db->createCommand('SHOW CREATE TABLE ' . $db->quoteTableName($tableName))->queryOne();
     if (is_array($row) && (count($row) == 2) && preg_match('~\)([^\)]*)$~', array_values($row)[1], $match)) {
         $tableOptions = $match[1];
@@ -45,8 +45,23 @@ $code .= '    }
 ';
 echo $code;
 
+// primary key
+$primaryKey = $tableSchema->primaryKey;
+if (count($primaryKey)) {
+    $code = '
+    /**
+     * @inheritdoc
+     */
+    public static function primaryKey()
+    {
+        return [\'' . implode('\', \'', $primaryKey) . '\'];
+    }
+';
+    echo $code;
+}
+
 // display field
-$displayField = $tableSchema->primaryKey;
+$displayField = $primaryKey;
 try {
     $uniqueIndexes = $db->getSchema()->findUniqueIndexes($tableSchema);
     foreach ($uniqueIndexes as $uniqueKey) {

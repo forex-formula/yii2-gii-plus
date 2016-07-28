@@ -90,7 +90,7 @@ class CommentBase extends \yii\boost\db\ActiveRecord
     public function getBlogType()
     {
         return $this->hasOne(BlogType::className(), ['id' => 'blog_type_id'])
-            ->viaTable('blog via_blog', ['blog_id' => 'id']);
+            ->viaTable('blog via_blog', ['id' => 'blog_id']);
     }
 
     /**
@@ -132,6 +132,14 @@ class CommentBase extends \yii\boost\db\ActiveRecord
     public function modelLabel()
     {
         return Yii::t('app', 'Комментарий');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function primaryKey()
+    {
+        return ['id'];
     }
 
     /**

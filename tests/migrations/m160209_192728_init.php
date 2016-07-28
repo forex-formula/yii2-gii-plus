@@ -38,6 +38,14 @@ class m160209_192728_init extends Migration
 
         $this->addForeignKey(null, 'post', 'blog_id', 'blog', 'id');
 
+        $db = $this->getDb();
+        $sql = <<<SQL
+CREATE VIEW `post_report` AS
+SELECT *
+FROM `post`;
+SQL;
+        $db->createCommand($sql)->execute();
+
         $this->createTableWithComment('comment', [
             'id' => $this->primaryKey(),
             'blog_id' => $this->integer()->unsigned()->notNull()->comment('Блог'),
@@ -58,6 +66,13 @@ class m160209_192728_init extends Migration
         $this->createIndex(null, 'comment', ['id', 'blog_id', 'post_id']);
         $this->addForeignKey(null, 'comment', ['parent_id', 'blog_id', 'post_id'], 'comment', ['id', 'blog_id', 'post_id']);
 
+        $sql = <<<SQL
+CREATE VIEW `comment_report` AS
+SELECT *
+FROM `comment`;
+SQL;
+        $db->createCommand($sql)->execute();
+
         $this->createTable('sequence', [
             'id' => $this->primaryKey(),
             'previous_id' => $this->integer()->unsigned()->unique(),
@@ -72,6 +87,15 @@ class m160209_192728_init extends Migration
             'tiny_id' => $this->tinyInteger()->unsigned()
         ]);
         $this->addPrimaryKey(null, 'test', ['small_id', 'tiny_id']);
+
+        $sql = <<<SQL
+CREATE VIEW `test_report` AS
+SELECT
+    t.small_id AS pk_small_id,
+    t.tiny_id AS pk_tiny_id
+FROM `test` t;
+SQL;
+        $db->createCommand($sql)->execute();
     }
 
     public function down()

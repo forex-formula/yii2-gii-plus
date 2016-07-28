@@ -4,13 +4,10 @@ namespace app\models\base;
 
 use app\models\Blog;
 use app\models\BlogType;
-use app\models\Comment;
-use app\models\CommentReport;
-use yii\db\Expression;
 use Yii;
 
 /**
- * This is the model class for table "post".
+ * This is the model class for table "post_report".
  *
  * @property integer $id
  * @property integer $blog_id
@@ -21,19 +18,17 @@ use Yii;
  * @property string $updated_at
  * @property integer $deleted
  *
- * @property Comment[] $comments
- * @property CommentReport[] $commentReports
  * @property Blog $blog
  * @property BlogType $blogType
  */
-class PostBase extends \yii\boost\db\ActiveRecord
+class PostReportBase extends \yii\boost\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'post';
+        return 'post_report';
     }
 
     /**
@@ -43,15 +38,14 @@ class PostBase extends \yii\boost\db\ActiveRecord
     {
         return [
             [['enabled', 'deleted'], 'boolean'],
-            [['blog_id'], 'integer', 'min' => 0],
+            [['id', 'blog_id'], 'integer', 'min' => 0],
             [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['blog_id', 'name', 'text'], 'required'],
             [['text'], 'string'],
             [['name'], 'string', 'max' => 50],
-            [['blog_id', 'name'], 'unique', 'targetAttribute' => ['blog_id', 'name'], 'message' => 'The combination of Блог and Название has already been taken.'],
             [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
-            [['created_at', 'updated_at'], 'default', 'value' => new Expression('CURRENT_TIMESTAMP')],
-            [['enabled', 'deleted'], 'default', 'value' => '0'],
+            [['id', 'enabled', 'deleted'], 'default', 'value' => '0'],
+            [['created_at', 'updated_at'], 'default', 'value' => '0000-00-00 00:00:00'],
         ];
     }
 
@@ -73,22 +67,6 @@ class PostBase extends \yii\boost\db\ActiveRecord
     }
 
     /**
-     * @return \app\models\query\CommentQuery
-     */
-    public function getComments()
-    {
-        return $this->hasMany(Comment::className(), ['post_id' => 'id', 'blog_id' => 'blog_id']);
-    }
-
-    /**
-     * @return \app\models\query\CommentReportQuery
-     */
-    public function getCommentReports()
-    {
-        return $this->hasMany(CommentReport::className(), ['post_id' => 'id']);
-    }
-
-    /**
      * @return \app\models\query\BlogQuery
      */
     public function getBlog()
@@ -107,11 +85,11 @@ class PostBase extends \yii\boost\db\ActiveRecord
 
     /**
      * @inheritdoc
-     * @return \app\models\query\PostQuery the active query used by this AR class.
+     * @return \app\models\query\PostReportQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new \app\models\query\PostQuery(get_called_class());
+        return new \app\models\query\PostReportQuery(get_called_class());
     }
 
     /**
@@ -119,7 +97,7 @@ class PostBase extends \yii\boost\db\ActiveRecord
      */
     public function modelLabel()
     {
-        return Yii::t('app', 'Пост');
+        return Yii::t('app', 'Post report');
     }
 
     /**
@@ -135,27 +113,6 @@ class PostBase extends \yii\boost\db\ActiveRecord
      */
     public static function displayField()
     {
-        return ['blog_id', 'name'];
-    }
-
-    /**
-     * @return Comment
-     */
-    public function newComment()
-    {
-        $model = new Comment;
-        $model->post_id = $this->id;
-        $model->blog_id = $this->blog_id;
-        return $model;
-    }
-
-    /**
-     * @return CommentReport
-     */
-    public function newCommentReport()
-    {
-        $model = new CommentReport;
-        $model->post_id = $this->id;
-        return $model;
+        return ['id'];
     }
 }
