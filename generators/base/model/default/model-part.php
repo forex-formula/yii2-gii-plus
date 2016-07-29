@@ -80,7 +80,7 @@ try {
 if (count($displayField)) {
     $code = '
     /**
-     * @return string[]
+     * @return string[]|Expression
      */
     public static function displayField()
     {
