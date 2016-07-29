@@ -22,7 +22,7 @@ class m160209_192728_init extends Migration
             'deleted' => $this->deletedShortcut()
         ], 'Блог');
 
-        $this->addForeignKey(null, 'blog', 'blog_type_id', 'blog_type', 'id');
+        $this->addForeignKey(null, 'blog', ['blog_type_id'], 'blog_type', ['id']);
 
         $this->createTableWithComment('post', [
             'id' => $this->primaryKey(),
@@ -36,7 +36,7 @@ class m160209_192728_init extends Migration
         ], 'Пост');
         $this->createUnique(null, 'post', ['blog_id', 'name']);
 
-        $this->addForeignKey(null, 'post', 'blog_id', 'blog', 'id');
+        $this->addForeignKey(null, 'post', ['blog_id'], 'blog', ['id']);
 
         $db = $this->getDb();
         $sql = <<<SQL
@@ -48,7 +48,6 @@ SQL;
 
         $this->createTableWithComment('comment', [
             'id' => $this->primaryKey(),
-            'blog_id' => $this->integer()->unsigned()->notNull()->comment('Блог'),
             'post_id' => $this->integer()->unsigned()->notNull()->comment('Пост'),
             'parent_id' => $this->integer()->unsigned()->comment('Родительский комментарий'),
             'text' => $this->text()->notNull()->comment('Текст'),
@@ -58,13 +57,10 @@ SQL;
             'deleted' => $this->deletedShortcut()
         ], 'Комментарий');
 
-        $this->addForeignKey(null, 'comment', 'blog_id', 'blog', 'id');
+        $this->addForeignKey(null, 'comment', ['post_id'], 'post', ['id']);
 
-        $this->createIndex(null, 'post', ['id', 'blog_id']);
-        $this->addForeignKey(null, 'comment', ['post_id', 'blog_id'], 'post', ['id', 'blog_id']);
-
-        $this->createIndex(null, 'comment', ['id', 'blog_id', 'post_id']);
-        $this->addForeignKey(null, 'comment', ['parent_id', 'blog_id', 'post_id'], 'comment', ['id', 'blog_id', 'post_id']);
+        $this->createIndex(null, 'comment', ['id', 'post_id']);
+        $this->addForeignKey(null, 'comment', ['parent_id', 'post_id'], 'comment', ['id', 'post_id']);
 
         $sql = <<<SQL
 CREATE VIEW `comment_report` AS

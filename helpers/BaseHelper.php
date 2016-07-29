@@ -145,8 +145,8 @@ class BaseHelper
     {
         if (is_null(static::$modelClassTableNameMap)) {
             static::$modelClassTableNameMap = [];
+            /* @var $modelClass string|\yii\db\ActiveRecord */
             foreach (static::getModelClasses() as $modelClass) {
-                /* @var $modelClass string|\yii\db\ActiveRecord */
                 static::$modelClassTableNameMap[$modelClass] = $modelClass::tableName();
             }
         }
