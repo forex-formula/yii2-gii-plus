@@ -5,7 +5,7 @@ namespace app\models;
 use app\models\base\CommentReportBase;
 
 /**
- * CommentReport
+ * Comment report
  * @see \app\models\query\CommentReportQuery
  */
 class CommentReport extends CommentReportBase

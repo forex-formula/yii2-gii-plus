@@ -72,7 +72,7 @@ SQL;
         $this->createTable('sequence', [
             'id' => $this->primaryKey(),
             'previous_id' => $this->integer()->unsigned()->unique(),
-            'value' => $this->double()->unsigned(),
+            'value' => $this->money()->unsigned(),
             'value_expires_at' => $this->timestamp()->null()
         ]);
 

@@ -5,7 +5,7 @@ namespace app\models\query;
 use app\models\query\base\PostQueryBase;
 
 /**
- * PostQuery
+ * Post query
  * @see \app\models\Post
  */
 class PostQuery extends PostQueryBase

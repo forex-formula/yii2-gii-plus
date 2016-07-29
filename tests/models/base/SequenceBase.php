@@ -10,7 +10,7 @@ use Yii;
  *
  * @property integer $id
  * @property integer $previous_id
- * @property double $value
+ * @property string $value
  * @property string $value_expires_at
  *
  * @property Sequence $previous
@@ -96,7 +96,7 @@ class SequenceBase extends \yii\boost\db\ActiveRecord
     }
 
     /**
-     * @return string[]
+     * @return string[]|\yii\db\Expression
      */
     public static function displayField()
     {

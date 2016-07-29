@@ -5,7 +5,7 @@ namespace app\models;
 use app\models\base\BlogTypeBase;
 
 /**
- * BlogType
+ * Blog type
  * @see \app\models\query\BlogTypeQuery
  */
 class BlogType extends BlogTypeBase

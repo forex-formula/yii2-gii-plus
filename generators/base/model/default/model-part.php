@@ -80,7 +80,7 @@ try {
 if (count($displayField)) {
     $code = '
     /**
-     * @return string[]|Expression
+     * @return string[]|\yii\db\Expression
      */
     public static function displayField()
     {

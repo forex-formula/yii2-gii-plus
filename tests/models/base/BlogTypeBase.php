@@ -80,7 +80,7 @@ class BlogTypeBase extends \yii\boost\db\ActiveRecord
     }
 
     /**
-     * @return string[]
+     * @return string[]|\yii\db\Expression
      */
     public static function displayField()
     {

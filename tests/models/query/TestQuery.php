@@ -5,7 +5,7 @@ namespace app\models\query;
 use app\models\query\base\TestQueryBase;
 
 /**
- * TestQuery
+ * Test query
  * @see \app\models\Test
  */
 class TestQuery extends TestQueryBase

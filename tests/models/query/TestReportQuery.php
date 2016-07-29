@@ -5,7 +5,7 @@ namespace app\models\query;
 use app\models\query\base\TestReportQueryBase;
 
 /**
- * TestReportQuery
+ * Test report query
  * @see \app\models\TestReport
  */
 class TestReportQuery extends TestReportQueryBase

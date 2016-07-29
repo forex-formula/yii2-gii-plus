@@ -5,7 +5,7 @@ namespace app\models\query;
 use app\models\query\base\PostReportQueryBase;
 
 /**
- * PostReportQuery
+ * Post report query
  * @see \app\models\PostReport
  */
 class PostReportQuery extends PostReportQueryBase
