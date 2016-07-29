@@ -20,6 +20,9 @@
     "ivan-chkv/yii2-boost": "*",
     "ivan-chkv/yii2-jui-autocomplete": "*"
   },
+  "require-dev": {
+    "ivan-chkv/yii2-phpunit": "2.*"
+  },
   "suggest": {
     "ivan-chkv/yii2-boost": "Yii 2 Boost Extension"
   },
