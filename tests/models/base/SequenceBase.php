@@ -34,6 +34,7 @@ class SequenceBase extends \yii\boost\db\ActiveRecord
         return [
             [['previous_id'], 'integer', 'min' => 0],
             [['value'], 'number', 'min' => 0],
+            [['value'], 'match', 'pattern' => '~^\d{1,15}(?:\.\d{1,4})?$~'],
             [['value_expires_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
             [['previous_id'], 'unique'],
             [['previous_id'], 'exist', 'skipOnError' => true, 'targetClass' => Sequence::className(), 'targetAttribute' => ['previous_id' => 'id']],

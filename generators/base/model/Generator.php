@@ -290,6 +290,7 @@ class Generator extends GiiModelGenerator
         $uIntegerAttributes = [];
         $numberAttributes = [];
         $uNumberAttributes = [];
+        $matchPatterns = [];
         $dateAttributes = [];
         $timeAttributes = [];
         $datetimeAttributes = [];
@@ -313,6 +314,29 @@ class Generator extends GiiModelGenerator
                     $uNumberAttributes[] = $column->name;
                 } else {
                     $numberAttributes[] = $column->name;
+                }
+                if (in_array($column->type, [Schema::TYPE_DECIMAL, Schema::TYPE_MONEY])) {
+                    $scale = $column->scale;
+                    $whole = $column->precision - $scale;
+                    if ($whole > 0) {
+                        if ($whole == 1) {
+                            $pattern = '~^\d';
+                        } else {
+                            $pattern = '~^\d{1,' . $whole . '}';
+                        }
+                    } else {
+                        $pattern = '~^0';
+                    }
+                    if ($scale > 0) {
+                        if ($scale == 1) {
+                            $pattern .= '(?:\.\d)?$~';
+                        } else {
+                            $pattern .= '(?:\.\d{1,' . $scale . '})?$~';
+                        }
+                    } else {
+                        $pattern .= '$~';
+                    }
+                    $matchPatterns[$pattern][] = $column->name;
                 }
             } elseif ($column->type == Schema::TYPE_DATE) {
                 $dateAttributes[] = $column->name;
@@ -347,6 +371,9 @@ class Generator extends GiiModelGenerator
         }
         if (count($uNumberAttributes)) {
             $rules[] = '[[\'' . implode('\', \'', $uNumberAttributes) . '\'], \'number\', \'min\' => 0]';
+        }
+        foreach ($matchPatterns as $matchPattern => $attributes) {
+            $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'match\', \'pattern\' => \'' . $matchPattern . '\']';
         }
         if (count($dateAttributes)) {
             $rules[] = '[[\'' . implode('\', \'', $dateAttributes) . '\'], \'date\', \'format\' => \'php:Y-m-d\']';
