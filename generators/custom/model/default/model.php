@@ -27,6 +27,12 @@ namespace <?= $ns ?>;
 
 use <?= implode(';' . "\n" . 'use ', $uses) ?>;
 
+/**
+ * <?= $modelName ?>
+
+ * @see \<?= $queryClass ?>
+
+ */
 class <?= $modelName ?> extends <?= $baseModelName ?>
 
 {
