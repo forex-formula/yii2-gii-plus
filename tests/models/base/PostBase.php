@@ -77,7 +77,7 @@ class PostBase extends \yii\boost\db\ActiveRecord
      */
     public function getComments()
     {
-        return $this->hasMany(Comment::className(), ['post_id' => 'id', 'blog_id' => 'blog_id']);
+        return $this->hasMany(Comment::className(), ['post_id' => 'id']);
     }
 
     /**
@@ -145,7 +145,6 @@ class PostBase extends \yii\boost\db\ActiveRecord
     {
         $model = new Comment;
         $model->post_id = $this->id;
-        $model->blog_id = $this->blog_id;
         return $model;
     }
 

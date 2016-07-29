@@ -53,15 +53,6 @@ class CommentReportQueryBase extends \yii\boost\db\ActiveQuery
     }
 
     /**
-     * @param integer $blogId
-     * @return self
-     */
-    public function blogId($blogId)
-    {
-        return $this->andWhere([$this->a('blog_id') => $blogId]);
-    }
-
-    /**
      * @param integer $postId
      * @return self
      */

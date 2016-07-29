@@ -3,8 +3,6 @@
 namespace app\models\base;
 
 use app\models\BlogType;
-use app\models\Comment;
-use app\models\CommentReport;
 use yii\db\Expression;
 use app\models\Post;
 use app\models\PostReport;
@@ -22,8 +20,6 @@ use Yii;
  * @property integer $deleted
  *
  * @property BlogType $blogType
- * @property Comment[] $comments
- * @property CommentReport[] $commentReports
  * @property Post[] $posts
  * @property PostReport[] $postReports
  */
@@ -80,22 +76,6 @@ class BlogBase extends \yii\boost\db\ActiveRecord
     }
 
     /**
-     * @return \app\models\query\CommentQuery
-     */
-    public function getComments()
-    {
-        return $this->hasMany(Comment::className(), ['blog_id' => 'id']);
-    }
-
-    /**
-     * @return \app\models\query\CommentReportQuery
-     */
-    public function getCommentReports()
-    {
-        return $this->hasMany(CommentReport::className(), ['blog_id' => 'id']);
-    }
-
-    /**
      * @return \app\models\query\PostQuery
      */
     public function getPosts()
@@ -142,26 +122,6 @@ class BlogBase extends \yii\boost\db\ActiveRecord
     public static function displayField()
     {
         return ['name'];
-    }
-
-    /**
-     * @return Comment
-     */
-    public function newComment()
-    {
-        $model = new Comment;
-        $model->blog_id = $this->id;
-        return $model;
-    }
-
-    /**
-     * @return CommentReport
-     */
-    public function newCommentReport()
-    {
-        $model = new CommentReport;
-        $model->blog_id = $this->id;
-        return $model;
     }
 
     /**

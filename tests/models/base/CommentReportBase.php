@@ -3,7 +3,6 @@
 namespace app\models\base;
 
 use app\models\Blog;
-use app\models\BlogType;
 use app\models\Post;
 use Yii;
 
@@ -11,7 +10,6 @@ use Yii;
  * This is the model class for table "comment_report".
  *
  * @property integer $id
- * @property integer $blog_id
  * @property integer $post_id
  * @property integer $parent_id
  * @property string $text
@@ -20,9 +18,8 @@ use Yii;
  * @property string $updated_at
  * @property integer $deleted
  *
- * @property Blog $blog
- * @property BlogType $blogType
  * @property Post $post
+ * @property Blog $blog
  */
 class CommentReportBase extends \yii\boost\db\ActiveRecord
 {
@@ -41,11 +38,10 @@ class CommentReportBase extends \yii\boost\db\ActiveRecord
     {
         return [
             [['enabled', 'deleted'], 'boolean'],
-            [['id', 'blog_id', 'post_id', 'parent_id'], 'integer', 'min' => 0],
+            [['id', 'post_id', 'parent_id'], 'integer', 'min' => 0],
             [['created_at', 'updated_at'], 'date', 'format' => 'php:Y-m-d H:i:s'],
-            [['blog_id', 'post_id', 'text'], 'required'],
+            [['post_id', 'text'], 'required'],
             [['text'], 'string'],
-            [['blog_id'], 'exist', 'skipOnError' => true, 'targetClass' => Blog::className(), 'targetAttribute' => ['blog_id' => 'id']],
             [['post_id'], 'exist', 'skipOnError' => true, 'targetClass' => Post::className(), 'targetAttribute' => ['post_id' => 'id']],
             [['id', 'enabled', 'deleted'], 'default', 'value' => '0'],
             [['created_at', 'updated_at'], 'default', 'value' => '0000-00-00 00:00:00'],
@@ -60,7 +56,6 @@ class CommentReportBase extends \yii\boost\db\ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'blog_id' => Yii::t('app', 'Блог'),
             'post_id' => Yii::t('app', 'Пост'),
             'parent_id' => Yii::t('app', 'Родительский комментарий'),
             'text' => Yii::t('app', 'Текст'),
@@ -72,28 +67,20 @@ class CommentReportBase extends \yii\boost\db\ActiveRecord
     }
 
     /**
-     * @return \app\models\query\BlogQuery
-     */
-    public function getBlog()
-    {
-        return $this->hasOne(Blog::className(), ['id' => 'blog_id']);
-    }
-
-    /**
-     * @return \app\models\query\BlogTypeQuery
-     */
-    public function getBlogType()
-    {
-        return $this->hasOne(BlogType::className(), ['id' => 'blog_type_id'])
-            ->viaTable('blog via_blog', ['id' => 'blog_id']);
-    }
-
-    /**
      * @return \app\models\query\PostQuery
      */
     public function getPost()
     {
         return $this->hasOne(Post::className(), ['id' => 'post_id']);
+    }
+
+    /**
+     * @return \app\models\query\BlogQuery
+     */
+    public function getBlog()
+    {
+        return $this->hasOne(Blog::className(), ['id' => 'blog_id'])
+            ->viaTable('post via_post', ['id' => 'post_id']);
     }
 
     /**
