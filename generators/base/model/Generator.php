@@ -402,12 +402,12 @@ class Generator extends GiiModelGenerator
             $this->hasManyRelations[$tableName] = [];
             foreach ($tableRelations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
+                /* @var $nsClassName string|\yii\db\ActiveRecord */
                 $nsClassName = array_search(array_search($className, $this->classNames), $modelClassTableNameMap);
                 if (($nsClassName !== false) && class_exists($nsClassName)) {
                     $relations[$tableName][$relationName] = [$code, $className, $hasMany];
                     $this->relationUses[$tableName][] = $nsClassName;
                     if ($hasMany || ($relationName == $className)) {
-                        /* @var $nsClassName \yii\db\ActiveRecord */
                         foreach ($nsClassName::getTableSchema()->foreignKeys as $foreignKey) {
                             if ($foreignKey[0] == $tableName) {
                                 unset($foreignKey[0]);
