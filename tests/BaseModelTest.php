@@ -39,11 +39,18 @@ class BaseModelTest extends TestCase
 
     public function testMethodPrimaryKey()
     {
-        $reflection = new ReflectionClass('app\models\Type');
-        $this->assertTrue($reflection->hasMethod('primaryKey'));
-        $this->assertTrue($reflection->getMethod('primaryKey')->isStatic());
         $primaryKey = \app\models\Type::primaryKey();
         $this->assertInternalType('array', $primaryKey);
         $this->assertEquals(['id'], $primaryKey);
+    }
+
+    public function testMethodDisplayField()
+    {
+        $reflection = new ReflectionClass('app\models\Type');
+        $this->assertTrue($reflection->hasMethod('displayField'));
+        $this->assertTrue($reflection->getMethod('displayField')->isStatic());
+        $displayField = \app\models\Type::displayField();
+        $this->assertInternalType('array', $displayField);
+        $this->assertEquals(['name'], $displayField);
     }
 }
