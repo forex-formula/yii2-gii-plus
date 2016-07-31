@@ -5,6 +5,8 @@ CREATE DATABASE yii2_gii_plus_tests;' | mysql
 
 DIR=$(dirname $0)
 
+rm -frv $DIR/models/*
+
 $DIR/yii migrate --interactive=0
 $DIR/yii gii/base_model --enableI18N=1 --interactive=0
 $DIR/yii gii/custom_model --interactive=0
