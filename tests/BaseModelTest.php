@@ -44,7 +44,7 @@ class BaseModelTest extends TestCase
         $this->assertEquals(['id'], $primaryKey);
     }
 
-    public function testMethodDisplayField()
+    public function testMethodDisplayField1()
     {
         $reflection = new ReflectionClass('app\models\Type');
         $this->assertTrue($reflection->hasMethod('displayField'));
@@ -52,5 +52,15 @@ class BaseModelTest extends TestCase
         $displayField = \app\models\Type::displayField();
         $this->assertInternalType('array', $displayField);
         $this->assertEquals(['name'], $displayField);
+    }
+
+    public function testMethodDisplayField2()
+    {
+        $reflection = new ReflectionClass('app\models\Folder');
+        $this->assertTrue($reflection->hasMethod('displayField'));
+        $this->assertTrue($reflection->getMethod('displayField')->isStatic());
+        $displayField = \app\models\Folder::displayField();
+        $this->assertInternalType('array', $displayField);
+        $this->assertEquals(['type_id', 'name'], $displayField);
     }
 }
