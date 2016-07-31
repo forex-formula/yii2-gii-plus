@@ -31,7 +31,7 @@ $code = '
     /**
      * @return string
      */
-    public function modelLabel()
+    public static function modelLabel()
     {
 ';
 if ($generator->enableI18N) {

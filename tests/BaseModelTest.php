@@ -3,6 +3,7 @@
 namespace yii\gii\plus\tests;
 
 use yii\phpunit\TestCase;
+use ReflectionClass;
 
 class BaseModelTest extends TestCase
 {
@@ -21,5 +22,10 @@ class BaseModelTest extends TestCase
         $this->assertEquals('yii\boost\db\ActiveQuery', get_parent_class('app\models\query\base\TypeQueryBase'));
         $this->assertEquals('app\models\base\TypeBase', get_parent_class('app\models\Type'));
         $this->assertEquals('app\models\query\base\TypeQueryBase', get_parent_class('app\models\query\TypeQuery'));
+    }
+
+    public function testMethodFind()
+    {
+        $this->assertEquals('app\models\query\TypeQuery', get_class(\app\models\Type::find()));
     }
 }
