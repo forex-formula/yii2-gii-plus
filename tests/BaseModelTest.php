@@ -63,4 +63,14 @@ class BaseModelTest extends TestCase
         $this->assertInternalType('array', $displayField);
         $this->assertEquals(['type_id', 'name'], $displayField);
     }
+
+    public function testMethodDisplayField3()
+    {
+        $reflection = new ReflectionClass('app\models\File');
+        $this->assertTrue($reflection->hasMethod('displayField'));
+        $this->assertTrue($reflection->getMethod('displayField')->isStatic());
+        $displayField = \app\models\File::displayField();
+        $this->assertInternalType('array', $displayField);
+        $this->assertEquals(['folder_id', 'name'], $displayField);
+    }
 }

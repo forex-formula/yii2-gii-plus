@@ -566,6 +566,7 @@ class Generator extends GiiModelGenerator
                         }
                     }, $output);
                 }
+                $params['relationUses'] = $this->relationUses;
                 $params['hasManyRelations'] = $this->hasManyRelations;
                 $output = preg_replace('~\}(\s*)$~', parent::render('model-part.php', $params) . '}\1', $output);
                 break;
