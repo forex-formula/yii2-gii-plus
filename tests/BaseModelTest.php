@@ -53,7 +53,7 @@ class BaseModelTest extends TestCase
         $this->assertEquals('app\models\query\\' . $modelName . 'Query', get_class($modelClass::find()));
     }
 
-    public function testMethodModelLabel()
+    public function testMethodModelLabelOfType()
     {
         $reflection = new ReflectionClass('app\models\Type');
         $this->assertTrue($reflection->hasMethod('modelLabel'));
@@ -61,14 +61,14 @@ class BaseModelTest extends TestCase
         $this->assertEquals('Тип', \app\models\Type::modelLabel());
     }
 
-    public function testMethodPrimaryKey()
+    public function testMethodPrimaryKeyOfType()
     {
         $primaryKey = \app\models\Type::primaryKey();
         $this->assertInternalType('array', $primaryKey);
         $this->assertEquals(['id'], $primaryKey);
     }
 
-    public function testMethodDisplayField1()
+    public function testMethodDisplayFieldOfType()
     {
         $reflection = new ReflectionClass('app\models\Type');
         $this->assertTrue($reflection->hasMethod('displayField'));
@@ -78,7 +78,7 @@ class BaseModelTest extends TestCase
         $this->assertEquals(['name'], $displayField);
     }
 
-    public function testMethodDisplayField2()
+    public function testMethodDisplayFieldOfFolder()
     {
         $reflection = new ReflectionClass('app\models\Folder');
         $this->assertTrue($reflection->hasMethod('displayField'));
@@ -88,7 +88,7 @@ class BaseModelTest extends TestCase
         $this->assertEquals(['type_id', 'name'], $displayField);
     }
 
-    public function testMethodDisplayField3()
+    public function testMethodDisplayFieldOfFile()
     {
         $reflection = new ReflectionClass('app\models\File');
         $this->assertTrue($reflection->hasMethod('displayField'));
@@ -98,11 +98,25 @@ class BaseModelTest extends TestCase
         $this->assertEquals(['folder_id', 'name'], $displayField);
     }
 
-    public function testMethodGetFolder()
+    public function testMethodGetFolderOfFile()
     {
         $reflection = new ReflectionClass('app\models\File');
         $this->assertTrue($reflection->hasMethod('getFolder'));
         $this->assertFalse($reflection->getMethod('getFolder')->isStatic());
         $this->assertEquals('app\models\query\FolderQuery', get_class((new \app\models\File)->getFolder()));
+    }
+
+    public function testMethodGetTypeOfFile()
+    {
+        $reflection = new ReflectionClass('app\models\File');
+        $this->assertTrue($reflection->hasMethod('getType'));
+        $this->assertFalse($reflection->getMethod('getType')->isStatic());
+        $query = (new \app\models\File)->getType();
+        $this->assertEquals('app\models\query\TypeQuery', get_class($query));
+        $this->assertInstanceOf('yii\db\ActiveQuery', $query->via);
+        /* @var $viaQuery \yii\db\ActiveQuery */
+        $viaQuery = $query->via;
+        $this->assertInternalType('array', $viaQuery->from);
+        $this->assertEquals(['folder via_folder'], $viaQuery->from);
     }
 }
