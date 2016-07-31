@@ -13,6 +13,7 @@ use yii\db\Schema;
 /* @var $labels string[] */
 /* @var $rules string[] */
 /* @var $relations array */
+/* @var $relationUses array */
 /* @var $hasManyRelations array */
 
 // model label
@@ -31,7 +32,7 @@ $code = '
     /**
      * @return string
      */
-    public function modelLabel()
+    public static function modelLabel()
     {
 ';
 if ($generator->enableI18N) {
@@ -78,9 +79,14 @@ try {
     // do nothing
 }
 if (count($displayField)) {
+    if (array_key_exists($tableName, $relationUses) && in_array('yii\db\Expression', $relationUses[$tableName])) {
+        $phpDocReturn = 'Expression';
+    } else {
+        $phpDocReturn = '\yii\db\Expression';
+    }
     $code = '
     /**
-     * @return string[]|Expression
+     * @return string[]|' . $phpDocReturn . '
      */
     public static function displayField()
     {

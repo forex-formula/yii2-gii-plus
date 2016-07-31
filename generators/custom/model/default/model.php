@@ -1,6 +1,7 @@
 <?php
 
 use yii\gii\plus\helpers\Helper;
+use yii\helpers\Inflector;
 
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\custom\model\Generator */
@@ -28,7 +29,7 @@ namespace <?= $ns ?>;
 use <?= implode(';' . "\n" . 'use ', $uses) ?>;
 
 /**
- * <?= $modelName ?>
+ * <?= Inflector::titleize($modelName) ?>
 
  * @see \<?= $queryClass ?>
 

@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'class' => 'yii\console\Application',
     'id' => 'test-app',
     'language' => 'ru',
     'basePath' => __DIR__,
