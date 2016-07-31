@@ -119,4 +119,26 @@ class BaseModelTest extends TestCase
         $this->assertInternalType('array', $viaQuery->from);
         $this->assertEquals(['folder via_folder'], $viaQuery->from);
     }
+
+    public function testMethodNewFolderOfType()
+    {
+        $reflection = new ReflectionClass('app\models\Type');
+        $this->assertTrue($reflection->hasMethod('newFolder'));
+        $this->assertFalse($reflection->getMethod('newFolder')->isStatic());
+        $type = new \app\models\Type;
+        $type->id = mt_rand(1, 10);
+        $folder = $type->newFolder();
+        $this->assertEquals($type->id, $folder->type_id);
+    }
+
+    public function testMethodNewFileOfFolder()
+    {
+        $reflection = new ReflectionClass('app\models\Folder');
+        $this->assertTrue($reflection->hasMethod('newFile'));
+        $this->assertFalse($reflection->getMethod('newFile')->isStatic());
+        $folder = new \app\models\Folder;
+        $folder->id = mt_rand(1, 10);
+        $file = $folder->newFile();
+        $this->assertEquals($folder->id, $file->folder_id);
+    }
 }
