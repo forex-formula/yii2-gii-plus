@@ -98,6 +98,22 @@ class BaseModelTest extends TestCase
         $this->assertEquals(['folder_id', 'name'], $displayField);
     }
 
+    public function testMethodGetTypeOfFolder()
+    {
+        $reflection = new ReflectionClass('app\models\Folder');
+        $this->assertTrue($reflection->hasMethod('getType'));
+        $this->assertFalse($reflection->getMethod('getType')->isStatic());
+        $this->assertEquals('app\models\query\TypeQuery', get_class((new \app\models\Folder)->getType()));
+    }
+
+    public function testMethodGetFilesOfFolder()
+    {
+        $reflection = new ReflectionClass('app\models\Folder');
+        $this->assertTrue($reflection->hasMethod('getFiles'));
+        $this->assertFalse($reflection->getMethod('getFiles')->isStatic());
+        $this->assertEquals('app\models\query\FileQuery', get_class((new \app\models\Folder)->getFiles()));
+    }
+
     public function testMethodGetFolderOfFile()
     {
         $reflection = new ReflectionClass('app\models\File');
