@@ -36,4 +36,14 @@ class BaseModelTest extends TestCase
         $this->assertTrue($reflection->getMethod('modelLabel')->isStatic());
         $this->assertEquals('Тип', \app\models\Type::modelLabel());
     }
+
+    public function testMethodPrimaryKey()
+    {
+        $reflection = new ReflectionClass('app\models\Type');
+        $this->assertTrue($reflection->hasMethod('primaryKey'));
+        $this->assertTrue($reflection->getMethod('primaryKey')->isStatic());
+        $primaryKey = \app\models\Type::primaryKey();
+        $this->assertInternalType('array', $primaryKey);
+        $this->assertEquals(['id'], $primaryKey);
+    }
 }
