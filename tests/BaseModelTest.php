@@ -2,31 +2,55 @@
 
 namespace yii\gii\plus\tests;
 
-use yii\phpunit\TestCase;
 use ReflectionClass;
+use yii\phpunit\TestCase;
 
 class BaseModelTest extends TestCase
 {
 
-    public function testClassExists()
+    /**
+     * @return array
+     */
+    public function modelNameDataProvider()
     {
-        $this->assertTrue(class_exists('app\models\base\TypeBase'));
-        $this->assertTrue(class_exists('app\models\query\base\TypeQueryBase'));
-        $this->assertTrue(class_exists('app\models\Type'));
-        $this->assertTrue(class_exists('app\models\query\TypeQuery'));
+        return [
+            ['Type'], ['Folder'], ['File']
+        ];
     }
 
-    public function testGetParentClass()
+    /**
+     * @param string $modelName
+     * @dataProvider modelNameDataProvider
+     */
+    public function testClassExists($modelName)
     {
-        $this->assertEquals('yii\boost\db\ActiveRecord', get_parent_class('app\models\base\TypeBase'));
-        $this->assertEquals('yii\boost\db\ActiveQuery', get_parent_class('app\models\query\base\TypeQueryBase'));
-        $this->assertEquals('app\models\base\TypeBase', get_parent_class('app\models\Type'));
-        $this->assertEquals('app\models\query\base\TypeQueryBase', get_parent_class('app\models\query\TypeQuery'));
+        $this->assertTrue(class_exists('app\models\base\\' . $modelName . 'Base'));
+        $this->assertTrue(class_exists('app\models\query\base\\' . $modelName . 'QueryBase'));
+        $this->assertTrue(class_exists('app\models\\' . $modelName));
+        $this->assertTrue(class_exists('app\models\query\\' . $modelName . 'Query'));
     }
 
-    public function testMethodFind()
+    /**
+     * @param string $modelName
+     * @dataProvider modelNameDataProvider
+     */
+    public function testGetParentClass($modelName)
     {
-        $this->assertEquals('app\models\query\TypeQuery', get_class(\app\models\Type::find()));
+        $this->assertEquals('yii\boost\db\ActiveRecord', get_parent_class('app\models\base\\' . $modelName . 'Base'));
+        $this->assertEquals('yii\boost\db\ActiveQuery', get_parent_class('app\models\query\base\\' . $modelName . 'QueryBase'));
+        $this->assertEquals('app\models\base\\' . $modelName . 'Base', get_parent_class('app\models\\' . $modelName));
+        $this->assertEquals('app\models\query\base\\' . $modelName . 'QueryBase', get_parent_class('app\models\query\\' . $modelName . 'Query'));
+    }
+
+    /**
+     * @param string $modelName
+     * @dataProvider modelNameDataProvider
+     */
+    public function testMethodFind($modelName)
+    {
+        /* @var $modelClass string|\yii\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        $this->assertEquals('app\models\query\\' . $modelName . 'Query', get_class($modelClass::find()));
     }
 
     public function testMethodModelLabel()
