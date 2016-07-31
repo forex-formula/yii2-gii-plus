@@ -28,4 +28,12 @@ class BaseModelTest extends TestCase
     {
         $this->assertEquals('app\models\query\TypeQuery', get_class(\app\models\Type::find()));
     }
+
+    public function testMethodModelLabel()
+    {
+        $reflection = new ReflectionClass('app\models\Type');
+        $this->assertTrue($reflection->hasMethod('modelLabel'));
+        $this->assertTrue($reflection->getMethod('modelLabel')->isStatic());
+        $this->assertEquals('Тип', \app\models\Type::modelLabel());
+    }
 }
