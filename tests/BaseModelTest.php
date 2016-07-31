@@ -97,4 +97,12 @@ class BaseModelTest extends TestCase
         $this->assertInternalType('array', $displayField);
         $this->assertEquals(['folder_id', 'name'], $displayField);
     }
+
+    public function testMethodGetFolder()
+    {
+        $reflection = new ReflectionClass('app\models\File');
+        $this->assertTrue($reflection->hasMethod('getFolder'));
+        $this->assertFalse($reflection->getMethod('getFolder')->isStatic());
+        $this->assertEquals('app\models\query\FolderQuery', get_class((new \app\models\File)->getFolder()));
+    }
 }
