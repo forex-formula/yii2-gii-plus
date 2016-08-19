@@ -154,7 +154,7 @@ class BaseHelper
     }
 
     /**
-     * @param array $uses
+     * @param string[] $uses
      * @return bool
      */
     public static function sortUses(array &$uses)

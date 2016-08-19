@@ -194,7 +194,7 @@ class Generator extends GiiModelGenerator
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getBaseClassAutoComplete()
     {
@@ -239,7 +239,7 @@ class Generator extends GiiModelGenerator
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getQueryBaseClassAutoComplete()
     {
