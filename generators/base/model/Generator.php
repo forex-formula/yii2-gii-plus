@@ -584,7 +584,7 @@ CODE;
                 $output = preg_replace('~\}(\s*)$~', parent::render('query-part.php', $params) . '}$1', $output);
                 break;
         }
-        $output = preg_replace_callback('~(@return |return new )\\\\((?:\w + \\\\)*\w + \\\\query)\\\\base\\\\(\w + Query)Base~', function ($match) {
+        $output = preg_replace_callback('~(@return |return new )\\\\((?:\w+\\\\)*\w+\\\\query)\\\\base\\\\(\w+Query)Base~', function ($match) {
             $nsClassName = $match[2] . '\\' . $match[3];
             if (class_exists($nsClassName)) {
                 return $match[1] . '\\' . $nsClassName;
@@ -592,7 +592,7 @@ CODE;
                 return $match[0];
             }
         }, $output);
-        $output = preg_replace_callback('~(@see | @return |\[\[)\\\\((?:\w + \\\\)*\w +)\\\\base\\\\(\w +)Base~', function ($match) {
+        $output = preg_replace_callback('~(@see | @return |\[\[)\\\\((?:\w+\\\\)*\w+)\\\\base\\\\(\w+)Base~', function ($match) {
             $nsClassName = $match[2] . '\\' . $match[3];
             if (class_exists($nsClassName)) {
                 return $match[1] . '\\' . $nsClassName;
