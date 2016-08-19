@@ -561,7 +561,7 @@ class Generator extends GiiModelGenerator
                     $model = new $nsClassName;
                     $output = preg_replace_callback('~@return \\\\(yii\\\\db\\\\ActiveQuery)\s+\*/\s+public function ([^\(]+)\(\)~', function ($match) use ($model) {
                         if (method_exists($model, $match[2])) {
-                            return str_replace($match[1], get_class(call_user_func([$model, $match[2]])), $match[0]);
+                            return str_replace($match[1], get_class(call_user_func([$model, $match[2]])) . '|\\' . $match[1], $match[0]);
                         } else {
                             return $match[0];
                         }
@@ -571,7 +571,8 @@ class Generator extends GiiModelGenerator
                 $params['hasManyRelations'] = $this->hasManyRelations;
                 $output = preg_replace('~\}(\s*)$~', parent::render('model-part.php', $params) . '}$1', $output);
                 break;
-            case 'query.php':
+            case
+            'query.php':
                 $code = <<<CODE
     /*public function active()
     {
@@ -580,10 +581,11 @@ class Generator extends GiiModelGenerator
 
 CODE;
                 $output = str_replace($code, '', $output);
-                $output = preg_replace('~\}(\s*)$~', parent::render('query-part.php', $params) . '}$1', $output);
+                $output = preg_replace('~\}(\s*)$~', parent::render('query-part.php', $params) . '}
+        $1', $output);
                 break;
         }
-        $output = preg_replace_callback('~(@return |return new )\\\\((?:\w+\\\\)*\w+\\\\query)\\\\base\\\\(\w+Query)Base~', function ($match) {
+        $output = preg_replace_callback('~(@return |return new )\\\\((?:\w + \\\\)*\w + \\\\query)\\\\base\\\\(\w + Query)Base~', function ($match) {
             $nsClassName = $match[2] . '\\' . $match[3];
             if (class_exists($nsClassName)) {
                 return $match[1] . '\\' . $nsClassName;
@@ -591,7 +593,7 @@ CODE;
                 return $match[0];
             }
         }, $output);
-        $output = preg_replace_callback('~(@see |@return |\[\[)\\\\((?:\w+\\\\)*\w+)\\\\base\\\\(\w+)Base~', function ($match) {
+        $output = preg_replace_callback('~(@see | @return |\[\[)\\\\((?:\w + \\\\)*\w +)\\\\base\\\\(\w +)Base~', function ($match) {
             $nsClassName = $match[2] . '\\' . $match[3];
             if (class_exists($nsClassName)) {
                 return $match[1] . '\\' . $nsClassName;
