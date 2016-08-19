@@ -130,7 +130,8 @@ foreach ($relations as $relationName => $relation) {
         $hasOneRelationNames[] = $relationName;
     }
 }
-$code = '
+if (count($hasManyRelationNames)) {
+    $code = '
     /**
      * @return string[]
      */
@@ -138,7 +139,11 @@ $code = '
     {
         return [\'' . implode('\', \'', $hasManyRelationNames) . '\'];
     }
-
+';
+    echo $code;
+}
+if (count($hasOneRelationNames)) {
+    $code = '
     /**
      * @return string[]
      */
@@ -147,4 +152,5 @@ $code = '
         return [\'' . implode('\', \'', $hasOneRelationNames) . '\'];
     }
 ';
-echo $code;
+    echo $code;
+}
