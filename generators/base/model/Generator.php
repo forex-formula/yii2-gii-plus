@@ -358,6 +358,7 @@ class Generator extends GiiModelGenerator
         }
         $rules = [];
         if (count($booleanAttributes)) {
+            $rules[] = '[[\'' . implode('\', \'', $booleanAttributes) . '\'], \'filter\', \'filter\' => function ($value) {' . "\n" . '                return $value ? 1 : 0;' . "\n" . '            }, \'skipOnEmpty\' => true]';
             $rules[] = '[[\'' . implode('\', \'', $booleanAttributes) . '\'], \'boolean\']';
         }
         if (count($integerAttributes)) {
