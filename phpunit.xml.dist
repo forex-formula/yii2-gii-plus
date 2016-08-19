@@ -3,6 +3,7 @@
     <testsuites>
         <testsuite name="Yii 2 Gii Plus Extension">
             <directory>./tests</directory>
+            <exclude>./tests/fixtures</exclude>
             <exclude>./tests/migrations</exclude>
             <exclude>./tests/models</exclude>
         </testsuite>
