@@ -7,12 +7,12 @@ use yii\helpers\Inflector;
 /* @var $generator yii\gii\plus\generators\fixture\Generator */
 /* @var $ns string */
 /* @var $modelName string */
-/* @var $modelClass string */
+/* @var $modelClass string|\yii\db\ActiveRecord */
 /* @var $fixtureNs string */
 /* @var $fixtureName string */
-/* @var $fixtureClass string */
+/* @var $fixtureClass string|\yii\test\ActiveFixture */
 /* @var $baseFixtureName string */
-/* @var $baseFixtureClass string */
+/* @var $baseFixtureClass string|\yii\test\ActiveFixture */
 
 $uses = [
     $baseFixtureClass
