@@ -554,7 +554,7 @@ class Generator extends GiiModelGenerator
                     $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
                 }
                 // fix rules
-                $output = preg_replace('~\'targetClass\' \=\> (\w+)Base\:\:className\(\)~', '\'targetClass\' => \1::className()', $output);
+                $output = preg_replace('~\'targetClass\' \=\> (\w+)Base\:\:className\(\)~', '\'targetClass\' => $1::className()', $output);
                 // fix relations
                 $nsClassName = $this->ns . '\\' . $params['className'];
                 if (class_exists($nsClassName) && is_subclass_of($nsClassName, 'yii\db\ActiveRecord')) {
@@ -569,7 +569,7 @@ class Generator extends GiiModelGenerator
                 }
                 $params['relationUses'] = $this->relationUses;
                 $params['hasManyRelations'] = $this->hasManyRelations;
-                $output = preg_replace('~\}(\s*)$~', parent::render('model-part.php', $params) . '}\1', $output);
+                $output = preg_replace('~\}(\s*)$~', parent::render('model-part.php', $params) . '}$1', $output);
                 break;
             case 'query.php':
                 $code = <<<CODE
@@ -580,7 +580,7 @@ class Generator extends GiiModelGenerator
 
 CODE;
                 $output = str_replace($code, '', $output);
-                $output = preg_replace('~\}(\s*)$~', parent::render('query-part.php', $params) . '}\1', $output);
+                $output = preg_replace('~\}(\s*)$~', parent::render('query-part.php', $params) . '}$1', $output);
                 break;
         }
         $output = preg_replace_callback('~(@return |return new )\\\\((?:\w+\\\\)*\w+\\\\query)\\\\base\\\\(\w+Query)Base~', function ($match) {
