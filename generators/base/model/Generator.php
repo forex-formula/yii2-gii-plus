@@ -85,13 +85,13 @@ class Generator extends GiiModelGenerator
             [['includeFilter', 'excludeFilter'], 'filter', 'filter' => 'trim'],
             [['includeFilter', 'excludeFilter'], 'required'],
             [['includeFilter', 'excludeFilter'], 'validatePattern'],
-            ['ns', 'match', 'pattern' => '~\\\\base$~'],
-            ['modelClass', 'match', 'pattern' => '~Base$~'],
-            ['queryNs', 'default', 'value' => function (Generator $model, $attribute) {
+            [['ns'], 'match', 'pattern' => '~\\\\base$~'],
+            [['modelClass'], 'match', 'pattern' => '~Base$~'],
+            [['queryNs'], 'default', 'value' => function (Generator $model, $attribute) {
                 return preg_replace('~\\\\base$~', '\query\base', $model->ns);
             }],
-            ['queryNs', 'match', 'pattern' => '~\\\\query\\\\base$~'],
-            ['queryClass', 'match', 'pattern' => '~QueryBase$~']
+            [['queryNs'], 'match', 'pattern' => '~\\\\query\\\\base$~'],
+            [['queryClass'], 'match', 'pattern' => '~QueryBase$~']
         ]);
     }
 

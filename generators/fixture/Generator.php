@@ -47,9 +47,9 @@ class Generator extends GiiGenerator
     public function rules()
     {
         return array_merge(parent::rules(), [
-            ['modelClass', 'filter', 'filter' => 'trim'],
-            ['modelClass', 'required'],
-            ['modelClass', 'match', 'pattern' => '~^(?:\w+\\\\)+(?:\w+|\*)$~']
+            [['modelClass', 'fixtureBaseClass'], 'filter', 'filter' => 'trim'],
+            [['modelClass', 'fixtureBaseClass'], 'required'],
+            [['modelClass'], 'match', 'pattern' => '~^(?:\w+\\\\)+(?:\w+|\*)$~']
         ]);
     }
 
