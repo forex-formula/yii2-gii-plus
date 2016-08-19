@@ -96,7 +96,7 @@ if (count($displayField)) {
     echo $code;
 }
 
-// relations
+// relation builders
 if (array_key_exists($tableName, $hasManyRelations)) {
     foreach ($hasManyRelations[$tableName] as $relationName => $hasManyRelation) {
         list ($nsClassName, $className, $foreignKey) = $hasManyRelation;
@@ -118,3 +118,33 @@ if (array_key_exists($tableName, $hasManyRelations)) {
         echo $code;
     }
 }
+
+// relations
+$hasManyRelationNames = [];
+$hasOneRelationNames = [];
+foreach ($relations as $relationName => $relation) {
+    list ($code, $className, $hasMany) = $relation;
+    if ($hasMany) {
+        $hasManyRelationNames[] = $relationName;
+    } else {
+        $hasOneRelationNames[] = $relationName;
+    }
+}
+$code = '
+    /**
+     * @return string[]
+     */
+    public static function hasManyRelationNames()
+    {
+        return [\'' . implode('\', \'', $hasManyRelationNames) . '\'];
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function hasOneRelationNames()
+    {
+        return [\'' . implode('\', \'', $hasOneRelationNames) . '\'];
+    }
+';
+echo $code;
