@@ -581,8 +581,7 @@ class Generator extends GiiModelGenerator
 
 CODE;
                 $output = str_replace($code, '', $output);
-                $output = preg_replace('~\}(\s*)$~', parent::render('query-part.php', $params) . '}
-        $1', $output);
+                $output = preg_replace('~\}(\s*)$~', parent::render('query-part.php', $params) . '}$1', $output);
                 break;
         }
         $output = preg_replace_callback('~(@return |return new )\\\\((?:\w + \\\\)*\w + \\\\query)\\\\base\\\\(\w + Query)Base~', function ($match) {
