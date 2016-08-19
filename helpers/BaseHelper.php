@@ -34,7 +34,7 @@ class BaseHelper
     /**
      * @param Connection $db
      * @param bool $refresh
-     * @return array
+     * @return string[]
      */
     public static function getSchemaNames(Connection $db, $refresh = false)
     {
@@ -47,12 +47,12 @@ class BaseHelper
     }
 
     /**
-     * @var array
+     * @var string[]
      */
     protected static $modelNamespaces;
 
     /**
-     * @return array
+     * @return string[]
      */
     public static function getModelNamespaces()
     {
@@ -72,13 +72,13 @@ class BaseHelper
     }
 
     /**
-     * @var array
+     * @var string[]
      */
     protected static $modelDeepNamespaces;
 
     /**
      * @param string $modelNs
-     * @return array
+     * @return string[]
      */
     protected static function getModelSubNamespaces($modelNs)
     {
@@ -95,7 +95,7 @@ class BaseHelper
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public static function getModelDeepNamespaces()
     {
@@ -110,12 +110,12 @@ class BaseHelper
     }
 
     /**
-     * @var array
+     * @var string[]
      */
     protected static $modelClasses;
 
     /**
-     * @return array
+     * @return string[]
      */
     public static function getModelClasses()
     {
@@ -154,7 +154,7 @@ class BaseHelper
     }
 
     /**
-     * @param array $uses
+     * @param string[] $uses
      * @return bool
      */
     public static function sortUses(array &$uses)

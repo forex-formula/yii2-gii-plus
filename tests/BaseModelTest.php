@@ -14,7 +14,9 @@ class BaseModelTest extends TestCase
     public function modelNameDataProvider()
     {
         return [
-            ['Type'], ['Folder'], ['File']
+            ['Type'],
+            ['Folder'],
+            ['File']
         ];
     }
 
@@ -53,17 +55,42 @@ class BaseModelTest extends TestCase
         $this->assertEquals('app\models\query\\' . $modelName . 'Query', get_class($modelClass::find()));
     }
 
-    public function testMethodModelLabelOfType()
+    /**
+     * @return array
+     */
+    public function modelLabelDataProvider()
     {
-        $reflection = new ReflectionClass('app\models\Type');
-        $this->assertTrue($reflection->hasMethod('modelLabel'));
-        $this->assertTrue($reflection->getMethod('modelLabel')->isStatic());
-        $this->assertEquals('Тип', \app\models\Type::modelLabel());
+        return [
+            ['Type', 'Тип'],
+            ['Folder', 'Папка'],
+            ['File', 'Файл']
+        ];
     }
 
-    public function testMethodPrimaryKeyOfType()
+    /**
+     * @param string $modelName
+     * @param string $modelLabel
+     * @dataProvider modelLabelDataProvider
+     */
+    public function testMethodModelLabel($modelName, $modelLabel)
     {
-        $primaryKey = \app\models\Type::primaryKey();
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        $reflection = new ReflectionClass($modelClass);
+        $this->assertTrue($reflection->hasMethod('modelLabel'));
+        $this->assertTrue($reflection->getMethod('modelLabel')->isStatic());
+        $this->assertEquals($modelLabel, $modelClass::modelLabel());
+    }
+
+    /**
+     * @param string $modelName
+     * @dataProvider modelNameDataProvider
+     */
+    public function testMethodPrimaryKey($modelName)
+    {
+        /* @var $modelClass string|\yii\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        $primaryKey = $modelClass::primaryKey();
         $this->assertInternalType('array', $primaryKey);
         $this->assertEquals(['id'], $primaryKey);
     }

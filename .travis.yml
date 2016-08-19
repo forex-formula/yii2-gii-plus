@@ -6,6 +6,13 @@ php:
   - 5.6
   - 7.0
 
+addons:
+  apt:
+    packages:
+      - mysql-server-5.6
+      - mysql-client-core-5.6
+      - mysql-client-5.6
+
 sudo: false
 
 cache:
@@ -25,6 +32,7 @@ before_script:
   - tests/yii gii/custom_model --interactive=0
   - tests/yii gii/base_model --enableI18N=1 --interactive=0 --overwrite=1
   - tests/yii gii/base_model --enableI18N=1 --interactive=0 --overwrite=1
+  - tests/yii gii/fixture --interactive=0
 
 script:
   - vendor/bin/phpunit

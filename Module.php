@@ -27,7 +27,8 @@ class Module extends GiiModule
     {
         return array_merge(parent::coreGenerators(), [
             'base_model' => ['class' => 'yii\gii\plus\generators\base\model\Generator'],
-            'custom_model' => ['class' => 'yii\gii\plus\generators\custom\model\Generator']
+            'custom_model' => ['class' => 'yii\gii\plus\generators\custom\model\Generator'],
+            'fixture' => ['class' => 'yii\gii\plus\generators\fixture\Generator']
         ]);
     }
 }
