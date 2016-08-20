@@ -120,36 +120,36 @@ if (array_key_exists($tableName, $hasManyRelations)) {
 }
 
 // relations
-$hasManyRelationNames = [];
-$hasOneRelationNames = [];
+$havingManyRelationNames = [];
+$havingOneRelationNames = [];
 foreach ($relations as $relationName => $relation) {
     list ($code, $className, $hasMany) = $relation;
     if ($hasMany) {
-        $hasManyRelationNames[] = $relationName;
+        $havingManyRelationNames[] = $relationName;
     } else {
-        $hasOneRelationNames[] = $relationName;
+        $havingOneRelationNames[] = $relationName;
     }
 }
-if (count($hasManyRelationNames)) {
+if (count($havingManyRelationNames)) {
     $code = '
     /**
      * @return string[]
      */
-    public static function hasManyRelationNames()
+    public static function havingManyRelationNames()
     {
-        return [\'' . implode('\', \'', $hasManyRelationNames) . '\'];
+        return [\'' . implode('\', \'', $havingManyRelationNames) . '\'];
     }
 ';
     echo $code;
 }
-if (count($hasOneRelationNames)) {
+if (count($havingOneRelationNames)) {
     $code = '
     /**
      * @return string[]
      */
-    public static function hasOneRelationNames()
+    public static function havingOneRelationNames()
     {
-        return [\'' . implode('\', \'', $hasOneRelationNames) . '\'];
+        return [\'' . implode('\', \'', $havingOneRelationNames) . '\'];
     }
 ';
     echo $code;
