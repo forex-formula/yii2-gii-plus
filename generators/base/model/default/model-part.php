@@ -92,6 +92,14 @@ if (count($displayField)) {
     {
         return [\'' . implode('\', \'', $displayField) . '\'];
     }
+
+    /**
+     * @return string
+     */
+    public function getDisplayField()
+    {
+        return $this->' . implode(' . \' \' . $this->', $displayField) . ';
+    }
 ';
     echo $code;
 }
