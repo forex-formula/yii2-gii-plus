@@ -14,7 +14,7 @@ use yii\db\Schema;
 /* @var $rules string[] */
 /* @var $relations array */
 /* @var $relationUses array */
-/* @var $hasManyRelations array */
+/* @var $buildRelations array */
 
 // model label
 $modelLabel = Inflector::titleize($tableName);
@@ -104,10 +104,10 @@ if (count($displayField)) {
     echo $code;
 }
 
-// relation builders
-if (array_key_exists($tableName, $hasManyRelations)) {
-    foreach ($hasManyRelations[$tableName] as $relationName => $hasManyRelation) {
-        list ($nsClassName, $className, $foreignKey) = $hasManyRelation;
+// build relations
+if (array_key_exists($tableName, $buildRelations)) {
+    foreach ($buildRelations[$tableName] as $relationName => $buildRelation) {
+        list ($nsClassName, $className, $foreignKey) = $buildRelation;
         $code = '
     /**
      * @return ' . $className . '
@@ -124,6 +124,36 @@ if (array_key_exists($tableName, $hasManyRelations)) {
     }
 ';
         echo $code;
+    }
+}
+
+// foreign keys
+foreach ($tableSchema->foreignKeys as $foreignKey) {
+    $foreignModelClass = \yii\gii\plus\helpers\Helper::getModelClassByTableName($foreignKey[0]);
+    if (($foreignModelClass !== false) && class_exists($foreignModelClass)) {
+        unset($foreignKey[0]);
+        $foreignKey = array_keys($foreignKey);
+        if (count($foreignKey) == 1) {
+            $attribute = $foreignKey[0];
+            $attributeArg = Inflector::variablize($attribute);
+            $code = '
+    /**
+     * @param string|array|Expression $condition
+     * @param array $params
+     * @param string|array|Expression $orderBy
+     * @return array
+     */
+    public function ' . $attributeArg . 'ListItems($condition = null, $params = [], $orderBy = null)
+    {
+        return \\' . $foreignModelClass . '::findListItems($condition, $params, $orderBy);
+    }
+';
+            echo $code;
+        } else {
+            foreach ($foreignKey as $i => $attribute) {
+
+            }
+        }
     }
 }
 
