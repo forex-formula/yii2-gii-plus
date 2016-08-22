@@ -41,6 +41,7 @@ class m160209_192728_init extends Migration
 
         $this->createTable('file', [
             'id' => $this->primaryKey(),
+            'root_folder_id' => $this->integer()->unsigned()->notNull()->comment('Корневая папка'),
             'folder_id' => $this->integer()->unsigned()->notNull()->comment('Папка'),
             'name' => $this->string(50)->notNull()->comment('Название'),
             'visible' => $this->boolean()->notNull()->defaultValue(1)->comment('Видимый'),
@@ -50,7 +51,8 @@ class m160209_192728_init extends Migration
         ]);
         $this->createUnique(null, 'file', ['folder_id', 'name']);
 
-        $this->addForeignKey(null, 'file', ['folder_id'], 'folder', ['id']);
+        $this->createIndex(null, 'folder', ['id', 'root_folder_id']);
+        $this->addForeignKey(null, 'file', ['folder_id', 'root_folder_id'], 'folder', ['id', 'root_folder_id']);
     }
 
     public function down()

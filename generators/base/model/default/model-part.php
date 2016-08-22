@@ -147,6 +147,16 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
     {
         return ' . Inflector::classify($foreignTableName) . '::findListItems($condition, $params, $orderBy);
     }
+
+    /**
+     * @param array $condition
+     * @param string|array|Expression $orderBy
+     * @return array
+     */
+    public function ' . $attributeArg . 'FilterListItems(array $condition = [], $orderBy = null)
+    {
+        return ' . Inflector::classify($foreignTableName) . '::findFilterListItems($condition, $orderBy);
+    }
 ';
         echo $code;
     } else {
@@ -168,8 +178,17 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
     {
         return ' . Inflector::classify($foreignTableName) . '::findListItems($condition, $params, $orderBy);
     }
+
+    /**
+     * @param array $condition
+     * @param string|array|Expression $orderBy
+     * @return array
+     */
+    public function ' . $attributeArg . 'FilterListItems(array $condition = [], $orderBy = null)
+    {
+        return ' . Inflector::classify($foreignTableName) . '::findFilterListItems($condition, $orderBy);
+    }
 ';
-                echo $code;
             }
         }
     }
@@ -179,7 +198,7 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
 $havingManyRelationNames = [];
 $havingOneRelationNames = [];
 foreach ($relations as $relationName => $relation) {
-    list ($code, $className, $hasMany) = $relation;
+    list ($code, $_className, $hasMany) = $relation;
     if ($hasMany) {
         $havingManyRelationNames[] = $relationName;
     } else {
