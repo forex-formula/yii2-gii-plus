@@ -457,6 +457,7 @@ class Generator extends GiiModelGenerator
                             }
                             foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
                                 list ($subCode, $subClassName, $subHasMany) = $subRelation;
+                                /* @var $subNsClassName string|\yii\db\ActiveRecord */
                                 $subNsClassName = Helper::getModelClassByTableName(array_search($subClassName, $this->classNames));
                                 if (($subNsClassName !== false) && class_exists($subNsClassName)) {
                                     if (!$subHasMany && ($subRelationName != $className)) {

@@ -17,7 +17,7 @@ use yii\db\Schema;
 /* @var $buildRelations array */
 
 // model label
-$modelLabel = Inflector::titleize($tableName);
+$modelLabel = Inflector::titleize($className);
 $db = $generator->getDbConnection();
 if ($generator->generateLabelsFromComments && in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
     $row = $db->createCommand('SHOW CREATE TABLE ' . $db->quoteTableName($tableName))->queryOne();
@@ -127,16 +127,15 @@ if (array_key_exists($tableName, $buildRelations)) {
     }
 }
 
-// foreign keys
+// list items
 foreach ($tableSchema->foreignKeys as $foreignKey) {
-    $foreignModelClass = \yii\gii\plus\helpers\Helper::getModelClassByTableName($foreignKey[0]);
-    if (($foreignModelClass !== false) && class_exists($foreignModelClass)) {
-        unset($foreignKey[0]);
-        $foreignKey = array_keys($foreignKey);
-        if (count($foreignKey) == 1) {
-            $attribute = $foreignKey[0];
-            $attributeArg = Inflector::variablize($attribute);
-            $code = '
+    $foreignTableName = $foreignKey[0];
+    unset($foreignKey[0]);
+    $foreignKey = array_keys($foreignKey);
+    if (count($foreignKey) == 1) {
+        $attribute = $foreignKey[0];
+        $attributeArg = Inflector::variablize($attribute);
+        $code = '
     /**
      * @param string|array|Expression $condition
      * @param array $params
@@ -145,14 +144,12 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
      */
     public function ' . $attributeArg . 'ListItems($condition = null, $params = [], $orderBy = null)
     {
-        return \\' . $foreignModelClass . '::findListItems($condition, $params, $orderBy);
+        return ' . Inflector::classify($foreignTableName) . '::findListItems($condition, $params, $orderBy);
     }
 ';
-            echo $code;
-        } else {
-            foreach ($foreignKey as $i => $attribute) {
-
-            }
+        echo $code;
+    } else {
+        foreach ($foreignKey as $i => $attribute) {
         }
     }
 }
