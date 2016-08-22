@@ -36,4 +36,6 @@ class <?= $fixtureName ?> extends <?= $baseFixtureName ?>
 {
 
     public $modelClass = '<?= $modelClass ?>';
+
+    public $depends = [];
 }

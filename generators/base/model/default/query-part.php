@@ -43,7 +43,7 @@ if (count($primaryKey)) {
         $code = '
     /**
      * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
-     * @return self
+     * @return $this
      */
     public function ' . $methodName . '($' . $attributeArg . ')
     {
@@ -55,7 +55,7 @@ if (count($primaryKey)) {
         $code .= '
     /**
      * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
-     * @return self
+     * @return $this
      */
     public function ' . $methodName . '($' . $attributeArg . ')
     {
@@ -74,7 +74,7 @@ if (count($primaryKey)) {
             $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
 ';
         }
-        $code .= '     * @return self
+        $code .= '     * @return $this
      */
     public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
     {
@@ -96,7 +96,7 @@ if (count($primaryKey)) {
             $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
 ';
         }
-        $code .= '     * @return self
+        $code .= '     * @return $this
      */
     public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
     {
@@ -127,7 +127,7 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
             $code = '
     /**
      * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
-     * @return self
+     * @return $this
      */
     public function ' . $methodName . '($' . $attributeArg . ')
     {
@@ -149,7 +149,7 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
                 $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
 ';
             }
-            $code .= '     * @return self
+            $code .= '     * @return $this
      */
     public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
     {
@@ -181,7 +181,7 @@ try {
                 $code = '
     /**
      * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
-     * @return self
+     * @return $this
      */
     public function ' . $methodName . '($' . $attributeArg . ')
     {
@@ -203,7 +203,7 @@ try {
                     $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
 ';
                 }
-                $code .= '     * @return self
+                $code .= '     * @return $this
      */
     public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
     {
@@ -233,7 +233,7 @@ foreach ($keyAttributes as $attribute) {
         $code = '
     /**
      * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
-     * @return self
+     * @return $this
      */
     public function ' . $methodName . '($' . $attributeArg . ')
     {
@@ -254,7 +254,7 @@ foreach ($tableSchema->columns as $column) {
             $code = '
     /**
      * @param int|bool $' . $attributeArg . '
-     * @return self
+     * @return $this
      */
     public function ' . $methodName . '($' . $attributeArg . ' = true)
     {
@@ -276,7 +276,7 @@ foreach ($tableSchema->columns as $column) {
             $code = '
     /**
      * @param bool $' . $attributeArg . '
-     * @return self
+     * @return $this
      */
     public function ' . $methodName . '($' . $attributeArg . ' = true)
     {

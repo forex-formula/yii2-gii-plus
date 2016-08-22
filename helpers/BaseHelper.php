@@ -154,6 +154,15 @@ class BaseHelper
     }
 
     /**
+     * @param string $tableName
+     * @return string|false
+     */
+    public static function getModelClassByTableName($tableName)
+    {
+        return array_search($tableName, static::getModelClassTableNameMap());
+    }
+
+    /**
      * @param string[] $uses
      * @return bool
      */

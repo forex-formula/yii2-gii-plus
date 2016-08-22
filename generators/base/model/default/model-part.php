@@ -3,6 +3,7 @@
 use yii\helpers\Inflector;
 use yii\base\NotSupportedException;
 use yii\db\Schema;
+use yii\gii\plus\helpers\Helper;
 
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\base\model\Generator */
@@ -14,10 +15,46 @@ use yii\db\Schema;
 /* @var $rules string[] */
 /* @var $relations array */
 /* @var $relationUses array */
-/* @var $hasManyRelations array */
+/* @var $buildRelations array */
+
+// relations
+$havingManyRelationNames = [];
+$havingOneRelationNames = [];
+foreach ($relations as $relationName => $relation) {
+    list ($code, $className, $hasMany) = $relation;
+    if ($hasMany) {
+        $havingManyRelationNames[] = $relationName;
+    } else {
+        $havingOneRelationNames[] = $relationName;
+    }
+}
+if (count($havingManyRelationNames)) {
+    $code = '
+    /**
+     * @return string[]
+     */
+    public static function havingManyRelationNames()
+    {
+        return [\'' . implode('\', \'', $havingManyRelationNames) . '\'];
+    }
+';
+    echo $code;
+}
+if (count($havingOneRelationNames)) {
+    $code = '
+    /**
+     * @return string[]
+     */
+    public static function havingOneRelationNames()
+    {
+        return [\'' . implode('\', \'', $havingOneRelationNames) . '\'];
+    }
+';
+    echo $code;
+}
 
 // model label
-$modelLabel = Inflector::titleize($tableName);
+$modelLabel = Inflector::titleize($className);
 $db = $generator->getDbConnection();
 if ($generator->generateLabelsFromComments && in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
     $row = $db->createCommand('SHOW CREATE TABLE ' . $db->quoteTableName($tableName))->queryOne();
@@ -92,14 +129,22 @@ if (count($displayField)) {
     {
         return [\'' . implode('\', \'', $displayField) . '\'];
     }
+
+    /**
+     * @return string
+     */
+    public function getDisplayField()
+    {
+        return $this->' . implode(' . \' \' . $this->', $displayField) . ';
+    }
 ';
     echo $code;
 }
 
-// relation builders
-if (array_key_exists($tableName, $hasManyRelations)) {
-    foreach ($hasManyRelations[$tableName] as $relationName => $hasManyRelation) {
-        list ($nsClassName, $className, $foreignKey) = $hasManyRelation;
+// build relations
+if (array_key_exists($tableName, $buildRelations)) {
+    foreach ($buildRelations[$tableName] as $relationName => $buildRelation) {
+        list ($nsClassName, $className, $foreignKey) = $buildRelation;
         $code = '
     /**
      * @return ' . $className . '
@@ -119,38 +164,49 @@ if (array_key_exists($tableName, $hasManyRelations)) {
     }
 }
 
-// relations
-$hasManyRelationNames = [];
-$hasOneRelationNames = [];
-foreach ($relations as $relationName => $relation) {
-    list ($code, $className, $hasMany) = $relation;
-    if ($hasMany) {
-        $hasManyRelationNames[] = $relationName;
+// list items
+foreach ($tableSchema->foreignKeys as $foreignKey) {
+    $foreignTableName = $foreignKey[0];
+    unset($foreignKey[0]);
+    if (count($foreignKey) == 1) {
+        $foreignKey = array_keys($foreignKey);
+        $attribute = $foreignKey[0];
+        $attributeArg = Inflector::variablize($attribute);
+        $code = '
+    /**
+     * @param string|array|Expression $condition
+     * @param array $params
+     * @param string|array|Expression $orderBy
+     * @return array
+     */
+    public function ' . $attributeArg . 'ListItems($condition = null, $params = [], $orderBy = null)
+    {
+        return ' . Inflector::classify($foreignTableName) . '::findListItems($condition, $params, $orderBy);
+    }
+';
+        echo $code;
     } else {
-        $hasOneRelationNames[] = $relationName;
-    }
-}
-if (count($hasManyRelationNames)) {
-    $code = '
+        /* @var $foreignModelClass string|\yii\db\ActiveRecord */
+        $foreignModelClass = Helper::getModelClassByTableName($foreignTableName);
+        if (($foreignModelClass !== false) && class_exists($foreignModelClass)) {
+            $primaryKey = $foreignModelClass::primaryKey();
+            if (count($primaryKey) == 1) {
+                $attribute = array_search($primaryKey[0], $foreignKey);
+                $attributeArg = Inflector::variablize($attribute);
+                $code = '
     /**
-     * @return string[]
+     * @param string|array|Expression $condition
+     * @param array $params
+     * @param string|array|Expression $orderBy
+     * @return array
      */
-    public static function hasManyRelationNames()
+    public function ' . $attributeArg . 'ListItems($condition = null, $params = [], $orderBy = null)
     {
-        return [\'' . implode('\', \'', $hasManyRelationNames) . '\'];
+        return ' . Inflector::classify($foreignTableName) . '::findListItems($condition, $params, $orderBy);
     }
 ';
-    echo $code;
-}
-if (count($hasOneRelationNames)) {
-    $code = '
-    /**
-     * @return string[]
-     */
-    public static function hasOneRelationNames()
-    {
-        return [\'' . implode('\', \'', $hasOneRelationNames) . '\'];
+                echo $code;
+            }
+        }
     }
-';
-    echo $code;
 }
