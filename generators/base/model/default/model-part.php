@@ -18,7 +18,7 @@ use yii\gii\plus\helpers\Helper;
 /* @var $buildRelations array */
 
 // model label
-$modelLabel = Inflector::titleize($className);
+$modelLabel = Inflector::titleize($tableName);
 $db = $generator->getDbConnection();
 if ($generator->generateLabelsFromComments && in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
     $row = $db->createCommand('SHOW CREATE TABLE ' . $db->quoteTableName($tableName))->queryOne();
