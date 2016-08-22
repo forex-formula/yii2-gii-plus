@@ -63,7 +63,7 @@ class BaseModelTest extends TestCase
         return [
             ['Type', 'Тип'],
             ['Folder', 'Папка'],
-            ['File', 'Файл']
+            ['File', 'File']
         ];
     }
 
