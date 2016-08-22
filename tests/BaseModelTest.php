@@ -46,6 +46,31 @@ class BaseModelTest extends TestCase
     }
 
     /**
+     * @return array
+     */
+    public function tableNameDataProvider()
+    {
+        return [
+            ['Type', 'type'],
+            ['Folder', 'folder'],
+            ['RootFolder', 'root_folder'],
+            ['File', 'file']
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string $tableName
+     * @dataProvider tableNameDataProvider
+     */
+    public function testMethodTableName($modelName, $tableName)
+    {
+        /* @var $modelClass string|\yii\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        $this->assertEquals($tableName, $modelClass::tableName());
+    }
+
+    /**
      * @param string $modelName
      * @dataProvider modelNameDataProvider
      */
