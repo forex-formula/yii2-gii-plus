@@ -110,16 +110,28 @@ class BaseModelTest extends TestCase
     }
 
     /**
-     * @param string $modelName
-     * @dataProvider modelNameDataProvider
+     * @return array
      */
-    public function testMethodPrimaryKey($modelName)
+    public function primaryKeyDataProvider()
+    {
+        return [
+            ['Type', ['id']],
+            ['Folder', ['id']],
+            ['RootFolder', ['id']],
+            ['File', ['id']]
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string[] $primaryKey
+     * @dataProvider primaryKeyDataProvider
+     */
+    public function testMethodPrimaryKey($modelName, array $primaryKey)
     {
         /* @var $modelClass string|\yii\db\ActiveRecord */
         $modelClass = 'app\models\\' . $modelName;
-        $primaryKey = $modelClass::primaryKey();
-        $this->assertInternalType('array', $primaryKey);
-        $this->assertEquals(['id'], $primaryKey);
+        $this->assertEquals($primaryKey, $modelClass::primaryKey());
     }
 
     public function testMethodDisplayFieldOfType()
