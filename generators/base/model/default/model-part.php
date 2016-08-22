@@ -3,6 +3,7 @@
 use yii\helpers\Inflector;
 use yii\base\NotSupportedException;
 use yii\db\Schema;
+use yii\gii\plus\helpers\Helper;
 
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\base\model\Generator */
@@ -15,6 +16,42 @@ use yii\db\Schema;
 /* @var $relations array */
 /* @var $relationUses array */
 /* @var $buildRelations array */
+
+// relations
+$havingManyRelationNames = [];
+$havingOneRelationNames = [];
+foreach ($relations as $relationName => $relation) {
+    list ($code, $className, $hasMany) = $relation;
+    if ($hasMany) {
+        $havingManyRelationNames[] = $relationName;
+    } else {
+        $havingOneRelationNames[] = $relationName;
+    }
+}
+if (count($havingManyRelationNames)) {
+    $code = '
+    /**
+     * @return string[]
+     */
+    public static function havingManyRelationNames()
+    {
+        return [\'' . implode('\', \'', $havingManyRelationNames) . '\'];
+    }
+';
+    echo $code;
+}
+if (count($havingOneRelationNames)) {
+    $code = '
+    /**
+     * @return string[]
+     */
+    public static function havingOneRelationNames()
+    {
+        return [\'' . implode('\', \'', $havingOneRelationNames) . '\'];
+    }
+';
+    echo $code;
+}
 
 // model label
 $modelLabel = Inflector::titleize($className);
@@ -131,8 +168,8 @@ if (array_key_exists($tableName, $buildRelations)) {
 foreach ($tableSchema->foreignKeys as $foreignKey) {
     $foreignTableName = $foreignKey[0];
     unset($foreignKey[0]);
-    $foreignKey = array_keys($foreignKey);
     if (count($foreignKey) == 1) {
+        $foreignKey = array_keys($foreignKey);
         $attribute = $foreignKey[0];
         $attributeArg = Inflector::variablize($attribute);
         $code = '
@@ -149,43 +186,27 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
 ';
         echo $code;
     } else {
-        foreach ($foreignKey as $i => $attribute) {
+        /* @var $foreignModelClass string|\yii\db\ActiveRecord */
+        $foreignModelClass = Helper::getModelClassByTableName($foreignTableName);
+        if (($foreignModelClass !== false) && class_exists($foreignModelClass)) {
+            $primaryKey = $foreignModelClass::primaryKey();
+            if (count($primaryKey) == 1) {
+                $attribute = array_search($primaryKey[0], $foreignKey);
+                $attributeArg = Inflector::variablize($attribute);
+                $code = '
+    /**
+     * @param string|array|Expression $condition
+     * @param array $params
+     * @param string|array|Expression $orderBy
+     * @return array
+     */
+    public function ' . $attributeArg . 'ListItems($condition = null, $params = [], $orderBy = null)
+    {
+        return ' . Inflector::classify($foreignTableName) . '::findListItems($condition, $params, $orderBy);
+    }
+';
+                echo $code;
+            }
         }
     }
-}
-
-// relations
-$havingManyRelationNames = [];
-$havingOneRelationNames = [];
-foreach ($relations as $relationName => $relation) {
-    list ($code, $className, $hasMany) = $relation;
-    if ($hasMany) {
-        $havingManyRelationNames[] = $relationName;
-    } else {
-        $havingOneRelationNames[] = $relationName;
-    }
-}
-if (count($havingManyRelationNames)) {
-    $code = '
-    /**
-     * @return string[]
-     */
-    public static function havingManyRelationNames()
-    {
-        return [\'' . implode('\', \'', $havingManyRelationNames) . '\'];
-    }
-';
-    echo $code;
-}
-if (count($havingOneRelationNames)) {
-    $code = '
-    /**
-     * @return string[]
-     */
-    public static function havingOneRelationNames()
-    {
-        return [\'' . implode('\', \'', $havingOneRelationNames) . '\'];
-    }
-';
-    echo $code;
 }
