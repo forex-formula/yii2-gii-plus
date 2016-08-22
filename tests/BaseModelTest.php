@@ -16,6 +16,7 @@ class BaseModelTest extends TestCase
         return [
             ['Type'],
             ['Folder'],
+            ['RootFolder'],
             ['File']
         ];
     }
@@ -63,6 +64,7 @@ class BaseModelTest extends TestCase
         return [
             ['Type', 'Тип'],
             ['Folder', 'Папка'],
+            ['RootFolder', 'Корневая папка'],
             ['File', 'File']
         ];
     }
