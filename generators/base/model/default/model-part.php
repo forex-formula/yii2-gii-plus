@@ -17,42 +17,6 @@ use yii\gii\plus\helpers\Helper;
 /* @var $relationUses array */
 /* @var $buildRelations array */
 
-// relations
-$havingManyRelationNames = [];
-$havingOneRelationNames = [];
-foreach ($relations as $relationName => $relation) {
-    list ($code, $className, $hasMany) = $relation;
-    if ($hasMany) {
-        $havingManyRelationNames[] = $relationName;
-    } else {
-        $havingOneRelationNames[] = $relationName;
-    }
-}
-if (count($havingManyRelationNames)) {
-    $code = '
-    /**
-     * @return string[]
-     */
-    public static function havingManyRelationNames()
-    {
-        return [\'' . implode('\', \'', $havingManyRelationNames) . '\'];
-    }
-';
-    echo $code;
-}
-if (count($havingOneRelationNames)) {
-    $code = '
-    /**
-     * @return string[]
-     */
-    public static function havingOneRelationNames()
-    {
-        return [\'' . implode('\', \'', $havingOneRelationNames) . '\'];
-    }
-';
-    echo $code;
-}
-
 // model label
 $modelLabel = Inflector::titleize($className);
 $db = $generator->getDbConnection();
@@ -209,4 +173,40 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
             }
         }
     }
+}
+
+// relations
+$havingManyRelationNames = [];
+$havingOneRelationNames = [];
+foreach ($relations as $relationName => $relation) {
+    list ($code, $className, $hasMany) = $relation;
+    if ($hasMany) {
+        $havingManyRelationNames[] = $relationName;
+    } else {
+        $havingOneRelationNames[] = $relationName;
+    }
+}
+if (count($havingManyRelationNames)) {
+    $code = '
+    /**
+     * @return string[]
+     */
+    public static function havingManyRelationNames()
+    {
+        return [\'' . implode('\', \'', $havingManyRelationNames) . '\'];
+    }
+';
+    echo $code;
+}
+if (count($havingOneRelationNames)) {
+    $code = '
+    /**
+     * @return string[]
+     */
+    public static function havingOneRelationNames()
+    {
+        return [\'' . implode('\', \'', $havingOneRelationNames) . '\'];
+    }
+';
+    echo $code;
 }
