@@ -17,6 +17,42 @@ use yii\db\Schema;
 /* @var $relationUses array */
 /* @var $buildRelations array */
 
+// relations
+$singularRelations = [];
+$pluralRelations = [];
+foreach ($relations as $relationName => $relation) {
+    list ($code, $_className, $hasMany) = $relation;
+    if ($hasMany) {
+        $pluralRelations[] = $relationName;
+    } else {
+        $singularRelations[] = $relationName;
+    }
+}
+if (count($singularRelations)) {
+    $code = '
+    /**
+     * @return string[]
+     */
+    public static function singularRelations()
+    {
+        return [\'' . implode('\', \'', $singularRelations) . '\'];
+    }
+';
+    echo $code;
+}
+if (count($pluralRelations)) {
+    $code = '
+    /**
+     * @return string[]
+     */
+    public static function pluralRelations()
+    {
+        return [\'' . implode('\', \'', $pluralRelations) . '\'];
+    }
+';
+    echo $code;
+}
+
 // model label
 $modelLabel = Inflector::titleize($tableName);
 $db = $generator->getDbConnection();
@@ -195,40 +231,4 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
             }
         }
     }
-}
-
-// relations
-$havingManyRelationNames = [];
-$havingOneRelationNames = [];
-foreach ($relations as $relationName => $relation) {
-    list ($code, $_className, $hasMany) = $relation;
-    if ($hasMany) {
-        $havingManyRelationNames[] = $relationName;
-    } else {
-        $havingOneRelationNames[] = $relationName;
-    }
-}
-if (count($havingManyRelationNames)) {
-    $code = '
-    /**
-     * @return string[]
-     */
-    public static function havingManyRelationNames()
-    {
-        return [\'' . implode('\', \'', $havingManyRelationNames) . '\'];
-    }
-';
-    echo $code;
-}
-if (count($havingOneRelationNames)) {
-    $code = '
-    /**
-     * @return string[]
-     */
-    public static function havingOneRelationNames()
-    {
-        return [\'' . implode('\', \'', $havingOneRelationNames) . '\'];
-    }
-';
-    echo $code;
 }
