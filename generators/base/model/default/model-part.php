@@ -135,11 +135,11 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
     unset($foreignKey[0]);
     /* @var $foreignModelClass string|\yii\db\ActiveRecord */
     $foreignModelClass = Helper::getModelClassByTableName($foreignTableName);
-    if (($foreignModelClass !== false) && class_exists($foreignModelClass)) {
+    if ($foreignModelClass && class_exists($foreignModelClass)) {
         $primaryKey = $foreignModelClass::primaryKey();
         if (count($primaryKey) == 1) {
             $attribute = array_search($primaryKey[0], $foreignKey);
-            if ($attribute != false) {
+            if ($attribute) {
                 $attributeArg = Inflector::variablize($attribute);
                 $conditionCode = '';
                 if (count($foreignKey) > 1) {

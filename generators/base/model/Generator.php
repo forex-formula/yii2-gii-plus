@@ -431,7 +431,7 @@ class Generator extends GiiModelGenerator
                 list ($code, $className, $hasMany) = $relation;
                 /* @var $nsClassName string|\yii\db\ActiveRecord */
                 $nsClassName = Helper::getModelClassByTableName(array_search($className, $this->classNames));
-                if (($nsClassName !== false) && class_exists($nsClassName)) {
+                if ($nsClassName && class_exists($nsClassName)) {
                     $relations[$tableName][$relationName] = [$code, $className, $hasMany];
                     $this->relationUses[$tableName][] = $nsClassName;
                     if ($hasMany || ($relationName == $className)) {
@@ -459,7 +459,7 @@ class Generator extends GiiModelGenerator
                                 list ($subCode, $subClassName, $subHasMany) = $subRelation;
                                 /* @var $subNsClassName string|\yii\db\ActiveRecord */
                                 $subNsClassName = Helper::getModelClassByTableName(array_search($subClassName, $this->classNames));
-                                if (($subNsClassName !== false) && class_exists($subNsClassName)) {
+                                if ($subNsClassName && class_exists($subNsClassName)) {
                                     if (!$subHasMany && ($subRelationName != $className)) {
                                         if (!array_key_exists($subRelationName, $generatedRelations[$tableName])) {
                                             $subCode = preg_replace('~;$~', "\n" . '            ->viaTable(\'' . $subTableName . ' via_' . $subTableName . '\', ' . $viaLink . ');', $subCode);
