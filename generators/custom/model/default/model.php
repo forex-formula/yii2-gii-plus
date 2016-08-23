@@ -21,20 +21,17 @@ $uses = [
 ];
 Helper::sortUses($uses);
 
-echo '<?php', "\n";
-?>
+echo '<?php
 
-namespace <?= $ns ?>;
+namespace ', $ns, ';
 
-use <?= implode(';' . "\n" . 'use ', $uses) ?>;
+use ', implode(';' . "\n" . 'use ', $uses), ';
 
 /**
- * <?= Inflector::titleize($modelName) ?>
-
- * @see \<?= $queryClass ?>
-
+ * ', Inflector::titleize($modelName), '
+ * @see \\', $queryClass, '
  */
-class <?= $modelName ?> extends <?= $baseModelName ?>
-
+class ', $modelName, ' extends ', $baseModelName, '
 {
 }
+';
