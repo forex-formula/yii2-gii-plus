@@ -84,6 +84,34 @@ class BaseModelTest extends TestCase
     /**
      * @return array
      */
+    public function singularRelationsDataProvider()
+    {
+        return [
+            ['Type', []],
+            ['RootFolder', ['Type']],
+            ['Folder', ['RootFolder', 'Type']],
+            ['File', ['Folder', 'RootFolder']]
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string[] $singularRelations
+     * @dataProvider singularRelationsDataProvider
+     */
+    public function testMethodSingularRelations($modelName, array $singularRelations)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        $reflection = new ReflectionClass($modelClass);
+        $this->assertTrue($reflection->hasMethod('singularRelations'));
+        $this->assertTrue($reflection->getMethod('singularRelations')->isStatic());
+        $this->assertEquals($singularRelations, $modelClass::singularRelations());
+    }
+
+    /**
+     * @return array
+     */
     public function modelLabelDataProvider()
     {
         return [
