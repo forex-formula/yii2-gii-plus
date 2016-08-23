@@ -19,23 +19,21 @@ $uses = [
 ];
 Helper::sortUses($uses);
 
-echo '<?php', "\n";
-?>
+echo '<?php
 
-namespace <?= $fixtureNs ?>;
+namespace ', $fixtureNs, ';
 
-use <?= implode(';' . "\n" . 'use ', $uses) ?>;
+use ', implode(';' . "\n" . 'use ', $uses), ';
 
 /**
- * <?= Inflector::titleize($fixtureName) ?> Fixture
- * @see \<?= $modelClass ?>
-
+ * ', Inflector::titleize($fixtureName), ' Fixture
+ * @see \\', $modelClass, '
  */
-class <?= $fixtureName ?> extends <?= $baseFixtureName ?>
-
+class ', $fixtureName, ' extends ', $baseFixtureName, '
 {
 
-    public $modelClass = '<?= $modelClass ?>';
+    public $modelClass = \'', $modelClass, '\';
 
     public $depends = [];
 }
+';
