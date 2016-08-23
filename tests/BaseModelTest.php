@@ -112,6 +112,34 @@ class BaseModelTest extends TestCase
     /**
      * @return array
      */
+    public function pluralRelationsDataProvider()
+    {
+        return [
+            ['Type', ['RootFolders']],
+            ['RootFolder', ['Folders']],
+            ['Folder', ['Files']],
+            ['File', []]
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string[] $pluralRelations
+     * @dataProvider pluralRelationsDataProvider
+     */
+    public function testMethodPluralRelations($modelName, array $pluralRelations)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        $reflection = new ReflectionClass($modelClass);
+        $this->assertTrue($reflection->hasMethod('pluralRelations'));
+        $this->assertTrue($reflection->getMethod('pluralRelations')->isStatic());
+        $this->assertEquals($pluralRelations, $modelClass::pluralRelations());
+    }
+
+    /**
+     * @return array
+     */
     public function modelLabelDataProvider()
     {
         return [
