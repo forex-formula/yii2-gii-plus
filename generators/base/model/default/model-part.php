@@ -1,9 +1,9 @@
 <?php
 
+use yii\gii\plus\helpers\Helper;
 use yii\helpers\Inflector;
 use yii\base\NotSupportedException;
 use yii\db\Schema;
-use yii\gii\plus\helpers\Helper;
 
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\base\model\Generator */
@@ -132,41 +132,28 @@ if (array_key_exists($tableName, $buildRelations)) {
 foreach ($tableSchema->foreignKeys as $foreignKey) {
     $foreignTableName = $foreignKey[0];
     unset($foreignKey[0]);
-    if (count($foreignKey) == 1) {
-        $foreignKey = array_keys($foreignKey);
-        $attribute = $foreignKey[0];
-        $attributeArg = Inflector::variablize($attribute);
-        $code = '
-    /**
-     * @param string|array|Expression $condition
-     * @param array $params
-     * @param string|array|Expression $orderBy
-     * @return array
-     */
-    public function ' . $attributeArg . 'ListItems($condition = null, $params = [], $orderBy = null)
-    {
-        return ' . Inflector::classify($foreignTableName) . '::findListItems($condition, $params, $orderBy);
-    }
-
-    /**
-     * @param array $condition
-     * @param string|array|Expression $orderBy
-     * @return array
-     */
-    public function ' . $attributeArg . 'FilterListItems(array $condition = [], $orderBy = null)
-    {
-        return ' . Inflector::classify($foreignTableName) . '::findFilterListItems($condition, $orderBy);
-    }
-';
-        echo $code;
-    } else {
-        /* @var $foreignModelClass string|\yii\db\ActiveRecord */
-        $foreignModelClass = Helper::getModelClassByTableName($foreignTableName);
-        if (($foreignModelClass !== false) && class_exists($foreignModelClass)) {
-            $primaryKey = $foreignModelClass::primaryKey();
-            if (count($primaryKey) == 1) {
-                $attribute = array_search($primaryKey[0], $foreignKey);
+    /* @var $foreignModelClass string|\yii\db\ActiveRecord */
+    $foreignModelClass = Helper::getModelClassByTableName($foreignTableName);
+    if (($foreignModelClass !== false) && class_exists($foreignModelClass)) {
+        $primaryKey = $foreignModelClass::primaryKey();
+        if (count($primaryKey) == 1) {
+            $attribute = array_search($primaryKey[0], $foreignKey);
+            if ($attribute != false) {
                 $attributeArg = Inflector::variablize($attribute);
+                $conditionCode = '';
+                if (count($foreignKey) > 1) {
+                    $conditions = [];
+                    foreach (array_diff($foreignKey, $primaryKey) as $key1 => $key2) {
+                        $conditions[] = '\'' . $key2 . '\' => $this->' . $key1;
+                    }
+                    if (count($conditions) == 1) {
+                        $conditionCode = '[' . $conditions[0] . ']';
+                    } else {
+                        $conditionCode = '[
+                ' . implode(',' . "\n" . '                ', $conditions) . '
+            ]';
+                    }
+                }
                 $code = '
     /**
      * @param string|array|Expression $condition
@@ -176,7 +163,14 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
      */
     public function ' . $attributeArg . 'ListItems($condition = null, $params = [], $orderBy = null)
     {
-        return ' . Inflector::classify($foreignTableName) . '::findListItems($condition, $params, $orderBy);
+';
+                if ($conditionCode) {
+                    $code .= '        if (is_null($condition)) {
+            $condition = ' . $conditionCode . ';
+        }
+';
+                }
+                $code .= '        return ' . Inflector::classify($foreignTableName) . '::findListItems($condition, $params, $orderBy);
     }
 
     /**
@@ -186,9 +180,17 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
      */
     public function ' . $attributeArg . 'FilterListItems(array $condition = [], $orderBy = null)
     {
-        return ' . Inflector::classify($foreignTableName) . '::findFilterListItems($condition, $orderBy);
+';
+                if ($conditionCode) {
+                    $code .= '        if (!count($condition)) {
+            $condition = ' . $conditionCode . ';
+        }
+';
+                }
+                $code .= '        return ' . Inflector::classify($foreignTableName) . '::findFilterListItems($condition, $orderBy);
     }
 ';
+                echo $code;
             }
         }
     }
