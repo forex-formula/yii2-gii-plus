@@ -162,6 +162,38 @@ class BaseModelTest extends TestCase
         $this->assertEquals($displayField, $modelClass::displayField());
     }
 
+    /**
+     * @return array
+     */
+    public function getDisplayFieldDataProvider()
+    {
+        return [
+            ['Type', ['name' => 'Type name'], 'Type name'],
+            ['RootFolder', ['type_id' => 1, 'name' => 'Root Folder name'], '1 Root Folder name'],
+            ['Folder', ['root_folder_id' => 2, 'name' => 'Folder name'], '2 Folder name'],
+            ['File', ['folder_id' => 3, 'name' => 'File name'], '3 File name']
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param array $values
+     * @param string $displayField
+     * @dataProvider getDisplayFieldDataProvider
+     */
+    public function testMethodGetDisplayField($modelName, array $values, $displayField)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        $reflection = new ReflectionClass($modelClass);
+        $this->assertTrue($reflection->hasMethod('getDisplayField'));
+        $this->assertNotTrue($reflection->getMethod('getDisplayField')->isStatic());
+        /* @var $model \yii\boost\db\ActiveRecord */
+        $model = new $modelClass;
+        $model->setAttributes($values, false);
+        $this->assertEquals($displayField, $model->getDisplayField());
+    }
+
 //    public function testMethodGetTypeOfFolder()
 //    {
 //        $reflection = new ReflectionClass('app\models\Folder');
