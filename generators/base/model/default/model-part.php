@@ -1,9 +1,9 @@
 <?php
 
+use yii\gii\plus\helpers\Helper;
 use yii\helpers\Inflector;
 use yii\base\NotSupportedException;
 use yii\db\Schema;
-use yii\gii\plus\helpers\Helper;
 
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\base\model\Generator */
@@ -17,44 +17,8 @@ use yii\gii\plus\helpers\Helper;
 /* @var $relationUses array */
 /* @var $buildRelations array */
 
-// relations
-$havingManyRelationNames = [];
-$havingOneRelationNames = [];
-foreach ($relations as $relationName => $relation) {
-    list ($code, $className, $hasMany) = $relation;
-    if ($hasMany) {
-        $havingManyRelationNames[] = $relationName;
-    } else {
-        $havingOneRelationNames[] = $relationName;
-    }
-}
-if (count($havingManyRelationNames)) {
-    $code = '
-    /**
-     * @return string[]
-     */
-    public static function havingManyRelationNames()
-    {
-        return [\'' . implode('\', \'', $havingManyRelationNames) . '\'];
-    }
-';
-    echo $code;
-}
-if (count($havingOneRelationNames)) {
-    $code = '
-    /**
-     * @return string[]
-     */
-    public static function havingOneRelationNames()
-    {
-        return [\'' . implode('\', \'', $havingOneRelationNames) . '\'];
-    }
-';
-    echo $code;
-}
-
 // model label
-$modelLabel = Inflector::titleize($className);
+$modelLabel = Inflector::titleize($tableName);
 $db = $generator->getDbConnection();
 if ($generator->generateLabelsFromComments && in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
     $row = $db->createCommand('SHOW CREATE TABLE ' . $db->quoteTableName($tableName))->queryOne();
@@ -98,6 +62,12 @@ if (count($primaryKey)) {
     echo $code;
 }
 
+if (array_key_exists($tableName, $relationUses) && in_array('yii\db\Expression', $relationUses[$tableName])) {
+    $dbExpression = 'Expression';
+} else {
+    $dbExpression = '\yii\db\Expression';
+}
+
 // display field
 $displayField = $primaryKey;
 try {
@@ -116,14 +86,9 @@ try {
     // do nothing
 }
 if (count($displayField)) {
-    if (array_key_exists($tableName, $relationUses) && in_array('yii\db\Expression', $relationUses[$tableName])) {
-        $phpDocReturn = 'Expression';
-    } else {
-        $phpDocReturn = '\yii\db\Expression';
-    }
     $code = '
     /**
-     * @return string[]|' . $phpDocReturn . '
+     * @return string[]|' . $dbExpression . '
      */
     public static function displayField()
     {
@@ -168,45 +133,102 @@ if (array_key_exists($tableName, $buildRelations)) {
 foreach ($tableSchema->foreignKeys as $foreignKey) {
     $foreignTableName = $foreignKey[0];
     unset($foreignKey[0]);
-    if (count($foreignKey) == 1) {
-        $foreignKey = array_keys($foreignKey);
-        $attribute = $foreignKey[0];
-        $attributeArg = Inflector::variablize($attribute);
-        $code = '
-    /**
-     * @param string|array|Expression $condition
-     * @param array $params
-     * @param string|array|Expression $orderBy
-     * @return array
-     */
-    public function ' . $attributeArg . 'ListItems($condition = null, $params = [], $orderBy = null)
-    {
-        return ' . Inflector::classify($foreignTableName) . '::findListItems($condition, $params, $orderBy);
-    }
-';
-        echo $code;
-    } else {
-        /* @var $foreignModelClass string|\yii\db\ActiveRecord */
-        $foreignModelClass = Helper::getModelClassByTableName($foreignTableName);
-        if (($foreignModelClass !== false) && class_exists($foreignModelClass)) {
-            $primaryKey = $foreignModelClass::primaryKey();
-            if (count($primaryKey) == 1) {
-                $attribute = array_search($primaryKey[0], $foreignKey);
+    /* @var $foreignModelClass string|\yii\db\ActiveRecord */
+    $foreignModelClass = Helper::getModelClassByTableName($foreignTableName);
+    if ($foreignModelClass && class_exists($foreignModelClass)) {
+        $primaryKey = $foreignModelClass::primaryKey();
+        if (count($primaryKey) == 1) {
+            $attribute = array_search($primaryKey[0], $foreignKey);
+            if ($attribute) {
                 $attributeArg = Inflector::variablize($attribute);
+                $conditionCode = '';
+                if (count($foreignKey) > 1) {
+                    $conditions = [];
+                    foreach (array_diff($foreignKey, $primaryKey) as $key1 => $key2) {
+                        $conditions[] = '\'' . $key2 . '\' => $this->' . $key1;
+                    }
+                    if (count($conditions) == 1) {
+                        $conditionCode = '[' . $conditions[0] . ']';
+                    } else {
+                        $conditionCode = '[
+                ' . implode(',' . "\n" . '                ', $conditions) . '
+            ]';
+                    }
+                }
                 $code = '
     /**
-     * @param string|array|Expression $condition
+     * @param string|array|' . $dbExpression . ' $condition
      * @param array $params
-     * @param string|array|Expression $orderBy
+     * @param string|array|' . $dbExpression . ' $orderBy
      * @return array
      */
     public function ' . $attributeArg . 'ListItems($condition = null, $params = [], $orderBy = null)
     {
-        return ' . Inflector::classify($foreignTableName) . '::findListItems($condition, $params, $orderBy);
+';
+                if ($conditionCode) {
+                    $code .= '        if (is_null($condition)) {
+            $condition = ' . $conditionCode . ';
+        }
+';
+                }
+                $code .= '        return ' . Inflector::classify($foreignTableName) . '::findListItems($condition, $params, $orderBy);
+    }
+
+    /**
+     * @param array $condition
+     * @param string|array|' . $dbExpression . ' $orderBy
+     * @return array
+     */
+    public function ' . $attributeArg . 'FilterListItems(array $condition = [], $orderBy = null)
+    {
+';
+                if ($conditionCode) {
+                    $code .= '        if (!count($condition)) {
+            $condition = ' . $conditionCode . ';
+        }
+';
+                }
+                $code .= '        return ' . Inflector::classify($foreignTableName) . '::findFilterListItems($condition, $orderBy);
     }
 ';
                 echo $code;
             }
         }
     }
+}
+
+// relations
+$havingManyRelationNames = [];
+$havingOneRelationNames = [];
+foreach ($relations as $relationName => $relation) {
+    list ($code, $_className, $hasMany) = $relation;
+    if ($hasMany) {
+        $havingManyRelationNames[] = $relationName;
+    } else {
+        $havingOneRelationNames[] = $relationName;
+    }
+}
+if (count($havingManyRelationNames)) {
+    $code = '
+    /**
+     * @return string[]
+     */
+    public static function havingManyRelationNames()
+    {
+        return [\'' . implode('\', \'', $havingManyRelationNames) . '\'];
+    }
+';
+    echo $code;
+}
+if (count($havingOneRelationNames)) {
+    $code = '
+    /**
+     * @return string[]
+     */
+    public static function havingOneRelationNames()
+    {
+        return [\'' . implode('\', \'', $havingOneRelationNames) . '\'];
+    }
+';
+    echo $code;
 }

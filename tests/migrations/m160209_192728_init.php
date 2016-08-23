@@ -17,21 +17,31 @@ class m160209_192728_init extends Migration
         $this->insert('type', ['id' => 1, 'name' => 'Музыка', 'code' => 'music']);
         $this->insert('type', ['id' => 2, 'name' => 'Видео', 'code' => 'video']);
 
-        $this->createTableWithComment('folder', [
+        $this->createTableWithComment('root_folder', [
             'id' => $this->primaryKey(),
             'type_id' => $this->tinyInteger()->unsigned()->notNull()->comment('Тип'),
+            'name' => $this->string(50)->notNull()->comment('Название')
+        ], 'Корневая папка');
+        $this->createUnique(null, 'root_folder', ['type_id', 'name']);
+
+        $this->addForeignKey(null, 'root_folder', ['type_id'], 'type', ['id']);
+
+        $this->createTableWithComment('folder', [
+            'id' => $this->primaryKey(),
+            'root_folder_id' => $this->integer()->unsigned()->notNull()->comment('Корневая папка'),
             'name' => $this->string(50)->notNull()->comment('Название'),
             'visible' => $this->boolean()->notNull()->defaultValue(1)->comment('Видимый'),
             'created_at' => $this->createdAtShortcut()->comment('Создано в'),
             'updated_at' => $this->updatedAtShortcut()->comment('Обновлено в'),
             'deleted' => $this->deletedShortcut()
         ], 'Папка');
-        $this->createUnique(null, 'folder', ['type_id', 'name']);
+        $this->createUnique(null, 'folder', ['root_folder_id', 'name']);
 
-        $this->addForeignKey(null, 'folder', ['type_id'], 'type', ['id']);
+        $this->addForeignKey(null, 'folder', ['root_folder_id'], 'root_folder', ['id']);
 
         $this->createTable('file', [
             'id' => $this->primaryKey(),
+            'root_folder_id' => $this->integer()->unsigned()->notNull()->comment('Корневая папка'),
             'folder_id' => $this->integer()->unsigned()->notNull()->comment('Папка'),
             'name' => $this->string(50)->notNull()->comment('Название'),
             'visible' => $this->boolean()->notNull()->defaultValue(1)->comment('Видимый'),
@@ -41,7 +51,8 @@ class m160209_192728_init extends Migration
         ]);
         $this->createUnique(null, 'file', ['folder_id', 'name']);
 
-        $this->addForeignKey(null, 'file', ['folder_id'], 'folder', ['id']);
+        $this->createIndex(null, 'folder', ['id', 'root_folder_id']);
+        $this->addForeignKey(null, 'file', ['folder_id', 'root_folder_id'], 'folder', ['id', 'root_folder_id']);
     }
 
     public function down()
