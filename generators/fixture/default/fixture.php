@@ -7,7 +7,7 @@ use yii\helpers\Inflector;
 /* @var $generator yii\gii\plus\generators\fixture\Generator */
 /* @var $ns string */
 /* @var $modelName string */
-/* @var $modelClass string|\yii\db\ActiveRecord */
+/* @var $modelClass string|\yii\boost\db\ActiveRecord */
 /* @var $fixtureNs string */
 /* @var $fixtureName string */
 /* @var $fixtureClass string|\yii\test\ActiveFixture */
@@ -26,14 +26,37 @@ namespace ', $fixtureNs, ';
 use ', implode(';' . "\n" . 'use ', $uses), ';
 
 /**
- * ', Inflector::titleize($fixtureName), ' Fixture
+ * ', Inflector::titleize($fixtureName), ' fixture
  * @see \\', $modelClass, '
  */
 class ', $fixtureName, ' extends ', $baseFixtureName, '
 {
 
     public $modelClass = \'', $modelClass, '\';
+';
 
-    public $depends = [];
+// depends
+$depends = [];
+foreach ($modelClass::singularRelations() as $relationName) {
+    $relationClass = $fixtureNs . '\\' . $relationName;
+    if (class_exists($relationClass)) {
+        $depends[] = $relationClass;
+    }
 }
+if (count($depends)) {
+    if (count($depends) == 1) {
+        echo '
+    public $depends = [\'', $depends[0], '\'];
+';
+    } else {
+        echo '
+    public $depends = [
+        \'', implode('\',
+        \'', $depends), '\'
+    ];
+';
+    }
+}
+
+echo '}
 ';
