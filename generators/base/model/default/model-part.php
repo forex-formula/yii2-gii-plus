@@ -63,9 +63,9 @@ if (count($primaryKey)) {
 }
 
 if (array_key_exists($tableName, $relationUses) && in_array('yii\db\Expression', $relationUses[$tableName])) {
-    $phpDocReturn = 'Expression';
+    $dbExpression = 'Expression';
 } else {
-    $phpDocReturn = '\yii\db\Expression';
+    $dbExpression = '\yii\db\Expression';
 }
 
 // display field
@@ -88,7 +88,7 @@ try {
 if (count($displayField)) {
     $code = '
     /**
-     * @return string[]|' . $phpDocReturn . '
+     * @return string[]|' . $dbExpression . '
      */
     public static function displayField()
     {
@@ -157,9 +157,9 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
                 }
                 $code = '
     /**
-     * @param string|array|' . $phpDocReturn . ' $condition
+     * @param string|array|' . $dbExpression . ' $condition
      * @param array $params
-     * @param string|array|' . $phpDocReturn . ' $orderBy
+     * @param string|array|' . $dbExpression . ' $orderBy
      * @return array
      */
     public function ' . $attributeArg . 'ListItems($condition = null, $params = [], $orderBy = null)
@@ -176,7 +176,7 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
 
     /**
      * @param array $condition
-     * @param string|array|' . $phpDocReturn . ' $orderBy
+     * @param string|array|' . $dbExpression . ' $orderBy
      * @return array
      */
     public function ' . $attributeArg . 'FilterListItems(array $condition = [], $orderBy = null)
