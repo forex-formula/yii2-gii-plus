@@ -18,14 +18,14 @@ use yii\db\Schema;
 // deleted
 $column = $tableSchema->getColumn('deleted');
 if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
-    $code = '
+    $attribute = $column->name;
+    echo '
     public function init()
     {
         parent::init();
-        $this->where(new \yii\boost\db\Expression(\'{a}.' . $column->name . ' = 0\', [], [\'query\' => $this]));
+        $this->where(new \yii\boost\db\Expression(\'{a}.', $attribute, ' = 0\', [], [\'query\' => $this]));
     }
 ';
-    echo $code;
 }
 
 $keyAttributes = [];
