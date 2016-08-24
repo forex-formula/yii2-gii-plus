@@ -15,6 +15,9 @@ use yii\db\Schema;
 /* @var $relations array */
 /* @var $modelClassName string */
 
+$keyAttributes = [];
+$methods = [];
+
 // deleted
 $column = $tableSchema->getColumn('deleted');
 if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
@@ -28,38 +31,36 @@ if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALL
 ';
 }
 
-$keyAttributes = [];
-$methods = [];
-
 // primary key
 $primaryKey = $tableSchema->primaryKey;
 if (count($primaryKey)) {
-    $keyAttributes = $primaryKey;
+    $keyAttributes = array_merge($keyAttributes, $primaryKey);
     if (count($primaryKey) == 1) {
         $methodName = 'pk';
         $methods[] = $methodName;
         $attribute = $primaryKey[0];
         $attributeArg = Inflector::variablize($attribute);
-        $code = '
+        $attributeType = $tableSchema->getColumn($attribute)->phpType;
+        echo '
     /**
-     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
+     * @param ', $attributeType, ' $', $attributeArg, '
      * @return $this
      */
-    public function ' . $methodName . '($' . $attributeArg . ')
+    public function ', $methodName, '($', $attributeArg, ')
     {
-        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
+        return $this->andWhere([$this->a(\'', $attribute, '\') => $', $attributeArg, ']);
     }
 ';
         $methodName = $attributeArg;
         $methods[] = $methodName;
-        $code .= '
+        echo '
     /**
-     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
+     * @param ', $attributeType, ' $', $attributeArg, '
      * @return $this
      */
-    public function ' . $methodName . '($' . $attributeArg . ')
+    public function ', $methodName, '($', $attributeArg, ')
     {
-        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
+        return $this->andWhere([$this->a(\'', $attribute, '\') => $', $attributeArg, ']);
     }
 ';
     } else {
@@ -109,8 +110,8 @@ if (count($primaryKey)) {
         $code .= '        ]);
     }
 ';
+        echo $code;
     }
-    echo $code;
 }
 
 // foreign keys
