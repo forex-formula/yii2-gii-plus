@@ -67,50 +67,53 @@ if (count($primaryKey)) {
         $methodName = 'pk';
         $methods[] = $methodName;
         $attributeArgs = [];
-        $code = '
+        $attributeTypes = [];
+        echo '
     /**
 ';
         foreach ($primaryKey as $i => $attribute) {
             $attributeArgs[$i] = Inflector::variablize($attribute);
-            $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
+            $attributeTypes[$i] = $tableSchema->getColumn($attribute)->phpType;
+            echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
 ';
         }
-        $code .= '     * @return $this
+        echo '     * @return $this
      */
-    public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
+    public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
         return $this->andWhere([
 ';
         foreach ($primaryKey as $i => $attribute) {
-            $code .= '            $this->a(\'' . $attribute . '\') => $' . $attributeArgs[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
+            $comma = ($i < count($primaryKey) - 1) ? ',' : '';
+            echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
 ';
         }
-        $code .= '        ]);
+        echo '        ]);
     }
 ';
         $methodName = Inflector::variablize(implode('_', $primaryKey));
         $methods[] = $methodName;
-        $code .= '
+        echo '
     /**
 ';
         foreach ($primaryKey as $i => $attribute) {
-            $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
+            echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
 ';
         }
-        $code .= '     * @return $this
+        echo '     * @return $this
      */
-    public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
+    public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
         return $this->andWhere([
 ';
         foreach ($primaryKey as $i => $attribute) {
-            $code .= '            $this->a(\'' . $attribute . '\') => $' . $attributeArgs[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
+            $comma = ($i < count($primaryKey) - 1) ? ',' : '';
+            echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
 ';
         }
-        $code .= '        ]);
+        echo '        ]);
     }
 ';
-        echo $code;
     }
 }
 
