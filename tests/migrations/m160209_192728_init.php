@@ -53,6 +53,12 @@ class m160209_192728_init extends Migration
 
         $this->createIndex(null, 'folder', ['id', 'root_folder_id']);
         $this->addForeignKey(null, 'file', ['folder_id', 'root_folder_id'], 'folder', ['id', 'root_folder_id']);
+
+        $this->createTable('something', [
+            'tiny_id' => $this->tinyInteger()->unsigned(),
+            'small_id' => $this->smallInteger()->unsigned()
+        ]);
+        $this->addPrimaryKey(null, 'something', ['tiny_id', 'small_id']);
     }
 
     public function down()
