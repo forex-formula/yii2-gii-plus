@@ -184,45 +184,47 @@ try {
             $methodName = $attributeArg;
             if (!in_array($methodName, $methods)) {
                 $methods[] = $methodName;
-                $code = '
+                $attributeType = $tableSchema->getColumn($attribute)->phpType;
+                echo '
     /**
-     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
+     * @param ', $attributeType, ' $', $attributeArg, '
      * @return $this
      */
-    public function ' . $methodName . '($' . $attributeArg . ')
+    public function ', $methodName, '($', $attributeArg, ')
     {
-        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
+        return $this->andWhere([$this->a(\'', $attribute, '\') => $', $attributeArg, ']);
     }
 ';
-                echo $code;
             }
         } else {
             $methodName = Inflector::variablize(implode('_', $uniqueKey));
             if (!in_array($methodName, $methods)) {
                 $methods[] = $methodName;
                 $attributeArgs = [];
-                $code = '
+                $attributeTypes = [];
+                echo '
     /**
 ';
                 foreach ($uniqueKey as $i => $attribute) {
                     $attributeArgs[$i] = Inflector::variablize($attribute);
-                    $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
+                    $attributeTypes[$i] = $tableSchema->getColumn($attribute)->phpType;
+                    echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
 ';
                 }
-                $code .= '     * @return $this
+                echo '     * @return $this
      */
-    public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
+    public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
         return $this->andWhere([
 ';
                 foreach ($uniqueKey as $i => $attribute) {
-                    $code .= '            $this->a(\'' . $attribute . '\') => $' . $attributeArgs[$i] . (($i < count($uniqueKey) - 1) ? ',' : '') . '
+                    $comma = ($i < count($uniqueKey) - 1) ? ',' : '';
+                    echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
 ';
                 }
-                $code .= '        ]);
+                echo '        ]);
     }
 ';
-                echo $code;
             }
         }
     }
