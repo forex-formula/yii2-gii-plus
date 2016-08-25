@@ -7,7 +7,7 @@ use yii\helpers\Inflector;
 /* @var $generator yii\gii\plus\generators\fixture\Generator */
 /* @var $ns string */
 /* @var $modelName string */
-/* @var $modelClass string|\yii\db\ActiveRecord */
+/* @var $modelClass string|\yii\boost\db\ActiveRecord */
 /* @var $fixtureNs string */
 /* @var $fixtureName string */
 /* @var $fixtureClass string|\yii\test\ActiveFixture */
@@ -19,23 +19,44 @@ $uses = [
 ];
 Helper::sortUses($uses);
 
-echo '<?php', "\n";
-?>
+echo '<?php
 
-namespace <?= $fixtureNs ?>;
+namespace ', $fixtureNs, ';
 
-use <?= implode(';' . "\n" . 'use ', $uses) ?>;
+use ', implode(';' . "\n" . 'use ', $uses), ';
 
 /**
- * <?= Inflector::titleize($fixtureName) ?> Fixture
- * @see \<?= $modelClass ?>
-
+ * ', Inflector::titleize($fixtureName), ' fixture
+ * @see \\', $modelClass, '
  */
-class <?= $fixtureName ?> extends <?= $baseFixtureName ?>
-
+class ', $fixtureName, ' extends ', $baseFixtureName, '
 {
 
-    public $modelClass = '<?= $modelClass ?>';
+    public $modelClass = \'', $modelClass, '\';
+';
 
-    public $depends = [];
+// depends
+$depends = [];
+foreach ($modelClass::singularRelations() as $relationName) {
+    $relationClass = $fixtureNs . '\\' . $relationName;
+    if (class_exists($relationClass)) {
+        $depends[] = $relationClass;
+    }
 }
+if (count($depends)) {
+    if (count($depends) == 1) {
+        echo '
+    public $depends = [\'', $depends[0], '\'];
+';
+    } else {
+        echo '
+    public $depends = [
+        \'', implode('\',
+        \'', $depends), '\'
+    ];
+';
+    }
+}
+
+echo '}
+';

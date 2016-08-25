@@ -15,102 +15,107 @@ use yii\db\Schema;
 /* @var $relations array */
 /* @var $modelClassName string */
 
+$keyAttributes = [];
+$methods = [];
+
 // deleted
 $column = $tableSchema->getColumn('deleted');
 if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
-    $code = '
+    $methods[] = 'init';
+    $attribute = $column->name;
+    echo '
     public function init()
     {
         parent::init();
-        $this->where(new \yii\boost\db\Expression(\'{a}.' . $column->name . ' = 0\', [], [\'query\' => $this]));
+        $this->where(new \yii\boost\db\Expression(\'{a}.', $attribute, ' = 0\', [], [\'query\' => $this]));
     }
 ';
-    echo $code;
 }
-
-$keyAttributes = [];
-$methods = [];
 
 // primary key
 $primaryKey = $tableSchema->primaryKey;
 if (count($primaryKey)) {
-    $keyAttributes = $primaryKey;
+    $keyAttributes = array_merge($keyAttributes, $primaryKey);
     if (count($primaryKey) == 1) {
         $methodName = 'pk';
         $methods[] = $methodName;
         $attribute = $primaryKey[0];
         $attributeArg = Inflector::variablize($attribute);
-        $code = '
+        $attributeType = $tableSchema->getColumn($attribute)->phpType;
+        echo '
     /**
-     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
+     * @param ', $attributeType, ' $', $attributeArg, '
      * @return $this
      */
-    public function ' . $methodName . '($' . $attributeArg . ')
+    public function ', $methodName, '($', $attributeArg, ')
     {
-        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
+        return $this->andWhere([$this->a(\'', $attribute, '\') => $', $attributeArg, ']);
     }
 ';
         $methodName = $attributeArg;
         $methods[] = $methodName;
-        $code .= '
+        echo '
     /**
-     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
+     * @param ', $attributeType, ' $', $attributeArg, '
      * @return $this
      */
-    public function ' . $methodName . '($' . $attributeArg . ')
+    public function ', $methodName, '($', $attributeArg, ')
     {
-        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
+        return $this->andWhere([$this->a(\'', $attribute, '\') => $', $attributeArg, ']);
     }
 ';
     } else {
         $methodName = 'pk';
         $methods[] = $methodName;
         $attributeArgs = [];
-        $code = '
+        $attributeTypes = [];
+        echo '
     /**
 ';
         foreach ($primaryKey as $i => $attribute) {
             $attributeArgs[$i] = Inflector::variablize($attribute);
-            $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
+            $attributeTypes[$i] = $tableSchema->getColumn($attribute)->phpType;
+            echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
 ';
         }
-        $code .= '     * @return $this
+        echo '     * @return $this
      */
-    public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
+    public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
         return $this->andWhere([
 ';
         foreach ($primaryKey as $i => $attribute) {
-            $code .= '            $this->a(\'' . $attribute . '\') => $' . $attributeArgs[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
+            $comma = ($i < count($primaryKey) - 1) ? ',' : '';
+            echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
 ';
         }
-        $code .= '        ]);
+        echo '        ]);
     }
 ';
         $methodName = Inflector::variablize(implode('_', $primaryKey));
         $methods[] = $methodName;
-        $code .= '
+        echo '
     /**
 ';
         foreach ($primaryKey as $i => $attribute) {
-            $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
+            echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
 ';
         }
-        $code .= '     * @return $this
+        echo '     * @return $this
      */
-    public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
+    public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
         return $this->andWhere([
 ';
         foreach ($primaryKey as $i => $attribute) {
-            $code .= '            $this->a(\'' . $attribute . '\') => $' . $attributeArgs[$i] . (($i < count($primaryKey) - 1) ? ',' : '') . '
+            $comma = ($i < count($primaryKey) - 1) ? ',' : '';
+            echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
 ';
         }
-        $code .= '        ]);
+        echo '        ]);
     }
 ';
     }
-    echo $code;
 }
 
 // foreign keys
@@ -124,45 +129,47 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
         $methodName = $attributeArg;
         if (!in_array($methodName, $methods)) {
             $methods[] = $methodName;
-            $code = '
+            $attributeType = $tableSchema->getColumn($attribute)->phpType;
+            echo '
     /**
-     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
+     * @param ', $attributeType, ' $', $attributeArg, '
      * @return $this
      */
-    public function ' . $methodName . '($' . $attributeArg . ')
+    public function ', $methodName, '($', $attributeArg, ')
     {
-        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
+        return $this->andWhere([$this->a(\'', $attribute, '\') => $', $attributeArg, ']);
     }
 ';
-            echo $code;
         }
     } else {
         $methodName = Inflector::variablize(implode('_', $foreignKey));
         if (!in_array($methodName, $methods)) {
             $methods[] = $methodName;
             $attributeArgs = [];
-            $code = '
+            $attributeTypes = [];
+            echo '
     /**
 ';
             foreach ($foreignKey as $i => $attribute) {
                 $attributeArgs[$i] = Inflector::variablize($attribute);
-                $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
+                $attributeTypes[$i] = $tableSchema->getColumn($attribute)->phpType;
+                echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
 ';
             }
-            $code .= '     * @return $this
+            echo '     * @return $this
      */
-    public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
+    public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
         return $this->andWhere([
 ';
             foreach ($foreignKey as $i => $attribute) {
-                $code .= '            $this->a(\'' . $attribute . '\') => $' . $attributeArgs[$i] . (($i < count($foreignKey) - 1) ? ',' : '') . '
+                $comma = ($i < count($foreignKey) - 1) ? ',' : '';
+                echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
 ';
             }
-            $code .= '        ]);
+            echo '        ]);
     }
 ';
-            echo $code;
         }
     }
 }
@@ -178,45 +185,47 @@ try {
             $methodName = $attributeArg;
             if (!in_array($methodName, $methods)) {
                 $methods[] = $methodName;
-                $code = '
+                $attributeType = $tableSchema->getColumn($attribute)->phpType;
+                echo '
     /**
-     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
+     * @param ', $attributeType, ' $', $attributeArg, '
      * @return $this
      */
-    public function ' . $methodName . '($' . $attributeArg . ')
+    public function ', $methodName, '($', $attributeArg, ')
     {
-        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
+        return $this->andWhere([$this->a(\'', $attribute, '\') => $', $attributeArg, ']);
     }
 ';
-                echo $code;
             }
         } else {
             $methodName = Inflector::variablize(implode('_', $uniqueKey));
             if (!in_array($methodName, $methods)) {
                 $methods[] = $methodName;
                 $attributeArgs = [];
-                $code = '
+                $attributeTypes = [];
+                echo '
     /**
 ';
                 foreach ($uniqueKey as $i => $attribute) {
                     $attributeArgs[$i] = Inflector::variablize($attribute);
-                    $code .= '     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArgs[$i] . '
+                    $attributeTypes[$i] = $tableSchema->getColumn($attribute)->phpType;
+                    echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
 ';
                 }
-                $code .= '     * @return $this
+                echo '     * @return $this
      */
-    public function ' . $methodName . '($' . implode(', $', $attributeArgs) . ')
+    public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
         return $this->andWhere([
 ';
                 foreach ($uniqueKey as $i => $attribute) {
-                    $code .= '            $this->a(\'' . $attribute . '\') => $' . $attributeArgs[$i] . (($i < count($uniqueKey) - 1) ? ',' : '') . '
+                    $comma = ($i < count($uniqueKey) - 1) ? ',' : '';
+                    echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
 ';
                 }
-                $code .= '        ]);
+                echo '        ]);
     }
 ';
-                echo $code;
             }
         }
     }
@@ -230,77 +239,77 @@ foreach ($keyAttributes as $attribute) {
     $methodName = $attributeArg;
     if (!in_array($methodName, $methods)) {
         $methods[] = $methodName;
-        $code = '
+        $attributeType = $tableSchema->getColumn($attribute)->phpType;
+        echo '
     /**
-     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
+     * @param ', $attributeType, ' $', $attributeArg, '
      * @return $this
      */
-    public function ' . $methodName . '($' . $attributeArg . ')
+    public function ', $methodName, '($', $attributeArg, ')
     {
-        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
+        return $this->andWhere([$this->a(\'', $attribute, '\') => $', $attributeArg, ']);
     }
 ';
-        echo $code;
     }
 }
 
 // boolean
 foreach ($tableSchema->columns as $column) {
-    if (($column->name != 'deleted') && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
-        $attributeArg = Inflector::variablize($column->name);
+    if (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+        $attribute = $column->name;
+        $attributeArg = Inflector::variablize($attribute);
         $methodName = $attributeArg;
         if (!in_array($methodName, $methods)) {
             $methods[] = $methodName;
-            $code = '
+            echo '
     /**
-     * @param int|bool $' . $attributeArg . '
+     * @param int|bool $', $attributeArg, '
      * @return $this
      */
-    public function ' . $methodName . '($' . $attributeArg . ' = true)
+    public function ', $methodName, '($', $attributeArg, ' = true)
     {
-        return $this->andWhere([$this->a(\'' . $column->name . '\') => $' . $attributeArg . ' ? 1 : 0]);
+        return $this->andWhere([$this->a(\'', $attribute, '\') => $', $attributeArg, ' ? 1 : 0]);
     }
 ';
-            echo $code;
         }
     }
 }
 
-// expires_at
+// ...expires_at
 foreach ($tableSchema->columns as $column) {
     if (preg_match('~(?:^|_)expires_at$~', $column->name) && in_array($column->type, [Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
-        $attributeArg = Inflector::variablize(str_replace('expires_at', 'not_expired', $column->name));
+        $attribute = $column->name;
+        $attributeArg = Inflector::variablize(str_replace('expires_at', 'not_expired', $attribute));
         $methodName = $attributeArg;
         if (!in_array($methodName, $methods)) {
             $methods[] = $methodName;
-            $code = '
+            echo '
     /**
-     * @param bool $' . $attributeArg . '
+     * @param bool $', $attributeArg, '
      * @return $this
      */
-    public function ' . $methodName . '($' . $attributeArg . ' = true)
+    public function ', $methodName, '($', $attributeArg, ' = true)
     {
 ';
-            $func = ($column->type == Schema::TYPE_DATE) ? 'CURDATE' : 'NOW';
+            $funcName = ($column->type == Schema::TYPE_DATE) ? 'CURDATE' : 'NOW';
             if ($column->allowNull) {
-                $code .= '        $columnName = $this->a(\'' . $column->name . '\');        
-        if ($' . $attributeArg . ') {
-            return $this->andWhere($columnName . \' IS NULL OR \' . $columnName . \' > ' . $func . '()\');
+                echo '        $columnName = $this->a(\'', $attribute, '\');        
+        if ($', $attributeArg, ') {
+            return $this->andWhere($columnName . \' IS NULL OR \' . $columnName . \' > ', $funcName, '()\');
         } else {
-            return $this->andWhere($columnName . \' IS NOT NULL AND \' . $columnName . \' <= ' . $func . '()\');
+            return $this->andWhere($columnName . \' IS NOT NULL AND \' . $columnName . \' <= ', $funcName, '()\');
         }
 ';
             } else {
-                $code .= '        if ($' . $attributeArg . ') {
-            return $this->andWhere($this->a(\'' . $column->name . '\') . \' > ' . $func . '()\');
+                echo '        if ($', $attributeArg, ') {
+            return $this->andWhere($this->a(\'', $attribute, '\') . \' > ', $funcName, '()\');
         } else {
-            return $this->andWhere($this->a(\'' . $column->name . '\') . \' <= ' . $func . '()\');
+            return $this->andWhere($this->a(\'', $attribute, '\') . \' <= ', $funcName, '()\');
         }
 ';
             }
-            $code .= '    }
+            echo '    }
 ';
-            echo $code;
         }
     }
 }

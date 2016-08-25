@@ -140,6 +140,34 @@ class BaseModelTest extends TestCase
     /**
      * @return array
      */
+    public function shortNameDataProvider()
+    {
+        return [
+            ['Type', 'Type'],
+            ['RootFolder', 'RootFolder'],
+            ['Folder', 'Folder'],
+            ['File', 'File']
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string $shortName
+     * @dataProvider shortNameDataProvider
+     */
+    public function testMethodShortName($modelName, $shortName)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        $reflection = new ReflectionClass($modelClass);
+        $this->assertTrue($reflection->hasMethod('shortName'));
+        $this->assertTrue($reflection->getMethod('shortName')->isStatic());
+        $this->assertEquals($shortName, $modelClass::shortName());
+    }
+
+    /**
+     * @return array
+     */
     public function modelLabelDataProvider()
     {
         return [

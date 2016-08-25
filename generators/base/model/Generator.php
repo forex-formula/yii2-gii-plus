@@ -27,10 +27,12 @@ class Generator extends GiiModelGenerator
 
     public $ns = 'app\models\base';
     public $tableName = '*';
+    public $baseClass = 'yii\boost\db\ActiveRecord';
     public $generateLabelsFromComments = true;
     public $useSchemaName = false;
     public $generateQuery = true;
     public $queryNs;
+    public $queryBaseClass = 'yii\boost\db\ActiveQuery';
 
     /**
      * @inheritdoc
@@ -47,12 +49,6 @@ class Generator extends GiiModelGenerator
         }
         if (Yii::getAlias('@common', false)) {
             $this->ns = 'common\models\base';
-        }
-        if (class_exists('yii\boost\db\ActiveRecord')) {
-            $this->baseClass = 'yii\boost\db\ActiveRecord';
-        }
-        if (class_exists('yii\boost\db\ActiveQuery')) {
-            $this->queryBaseClass = 'yii\boost\db\ActiveQuery';
         }
     }
 

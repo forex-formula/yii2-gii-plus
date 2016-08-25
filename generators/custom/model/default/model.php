@@ -7,34 +7,31 @@ use yii\helpers\Inflector;
 /* @var $generator yii\gii\plus\generators\custom\model\Generator */
 /* @var $ns string */
 /* @var $modelName string */
-/* @var $modelClass string|\yii\db\ActiveRecord */
+/* @var $modelClass string|\yii\boost\db\ActiveRecord */
 /* @var $baseModelName string */
-/* @var $baseModelClass string|\yii\db\ActiveRecord */
+/* @var $baseModelClass string|\yii\boost\db\ActiveRecord */
 /* @var $queryNs string */
 /* @var $queryName string */
-/* @var $queryClass string|\yii\db\ActiveQuery */
+/* @var $queryClass string|\yii\boost\db\ActiveQuery */
 /* @var $baseQueryName string */
-/* @var $baseQueryClass string|\yii\db\ActiveQuery */
+/* @var $baseQueryClass string|\yii\boost\db\ActiveQuery */
 
 $uses = [
     $baseModelClass
 ];
 Helper::sortUses($uses);
 
-echo '<?php', "\n";
-?>
+echo '<?php
 
-namespace <?= $ns ?>;
+namespace ', $ns, ';
 
-use <?= implode(';' . "\n" . 'use ', $uses) ?>;
+use ', implode(';' . "\n" . 'use ', $uses), ';
 
 /**
- * <?= Inflector::titleize($modelName) ?>
-
- * @see \<?= $queryClass ?>
-
+ * ', Inflector::titleize($modelName), '
+ * @see \\', $queryClass, '
  */
-class <?= $modelName ?> extends <?= $baseModelName ?>
-
+class ', $modelName, ' extends ', $baseModelName, '
 {
 }
+';
