@@ -21,6 +21,7 @@ $methods = [];
 // deleted
 $column = $tableSchema->getColumn('deleted');
 if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+    $methods[] = 'init';
     $attribute = $column->name;
     echo '
     public function init()
@@ -254,22 +255,22 @@ foreach ($keyAttributes as $attribute) {
 
 // boolean
 foreach ($tableSchema->columns as $column) {
-    if (($column->name != 'deleted') && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
-        $attributeArg = Inflector::variablize($column->name);
+    if (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+        $attribute = $column->name;
+        $attributeArg = Inflector::variablize($attribute);
         $methodName = $attributeArg;
         if (!in_array($methodName, $methods)) {
             $methods[] = $methodName;
-            $code = '
+            echo '
     /**
-     * @param int|bool $' . $attributeArg . '
+     * @param int|bool $', $attributeArg, '
      * @return $this
      */
-    public function ' . $methodName . '($' . $attributeArg . ' = true)
+    public function ', $methodName, '($', $attributeArg, ' = true)
     {
-        return $this->andWhere([$this->a(\'' . $column->name . '\') => $' . $attributeArg . ' ? 1 : 0]);
+        return $this->andWhere([$this->a(\'', $attribute, '\') => $', $attributeArg, ' ? 1 : 0]);
     }
 ';
-            echo $code;
         }
     }
 }
