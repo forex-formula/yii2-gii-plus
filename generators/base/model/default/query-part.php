@@ -82,14 +82,14 @@ if (count($primaryKey)) {
      */
     public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
-        return $this->andWhere([
+        return $this->andWhere($this->a([
 ';
         foreach ($primaryKey as $i => $attribute) {
             $comma = ($i < count($primaryKey) - 1) ? ',' : '';
-            echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
+            echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
 ';
         }
-        echo '        ]);
+        echo '        ]));
     }
 ';
         $methodName = Inflector::variablize(implode('_', $primaryKey));
@@ -105,14 +105,14 @@ if (count($primaryKey)) {
      */
     public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
-        return $this->andWhere([
+        return $this->andWhere($this->a([
 ';
         foreach ($primaryKey as $i => $attribute) {
             $comma = ($i < count($primaryKey) - 1) ? ',' : '';
-            echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
+            echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
 ';
         }
-        echo '        ]);
+        echo '        ]));
     }
 ';
     }

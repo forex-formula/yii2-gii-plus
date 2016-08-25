@@ -20,7 +20,7 @@ class Generator extends GiiGenerator
     /**
      * @var string
      */
-    public $fixtureBaseClass = 'yii\test\ActiveFixture';
+    public $fixtureBaseClass = 'yii\boost\test\ActiveFixture';
 
     /**
      * @inheritdoc
