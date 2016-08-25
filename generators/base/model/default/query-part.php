@@ -238,17 +238,17 @@ foreach ($keyAttributes as $attribute) {
     $methodName = $attributeArg;
     if (!in_array($methodName, $methods)) {
         $methods[] = $methodName;
-        $code = '
+        $attributeType = $tableSchema->getColumn($attribute)->phpType;
+        echo '
     /**
-     * @param ' . $tableSchema->getColumn($attribute)->phpType . ' $' . $attributeArg . '
+     * @param ', $attributeType, ' $', $attributeArg, '
      * @return $this
      */
-    public function ' . $methodName . '($' . $attributeArg . ')
+    public function ', $methodName, '($', $attributeArg, ')
     {
-        return $this->andWhere([$this->a(\'' . $attribute . '\') => $' . $attributeArg . ']);
+        return $this->andWhere([$this->a(\'', $attribute, '\') => $', $attributeArg, ']);
     }
 ';
-        echo $code;
     }
 }
 
