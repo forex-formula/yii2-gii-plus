@@ -160,14 +160,14 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
      */
     public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
-        return $this->andWhere([
+        return $this->andWhere($this->a([
 ';
             foreach ($foreignKey as $i => $attribute) {
                 $comma = ($i < count($foreignKey) - 1) ? ',' : '';
-                echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
+                echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
 ';
             }
-            echo '        ]);
+            echo '        ]));
     }
 ';
         }
@@ -216,14 +216,14 @@ try {
      */
     public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
-        return $this->andWhere([
+        return $this->andWhere($this->a([
 ';
                 foreach ($uniqueKey as $i => $attribute) {
                     $comma = ($i < count($uniqueKey) - 1) ? ',' : '';
-                    echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
+                    echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
 ';
                 }
-                echo '        ]);
+                echo '        ]));
     }
 ';
             }
