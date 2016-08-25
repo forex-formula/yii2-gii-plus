@@ -275,41 +275,41 @@ foreach ($tableSchema->columns as $column) {
     }
 }
 
-// expires_at
+// ...expires_at
 foreach ($tableSchema->columns as $column) {
     if (preg_match('~(?:^|_)expires_at$~', $column->name) && in_array($column->type, [Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
-        $attributeArg = Inflector::variablize(str_replace('expires_at', 'not_expired', $column->name));
+        $attribute = $column->name;
+        $attributeArg = Inflector::variablize(str_replace('expires_at', 'not_expired', $attribute));
         $methodName = $attributeArg;
         if (!in_array($methodName, $methods)) {
             $methods[] = $methodName;
-            $code = '
+            echo '
     /**
-     * @param bool $' . $attributeArg . '
+     * @param bool $', $attributeArg, '
      * @return $this
      */
-    public function ' . $methodName . '($' . $attributeArg . ' = true)
+    public function ', $methodName, '($', $attributeArg, ' = true)
     {
 ';
-            $func = ($column->type == Schema::TYPE_DATE) ? 'CURDATE' : 'NOW';
+            $funcName = ($column->type == Schema::TYPE_DATE) ? 'CURDATE' : 'NOW';
             if ($column->allowNull) {
-                $code .= '        $columnName = $this->a(\'' . $column->name . '\');        
-        if ($' . $attributeArg . ') {
-            return $this->andWhere($columnName . \' IS NULL OR \' . $columnName . \' > ' . $func . '()\');
+                echo '        $columnName = $this->a(\'', $attribute, '\');        
+        if ($', $attributeArg, ') {
+            return $this->andWhere($columnName . \' IS NULL OR \' . $columnName . \' > ', $funcName, '()\');
         } else {
-            return $this->andWhere($columnName . \' IS NOT NULL AND \' . $columnName . \' <= ' . $func . '()\');
+            return $this->andWhere($columnName . \' IS NOT NULL AND \' . $columnName . \' <= ', $funcName, '()\');
         }
 ';
             } else {
-                $code .= '        if ($' . $attributeArg . ') {
-            return $this->andWhere($this->a(\'' . $column->name . '\') . \' > ' . $func . '()\');
+                echo '        if ($', $attributeArg, ') {
+            return $this->andWhere($this->a(\'', $attribute, '\') . \' > ', $funcName, '()\');
         } else {
-            return $this->andWhere($this->a(\'' . $column->name . '\') . \' <= ' . $func . '()\');
+            return $this->andWhere($this->a(\'', $attribute, '\') . \' <= ', $funcName, '()\');
         }
 ';
             }
-            $code .= '    }
+            echo '    }
 ';
-            echo $code;
         }
     }
 }

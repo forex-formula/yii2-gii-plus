@@ -56,7 +56,11 @@ class m160209_192728_init extends Migration
 
         $this->createTable('something', [
             'tiny_id' => $this->tinyInteger()->unsigned(),
-            'small_id' => $this->smallInteger()->unsigned()
+            'small_id' => $this->smallInteger()->unsigned(),
+            'expires_at' => $this->date(),
+            'second_expires_at' => $this->date()->notNull(),
+            'third_expires_at' => $this->dateTime(),
+            'fourth_expires_at' => $this->dateTime()->notNull()
         ]);
         $this->addPrimaryKey(null, 'something', ['tiny_id', 'small_id']);
     }
