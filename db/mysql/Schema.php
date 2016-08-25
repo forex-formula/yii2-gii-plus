@@ -2,9 +2,9 @@
 
 namespace yii\gii\plus\db\mysql;
 
-use yii\db\mysql\Schema as YiiMysqlSchema;
+use yii\db\mysql\Schema as MysqlSchema;
 
-class Schema extends YiiMysqlSchema
+class Schema extends MysqlSchema
 {
 
     /**
