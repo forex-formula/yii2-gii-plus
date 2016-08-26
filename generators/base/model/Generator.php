@@ -196,11 +196,7 @@ class Generator extends GiiModelGenerator
      */
     public function getBaseClassAutoComplete()
     {
-        $data = ['yii\db\ActiveRecord'];
-        if (class_exists('yii\boost\db\ActiveRecord')) {
-            $data[] = 'yii\boost\db\ActiveRecord';
-        }
-        return $data;
+        return ['yii\boost\db\ActiveRecord'];
     }
 
     /**
@@ -241,11 +237,7 @@ class Generator extends GiiModelGenerator
      */
     public function getQueryBaseClassAutoComplete()
     {
-        $data = ['yii\db\ActiveQuery'];
-        if (class_exists('yii\boost\db\ActiveQuery')) {
-            $data[] = 'yii\boost\db\ActiveQuery';
-        }
-        return $data;
+        return ['yii\boost\db\ActiveQuery'];
     }
 
     /**
