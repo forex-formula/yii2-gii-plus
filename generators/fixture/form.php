@@ -9,4 +9,6 @@ use yii\jui\autosearch\AutoComplete;
 echo $form->field($generator, 'modelClass')->widget(AutoComplete::className(), [
     'source' => $generator->getModelClassAutoComplete()
 ]);
+echo $form->field($generator, 'fixtureNs');
 echo $form->field($generator, 'fixtureBaseClass');
+echo $form->field($generator, 'dataPath');

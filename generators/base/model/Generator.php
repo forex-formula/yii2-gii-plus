@@ -83,11 +83,13 @@ class Generator extends GiiModelGenerator
             [['includeFilter', 'excludeFilter'], 'validatePattern'],
             [['ns'], 'match', 'pattern' => '~\\\\base$~'],
             [['modelClass'], 'match', 'pattern' => '~Base$~'],
+            [['baseClass'], 'validateClass', 'params' => ['extends' => 'yii\boost\db\ActiveRecord']],
             [['queryNs'], 'default', 'value' => function (Generator $model, $attribute) {
                 return preg_replace('~\\\\base$~', '\query\base', $model->ns);
             }],
             [['queryNs'], 'match', 'pattern' => '~\\\\query\\\\base$~'],
-            [['queryClass'], 'match', 'pattern' => '~QueryBase$~']
+            [['queryClass'], 'match', 'pattern' => '~QueryBase$~'],
+            [['queryBaseClass'], 'validateClass', 'params' => ['extends' => 'yii\boost\db\ActiveQuery']]
         ]);
     }
 

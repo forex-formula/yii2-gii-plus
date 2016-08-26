@@ -20,7 +20,17 @@ class Generator extends GiiGenerator
     /**
      * @var string
      */
+    public $fixtureNs;
+
+    /**
+     * @var string
+     */
     public $fixtureBaseClass = 'yii\boost\test\ActiveFixture';
+
+    /**
+     * @var string
+     */
+    public $dataPath;
 
     /**
      * @inheritdoc
@@ -47,9 +57,15 @@ class Generator extends GiiGenerator
     public function rules()
     {
         return array_merge(parent::rules(), [
-            [['modelClass', 'fixtureBaseClass'], 'filter', 'filter' => 'trim'],
+            [['modelClass', 'fixtureNs', 'fixtureBaseClass', 'dataPath'], 'filter', 'filter' => 'trim'],
             [['modelClass', 'fixtureBaseClass'], 'required'],
-            [['modelClass'], 'match', 'pattern' => '~^(?:\w+\\\\)+(?:\w+|\*)$~']
+            [['modelClass'], 'match', 'pattern' => '~^(?:\w+\\\\)+(?:\w+|\*)$~'],
+            [['fixtureNs'], 'default', 'value' => function (Generator $model, $attribute) {
+                //tests\codeception\common\fixtures
+                return preg_replace('~\\\\models\\\\(?:\w+|\*)$~', '\fixtures', $model->modelClass);
+            }],
+            [['fixtureNs'], 'match', 'pattern' => '~\\\\fixtures$~'],
+            [['fixtureBaseClass'], 'validateClass', 'params' => ['extends' => 'yii\boost\test\ActiveFixture']]
         ]);
     }
 
@@ -58,7 +74,7 @@ class Generator extends GiiGenerator
      */
     public function requiredTemplates()
     {
-        return ['fixture.php'];
+        return ['fixture.php', 'data-file.php'];
     }
 
     /**
@@ -84,11 +100,12 @@ class Generator extends GiiGenerator
                 $ns = $match[1];
                 $modelName = basename($filename, '.php');
                 $modelClass = $ns . '\\' . $modelName;
-                $fixtureNs = preg_replace('~\\\\models$~', '\fixtures', $ns);
+                $fixtureNs = $this->fixtureNs;
                 $fixtureName = $modelName;
                 $fixtureClass = $fixtureNs . '\\' . $fixtureName;
                 $baseFixtureName = preg_replace('~^(?:\w+\\\\)*\w+\\\\(\w+)$~', '$1', $this->fixtureBaseClass);
                 $baseFixtureClass = $this->fixtureBaseClass;
+                $dataFile = '';
                 $params = [
                     'ns' => $ns,
                     'modelName' => $modelName,
@@ -97,9 +114,11 @@ class Generator extends GiiGenerator
                     'fixtureName' => $fixtureName,
                     'fixtureClass' => $fixtureClass,
                     'baseFixtureName' => $baseFixtureName,
-                    'baseFixtureClass' => $baseFixtureClass
+                    'baseFixtureClass' => $baseFixtureClass,
+                    'dataFile' => $dataFile
                 ];
                 $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $fixtureNs)) . '/' . $fixtureName . '.php', $this->render('fixture.php', $params));
+                //$files[] = new CodeFile(Yii::getAlias($dataFile), $this->render('data-file.php', $params));
             }
         }
         return $files;
