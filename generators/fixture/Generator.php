@@ -5,6 +5,7 @@ namespace yii\gii\plus\generators\fixture;
 use yii\gii\CodeFile;
 use yii\gii\Generator as GiiGenerator;
 use yii\gii\plus\helpers\Helper;
+use yii\helpers\Inflector;
 use yii\web\JsExpression;
 use yii\helpers\Json;
 use Yii;
@@ -65,7 +66,10 @@ class Generator extends GiiGenerator
                 return preg_replace('~\\\\models\\\\(?:\w+|\*)$~', '\fixtures', $model->modelClass);
             }],
             [['fixtureNs'], 'match', 'pattern' => '~\\\\fixtures$~'],
-            [['fixtureBaseClass'], 'validateClass', 'params' => ['extends' => 'yii\boost\test\ActiveFixture']]
+            [['fixtureBaseClass'], 'validateClass', 'params' => ['extends' => 'yii\boost\test\ActiveFixture']],
+            [['dataPath'], 'default', 'value' => function (Generator $model, $attribute) {
+                return '@' . str_replace('\\', '/', preg_replace('~\\\\models\\\\(?:\w+|\*)$~', '\tests\_data', $model->modelClass));
+            }]
         ]);
     }
 
@@ -105,7 +109,7 @@ class Generator extends GiiGenerator
                 $fixtureClass = $fixtureNs . '\\' . $fixtureName;
                 $baseFixtureName = preg_replace('~^(?:\w+\\\\)*\w+\\\\(\w+)$~', '$1', $this->fixtureBaseClass);
                 $baseFixtureClass = $this->fixtureBaseClass;
-                $dataFile = '';
+                $dataFile = $this->dataPath . '/' . Inflector::underscore($modelName) . '.php';
                 $params = [
                     'ns' => $ns,
                     'modelName' => $modelName,
@@ -118,7 +122,7 @@ class Generator extends GiiGenerator
                     'dataFile' => $dataFile
                 ];
                 $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $fixtureNs)) . '/' . $fixtureName . '.php', $this->render('fixture.php', $params));
-                //$files[] = new CodeFile(Yii::getAlias($dataFile), $this->render('data-file.php', $params));
+                $files[] = new CodeFile(Yii::getAlias($dataFile), $this->render('data-file.php', $params));
             }
         }
         return $files;

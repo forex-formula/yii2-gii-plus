@@ -1,5 +1,7 @@
 <?php
 
+use yii\helpers\Inflector;
+
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\fixture\Generator */
 /* @var $ns string */
@@ -13,6 +15,10 @@
 /* @var $dataFile string */
 
 echo '<?php
+
+/* ', Inflector::titleize($fixtureName), ' data-file */
+/* @see \\', $fixtureClass, ' */
+/* @see \\', $modelClass, ' */
 
 return [
 ];
