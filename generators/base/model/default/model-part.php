@@ -185,43 +185,42 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
             ]';
                     }
                 }
-                $code = '
+                echo '
     /**
-     * @param string|array|' . $dbExpression . ' $condition
+     * @param string|array|', $dbExpression, ' $condition
      * @param array $params
-     * @param string|array|' . $dbExpression . ' $orderBy
+     * @param string|array|', $dbExpression, ' $orderBy
      * @return array
      */
-    public function ' . $attributeArg . 'ListItems($condition = null, $params = [], $orderBy = null)
+    public function ', $attributeArg, 'ListItems($condition = null, $params = [], $orderBy = null)
     {
 ';
                 if ($conditionCode) {
-                    $code .= '        if (is_null($condition)) {
-            $condition = ' . $conditionCode . ';
+                    echo '        if (is_null($condition)) {
+            $condition = ', $conditionCode, ';
         }
 ';
                 }
-                $code .= '        return ' . Inflector::classify($foreignTableName) . '::findListItems($condition, $params, $orderBy);
+                echo '        return ', Inflector::classify($foreignTableName), '::findListItems($condition, $params, $orderBy);
     }
 
     /**
      * @param array $condition
-     * @param string|array|' . $dbExpression . ' $orderBy
+     * @param string|array|', $dbExpression, ' $orderBy
      * @return array
      */
-    public function ' . $attributeArg . 'FilterListItems(array $condition = [], $orderBy = null)
+    public function ', $attributeArg, 'FilterListItems(array $condition = [], $orderBy = null)
     {
 ';
                 if ($conditionCode) {
-                    $code .= '        if (!count($condition)) {
-            $condition = ' . $conditionCode . ';
+                    echo '        if (!count($condition)) {
+            $condition = ', $conditionCode, ';
         }
 ';
                 }
-                $code .= '        return ' . Inflector::classify($foreignTableName) . '::findFilterListItems($condition, $orderBy);
+                echo '        return ', Inflector::classify($foreignTableName), '::findFilterListItems($condition, $orderBy);
     }
 ';
-                echo $code;
             }
         }
     }
