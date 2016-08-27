@@ -163,7 +163,7 @@ if (array_key_exists($tableName, $buildRelations)) {
 foreach ($tableSchema->foreignKeys as $foreignKey) {
     $foreignTableName = $foreignKey[0];
     unset($foreignKey[0]);
-    /* @var $foreignModelClass string|\yii\db\ActiveRecord */
+    /* @var $foreignModelClass string|\yii\boost\db\ActiveRecord */
     $foreignModelClass = Helper::getModelClassByTableName($foreignTableName);
     if ($foreignModelClass && class_exists($foreignModelClass)) {
         $primaryKey = $foreignModelClass::primaryKey();
@@ -178,11 +178,12 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
                         $conditions[] = '\'' . $key2 . '\' => $this->' . $key1;
                     }
                     if (count($conditions) == 1) {
-                        $conditionCode = '[' . $conditions[0] . ']';
+                        $conditionCode = $conditions[0];
                     } else {
-                        $conditionCode = '[
-                ' . implode(',' . "\n" . '                ', $conditions) . '
-            ]';
+                        $conditionCode = '
+                ' . implode(',
+                ', $conditions) . '
+            ';
                     }
                 }
                 echo '
@@ -197,7 +198,7 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
 ';
                 if ($conditionCode) {
                     echo '        if (is_null($condition)) {
-            $condition = ', $conditionCode, ';
+            $condition = [', $conditionCode, '];
         }
 ';
                 }
@@ -214,7 +215,7 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
 ';
                 if ($conditionCode) {
                     echo '        if (!count($condition)) {
-            $condition = ', $conditionCode, ';
+            $condition = [', $conditionCode, '];
         }
 ';
                 }
