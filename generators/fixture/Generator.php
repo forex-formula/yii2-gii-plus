@@ -68,7 +68,7 @@ class Generator extends GiiGenerator
             [['fixtureNs'], 'match', 'pattern' => '~\\\\fixtures$~'],
             [['fixtureBaseClass'], 'validateClass', 'params' => ['extends' => 'yii\boost\test\ActiveFixture']],
             [['dataPath'], 'default', 'value' => function (Generator $model, $attribute) {
-                return '@' . str_replace('\\', '/', preg_replace('~\\\\models\\\\(?:\w+|\*)$~', '\tests\_data', $model->modelClass));
+                return '@' . str_replace('\\', '/', preg_replace('~\\\\fixtures$~', '\tests\_data', $model->fixtureNs));
             }]
         ]);
     }
@@ -91,6 +91,14 @@ class Generator extends GiiGenerator
             $data[] = $modelNs . '\*';
         }
         return new JsExpression('function (request, response) { response(' . Json::htmlEncode($data) . '); }');
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getFixtureBaseClassAutoComplete()
+    {
+        return ['yii\boost\test\ActiveFixture'];
     }
 
     /**
