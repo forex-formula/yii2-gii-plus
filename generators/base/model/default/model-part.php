@@ -63,7 +63,7 @@ if ($generator->generateLabelsFromComments && in_array($db->getDriverName(), ['m
         }
     }
 }
-$code = '
+echo '
     /**
      * @return string
      */
@@ -71,15 +71,14 @@ $code = '
     {
 ';
 if ($generator->enableI18N) {
-    $code .= '        return Yii::t(\'' . $generator->messageCategory . '\', \'' . $modelLabel . '\');
+    echo '        return Yii::t(\'' . $generator->messageCategory . '\', \'' . $modelLabel . '\');
 ';
 } else {
-    $code .= '        return \'' . $modelLabel . '\';
+    echo '        return \'' . $modelLabel . '\';
 ';
 }
-$code .= '    }
+echo '    }
 ';
-echo $code;
 
 // primary key
 $primaryKey = $tableSchema->primaryKey;
