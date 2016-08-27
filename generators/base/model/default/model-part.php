@@ -141,22 +141,21 @@ if (count($displayField)) {
 if (array_key_exists($tableName, $buildRelations)) {
     foreach ($buildRelations[$tableName] as $relationName => $buildRelation) {
         list ($nsClassName, $className, $foreignKey) = $buildRelation;
-        $code = '
+        echo '
     /**
-     * @return ' . $className . '
+     * @return ', $className, '
      */
-    public function new' . Inflector::singularize($relationName) . '()
+    public function new', Inflector::singularize($relationName), '()
     {
-        $model = new ' . $className . ';
+        $model = new ', $className, ';
 ';
         foreach ($foreignKey as $key1 => $key2) {
-            $code .= '        $model->' . $key1 . ' = $this->' . $key2 . ';
+            echo '        $model->', $key1, ' = $this->', $key2, ';
 ';
         }
-        $code .= '        return $model;
+        echo '        return $model;
     }
 ';
-        echo $code;
     }
 }
 
