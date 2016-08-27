@@ -31,7 +31,7 @@ foreach ($relations as $relationName => $relation) {
 if (count($singularRelations)) {
     echo '
     /**
-     * @return string[]
+     * @return array
      */
     public static function singularRelations()
     {
@@ -42,7 +42,7 @@ if (count($singularRelations)) {
 if (count($pluralRelations)) {
     echo '
     /**
-     * @return string[]
+     * @return array
      */
     public static function pluralRelations()
     {
@@ -132,7 +132,7 @@ if (count($displayField)) {
      */
     public function getDisplayField()
     {
-        return $this->', implode(' . \' \' . $this->', $displayField), ';
+        return $this->', implode(' . static::DISPLAY_FIELD_SEPARATOR . $this->', $displayField), ';
     }
 ';
 }
@@ -171,18 +171,17 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
             $attribute = array_search($primaryKey[0], $foreignKey);
             if ($attribute) {
                 $attributeArg = Inflector::variablize($attribute);
-                $conditionCode = '';
+                $listItemConditions = [];
                 if (count($foreignKey) > 1) {
-                    $conditions = [];
                     foreach (array_diff($foreignKey, $primaryKey) as $key1 => $key2) {
-                        $conditions[] = '\'' . $key2 . '\' => $this->' . $key1;
+                        $listItemConditions[] = '\'' . $key2 . '\' => $this->' . $key1;
                     }
-                    if (count($conditions) == 1) {
-                        $conditionCode = $conditions[0];
+                    if (count($listItemConditions) == 1) {
+                        $listItemConditions = $listItemConditions[0];
                     } else {
-                        $conditionCode = '
+                        $listItemConditions = '
                 ' . implode(',
-                ', $conditions) . '
+                ', $listItemConditions) . '
             ';
                     }
                 }
@@ -196,9 +195,9 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
     public function ', $attributeArg, 'ListItems($condition = null, $params = [], $orderBy = null)
     {
 ';
-                if ($conditionCode) {
+                if ($listItemConditions) {
                     echo '        if (is_null($condition)) {
-            $condition = [', $conditionCode, '];
+            $condition = [', $listItemConditions, '];
         }
 ';
                 }
@@ -213,9 +212,9 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
     public function ', $attributeArg, 'FilterListItems(array $condition = [], $orderBy = null)
     {
 ';
-                if ($conditionCode) {
+                if ($listItemConditions) {
                     echo '        if (!count($condition)) {
-            $condition = [', $conditionCode, '];
+            $condition = [', $listItemConditions, '];
         }
 ';
                 }
