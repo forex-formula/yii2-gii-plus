@@ -71,10 +71,10 @@ echo '
     {
 ';
 if ($generator->enableI18N) {
-    echo '        return Yii::t(\'' . $generator->messageCategory . '\', \'' . $modelLabel . '\');
+    echo '        return Yii::t(\'', $generator->messageCategory, '\', \'', $modelLabel, '\');
 ';
 } else {
-    echo '        return \'' . $modelLabel . '\';
+    echo '        return \'', $modelLabel, '\';
 ';
 }
 echo '    }
@@ -83,16 +83,15 @@ echo '    }
 // primary key
 $primaryKey = $tableSchema->primaryKey;
 if (count($primaryKey)) {
-    $code = '
+    echo '
     /**
      * @inheritdoc
      */
     public static function primaryKey()
     {
-        return [\'' . implode('\', \'', $primaryKey) . '\'];
+        return [\'', implode('\', \'', $primaryKey), '\'];
     }
 ';
-    echo $code;
 }
 
 if (array_key_exists($tableName, $relationUses) && in_array('yii\db\Expression', $relationUses[$tableName])) {
@@ -119,13 +118,13 @@ try {
     // do nothing
 }
 if (count($displayField)) {
-    $code = '
+    echo '
     /**
-     * @return string[]|' . $dbExpression . '
+     * @return string[]|', $dbExpression, '
      */
     public static function displayField()
     {
-        return [\'' . implode('\', \'', $displayField) . '\'];
+        return [\'', implode('\', \'', $displayField), '\'];
     }
 
     /**
@@ -133,10 +132,9 @@ if (count($displayField)) {
      */
     public function getDisplayField()
     {
-        return $this->' . implode(' . \' \' . $this->', $displayField) . ';
+        return $this->', implode(' . \' \' . $this->', $displayField), ';
     }
 ';
-    echo $code;
 }
 
 // build relations
