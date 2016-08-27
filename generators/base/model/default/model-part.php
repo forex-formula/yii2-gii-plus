@@ -51,15 +51,15 @@ if (count($pluralRelations)) {
 ';
 }
 
-// model label
-$modelLabel = Inflector::titleize($tableName);
+// title
+$title = Inflector::titleize($tableName);
 $db = $generator->getDbConnection();
 if ($generator->generateLabelsFromComments && in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
     $row = $db->createCommand('SHOW CREATE TABLE ' . $db->quoteTableName($tableName))->queryOne();
     if (is_array($row) && (count($row) == 2) && preg_match('~\)([^\)]*)$~', array_values($row)[1], $match)) {
         $tableOptions = $match[1];
         if (preg_match('~COMMENT\s*\=?\s*\'([^\']+)\'~i', $tableOptions, $match)) {
-            $modelLabel = $match[1];
+            $title = $match[1];
         }
     }
 }
@@ -67,14 +67,14 @@ echo '
     /**
      * @return string
      */
-    public static function modelLabel()
+    public static function title()
     {
 ';
 if ($generator->enableI18N) {
-    echo '        return Yii::t(\'', $generator->messageCategory, '\', \'', $modelLabel, '\');
+    echo '        return Yii::t(\'', $generator->messageCategory, '\', \'', $title, '\');
 ';
 } else {
-    echo '        return \'', $modelLabel, '\';
+    echo '        return \'', $title, '\';
 ';
 }
 echo '    }
@@ -202,7 +202,7 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
         }
 ';
                 }
-                echo '        return ', Inflector::classify($foreignTableName), '::findListItems($condition, $params, $orderBy);
+                echo '        return ', $foreignModelClass::shortName(), '::findListItems($condition, $params, $orderBy);
     }
 
     /**
@@ -219,7 +219,7 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
         }
 ';
                 }
-                echo '        return ', Inflector::classify($foreignTableName), '::findFilterListItems($condition, $orderBy);
+                echo '        return ', $foreignModelClass::shortName(), '::findFilterListItems($condition, $orderBy);
     }
 ';
             }
