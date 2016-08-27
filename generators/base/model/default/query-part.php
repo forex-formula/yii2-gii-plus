@@ -277,8 +277,8 @@ foreach ($tableSchema->columns as $column) {
 
 // ...expires_at
 foreach ($tableSchema->columns as $column) {
-    if (preg_match('~(?:^|_)expires_at$~', $column->name) && in_array($column->type, [Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
-        $attribute = $column->name;
+    $attribute = $column->name;
+    if (preg_match('~(?:^|_)expires_at$~', $attribute) && in_array($column->type, [Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
         $attributeArg = Inflector::variablize(str_replace('expires_at', 'not_expired', $attribute));
         $methodName = $attributeArg;
         if (!in_array($methodName, $methods)) {

@@ -59,6 +59,29 @@ if (count($depends)) {
     }
 }
 
+// backDepends
+$backDepends = [];
+foreach ($modelClass::pluralRelations() as $relationName) {
+    $relationClass = $fixtureNs . '\\' . $relationName;
+    if (class_exists($relationClass)) {
+        $backDepends[] = $relationClass;
+    }
+}
+if (count($backDepends)) {
+    if (count($backDepends) == 1) {
+        echo '
+    public $backDepends = [\'', $backDepends[0], '\'];
+';
+    } else {
+        echo '
+    public $backDepends = [
+        \'', implode('\',
+        \'', $backDepends), '\'
+    ];
+';
+    }
+}
+
 echo '
     public $dataFile = \'', $dataFile, '\';
 }

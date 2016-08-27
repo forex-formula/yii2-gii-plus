@@ -29,28 +29,26 @@ foreach ($relations as $relationName => $relation) {
     }
 }
 if (count($singularRelations)) {
-    $code = '
+    echo '
     /**
      * @return string[]
      */
     public static function singularRelations()
     {
-        return [\'' . implode('\', \'', $singularRelations) . '\'];
+        return [\'', implode('\', \'', $singularRelations), '\'];
     }
 ';
-    echo $code;
 }
 if (count($pluralRelations)) {
-    $code = '
+    echo '
     /**
      * @return string[]
      */
     public static function pluralRelations()
     {
-        return [\'' . implode('\', \'', $pluralRelations) . '\'];
+        return [\'', implode('\', \'', $pluralRelations), '\'];
     }
 ';
-    echo $code;
 }
 
 // model label
