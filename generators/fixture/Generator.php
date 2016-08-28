@@ -62,7 +62,6 @@ class Generator extends GiiGenerator
             [['modelClass', 'fixtureBaseClass'], 'required'],
             [['modelClass'], 'match', 'pattern' => '~^(?:\w+\\\\)+(?:\w+|\*)$~'],
             [['fixtureNs'], 'default', 'value' => function (Generator $model, $attribute) {
-                //tests\codeception\common\fixtures
                 return preg_replace('~\\\\models\\\\(?:\w+|\*)$~', '\fixtures', $model->modelClass);
             }],
             [['fixtureNs'], 'match', 'pattern' => '~\\\\fixtures$~'],
