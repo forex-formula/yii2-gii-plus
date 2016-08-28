@@ -23,15 +23,15 @@ $pluralRelations = [];
 foreach ($relations as $relationName => $relation) {
     list ($code, $_className, $hasMany) = $relation;
     if ($hasMany) {
-        $pluralRelations[] = $relationName;
+        $pluralRelations[] = lcfirst($relationName);
     } else {
-        $singularRelations[] = $relationName;
+        $singularRelations[] = lcfirst($relationName);
     }
 }
 if (count($singularRelations)) {
     echo '
     /**
-     * @return array
+     * @return string[]
      */
     public static function singularRelations()
     {
@@ -42,7 +42,7 @@ if (count($singularRelations)) {
 if (count($pluralRelations)) {
     echo '
     /**
-     * @return array
+     * @return string[]
      */
     public static function pluralRelations()
     {

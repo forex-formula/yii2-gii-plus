@@ -36,10 +36,13 @@ class ', $fixtureName, ' extends ', $baseFixtureName, '
     public $modelClass = \'', $modelClass, '\';
 ';
 
+/* @var $model \yii\boost\db\ActiveRecord */
+$model = new $modelClass;
+
 // depends
 $depends = [];
 foreach ($modelClass::singularRelations() as $relationName) {
-    $relationClass = $fixtureNs . '\\' . $relationName;
+    $relationClass = $model->getRelationClass($relationName);
     if (class_exists($relationClass)) {
         $depends[] = $relationClass;
     }
@@ -62,7 +65,7 @@ if (count($depends)) {
 // backDepends
 $backDepends = [];
 foreach ($modelClass::pluralRelations() as $relationName) {
-    $relationClass = $fixtureNs . '\\' . $relationName;
+    $relationClass = $model->getRelationClass($relationName);
     if (class_exists($relationClass)) {
         $backDepends[] = $relationClass;
     }
