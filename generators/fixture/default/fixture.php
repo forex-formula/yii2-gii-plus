@@ -10,9 +10,10 @@ use yii\helpers\Inflector;
 /* @var $modelClass string|\yii\boost\db\ActiveRecord */
 /* @var $fixtureNs string */
 /* @var $fixtureName string */
-/* @var $fixtureClass string|\yii\test\ActiveFixture */
+/* @var $fixtureClass string|\yii\boost\test\ActiveFixture */
 /* @var $baseFixtureName string */
-/* @var $baseFixtureClass string|\yii\test\ActiveFixture */
+/* @var $baseFixtureClass string|\yii\boost\test\ActiveFixture */
+/* @var $dataFile string */
 
 $uses = [
     $baseFixtureClass
@@ -35,10 +36,13 @@ class ', $fixtureName, ' extends ', $baseFixtureName, '
     public $modelClass = \'', $modelClass, '\';
 ';
 
+/* @var $model \yii\boost\db\ActiveRecord */
+$model = new $modelClass;
+
 // depends
 $depends = [];
 foreach ($modelClass::singularRelations() as $relationName) {
-    $relationClass = $fixtureNs . '\\' . $relationName;
+    $relationClass = $model->getRelationClass($relationName);
     if (class_exists($relationClass)) {
         $depends[] = $relationClass;
     }
@@ -58,5 +62,30 @@ if (count($depends)) {
     }
 }
 
-echo '}
+// backDepends
+$backDepends = [];
+foreach ($modelClass::pluralRelations() as $relationName) {
+    $relationClass = $model->getRelationClass($relationName);
+    if (class_exists($relationClass)) {
+        $backDepends[] = $relationClass;
+    }
+}
+if (count($backDepends)) {
+    if (count($backDepends) == 1) {
+        echo '
+    public $backDepends = [\'', $backDepends[0], '\'];
+';
+    } else {
+        echo '
+    public $backDepends = [
+        \'', implode('\',
+        \'', $backDepends), '\'
+    ];
+';
+    }
+}
+
+echo '
+    public $dataFile = \'', $dataFile, '\';
+}
 ';

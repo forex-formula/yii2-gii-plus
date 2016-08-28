@@ -88,9 +88,9 @@ class BaseModelTest extends TestCase
     {
         return [
             ['Type', []],
-            ['RootFolder', ['Type']],
-            ['Folder', ['RootFolder', 'Type']],
-            ['File', ['Folder', 'RootFolder']]
+            ['RootFolder', ['type']],
+            ['Folder', ['rootFolder', 'type']],
+            ['File', ['folder', 'rootFolder']]
         ];
     }
 
@@ -115,9 +115,9 @@ class BaseModelTest extends TestCase
     public function pluralRelationsDataProvider()
     {
         return [
-            ['Type', ['RootFolders']],
-            ['RootFolder', ['Folders']],
-            ['Folder', ['Files']],
+            ['Type', ['rootFolders']],
+            ['RootFolder', ['folders']],
+            ['Folder', ['files']],
             ['File', []]
         ];
     }
@@ -168,7 +168,7 @@ class BaseModelTest extends TestCase
     /**
      * @return array
      */
-    public function modelLabelDataProvider()
+    public function titleDataProvider()
     {
         return [
             ['Type', 'Тип'],
@@ -180,17 +180,17 @@ class BaseModelTest extends TestCase
 
     /**
      * @param string $modelName
-     * @param string $modelLabel
-     * @dataProvider modelLabelDataProvider
+     * @param string $title
+     * @dataProvider titleDataProvider
      */
-    public function testMethodModelLabel($modelName, $modelLabel)
+    public function testMethodTitle($modelName, $title)
     {
         /* @var $modelClass string|\yii\boost\db\ActiveRecord */
         $modelClass = 'app\models\\' . $modelName;
         $reflection = new ReflectionClass($modelClass);
-        $this->assertTrue($reflection->hasMethod('modelLabel'));
-        $this->assertTrue($reflection->getMethod('modelLabel')->isStatic());
-        $this->assertEquals($modelLabel, $modelClass::modelLabel());
+        $this->assertTrue($reflection->hasMethod('title'));
+        $this->assertTrue($reflection->getMethod('title')->isStatic());
+        $this->assertEquals($title, $modelClass::title());
     }
 
     /**

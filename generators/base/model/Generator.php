@@ -83,11 +83,13 @@ class Generator extends GiiModelGenerator
             [['includeFilter', 'excludeFilter'], 'validatePattern'],
             [['ns'], 'match', 'pattern' => '~\\\\base$~'],
             [['modelClass'], 'match', 'pattern' => '~Base$~'],
+            [['baseClass'], 'validateClass', 'params' => ['extends' => 'yii\boost\db\ActiveRecord']],
             [['queryNs'], 'default', 'value' => function (Generator $model, $attribute) {
                 return preg_replace('~\\\\base$~', '\query\base', $model->ns);
             }],
             [['queryNs'], 'match', 'pattern' => '~\\\\query\\\\base$~'],
-            [['queryClass'], 'match', 'pattern' => '~QueryBase$~']
+            [['queryClass'], 'match', 'pattern' => '~QueryBase$~'],
+            [['queryBaseClass'], 'validateClass', 'params' => ['extends' => 'yii\boost\db\ActiveQuery']]
         ]);
     }
 
@@ -194,11 +196,7 @@ class Generator extends GiiModelGenerator
      */
     public function getBaseClassAutoComplete()
     {
-        $data = ['yii\db\ActiveRecord'];
-        if (class_exists('yii\boost\db\ActiveRecord')) {
-            $data[] = 'yii\boost\db\ActiveRecord';
-        }
-        return $data;
+        return ['yii\boost\db\ActiveRecord'];
     }
 
     /**
@@ -239,11 +237,7 @@ class Generator extends GiiModelGenerator
      */
     public function getQueryBaseClassAutoComplete()
     {
-        $data = ['yii\db\ActiveQuery'];
-        if (class_exists('yii\boost\db\ActiveQuery')) {
-            $data[] = 'yii\boost\db\ActiveQuery';
-        }
-        return $data;
+        return ['yii\boost\db\ActiveQuery'];
     }
 
     /**

@@ -23,79 +23,75 @@ $pluralRelations = [];
 foreach ($relations as $relationName => $relation) {
     list ($code, $_className, $hasMany) = $relation;
     if ($hasMany) {
-        $pluralRelations[] = $relationName;
+        $pluralRelations[] = lcfirst($relationName);
     } else {
-        $singularRelations[] = $relationName;
+        $singularRelations[] = lcfirst($relationName);
     }
 }
 if (count($singularRelations)) {
-    $code = '
+    echo '
     /**
      * @return string[]
      */
     public static function singularRelations()
     {
-        return [\'' . implode('\', \'', $singularRelations) . '\'];
+        return [\'', implode('\', \'', $singularRelations), '\'];
     }
 ';
-    echo $code;
 }
 if (count($pluralRelations)) {
-    $code = '
+    echo '
     /**
      * @return string[]
      */
     public static function pluralRelations()
     {
-        return [\'' . implode('\', \'', $pluralRelations) . '\'];
+        return [\'', implode('\', \'', $pluralRelations), '\'];
     }
 ';
-    echo $code;
 }
 
-// model label
-$modelLabel = Inflector::titleize($tableName);
+// title
+$title = Inflector::titleize($tableName);
 $db = $generator->getDbConnection();
 if ($generator->generateLabelsFromComments && in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
     $row = $db->createCommand('SHOW CREATE TABLE ' . $db->quoteTableName($tableName))->queryOne();
     if (is_array($row) && (count($row) == 2) && preg_match('~\)([^\)]*)$~', array_values($row)[1], $match)) {
         $tableOptions = $match[1];
         if (preg_match('~COMMENT\s*\=?\s*\'([^\']+)\'~i', $tableOptions, $match)) {
-            $modelLabel = $match[1];
+            $title = $match[1];
         }
     }
 }
-$code = '
+echo '
     /**
      * @return string
      */
-    public static function modelLabel()
+    public static function title()
     {
 ';
 if ($generator->enableI18N) {
-    $code .= '        return Yii::t(\'' . $generator->messageCategory . '\', \'' . $modelLabel . '\');
+    echo '        return Yii::t(\'', $generator->messageCategory, '\', \'', $title, '\');
 ';
 } else {
-    $code .= '        return \'' . $modelLabel . '\';
+    echo '        return \'', $title, '\';
 ';
 }
-$code .= '    }
+echo '    }
 ';
-echo $code;
 
 // primary key
 $primaryKey = $tableSchema->primaryKey;
 if (count($primaryKey)) {
-    $code = '
+    echo '
     /**
      * @inheritdoc
      */
     public static function primaryKey()
     {
-        return [\'' . implode('\', \'', $primaryKey) . '\'];
+        return [\'', implode('\', \'', $primaryKey), '\'];
     }
 ';
-    echo $code;
 }
 
 if (array_key_exists($tableName, $relationUses) && in_array('yii\db\Expression', $relationUses[$tableName])) {
@@ -122,13 +118,13 @@ try {
     // do nothing
 }
 if (count($displayField)) {
-    $code = '
+    echo '
     /**
-     * @return string[]|' . $dbExpression . '
+     * @return string[]|', $dbExpression, '
      */
     public static function displayField()
     {
-        return [\'' . implode('\', \'', $displayField) . '\'];
+        return [\'', implode('\', \'', $displayField), '\'];
     }
 
     /**
@@ -136,32 +132,30 @@ if (count($displayField)) {
      */
     public function getDisplayField()
     {
-        return $this->' . implode(' . \' \' . $this->', $displayField) . ';
+        return $this->', implode(' . static::DISPLAY_FIELD_SEPARATOR . $this->', $displayField), ';
     }
 ';
-    echo $code;
 }
 
 // build relations
 if (array_key_exists($tableName, $buildRelations)) {
     foreach ($buildRelations[$tableName] as $relationName => $buildRelation) {
         list ($nsClassName, $className, $foreignKey) = $buildRelation;
-        $code = '
+        echo '
     /**
-     * @return ' . $className . '
+     * @return ', $className, '
      */
-    public function new' . Inflector::singularize($relationName) . '()
+    public function new', Inflector::singularize($relationName), '()
     {
-        $model = new ' . $className . ';
+        $model = new ', $className, ';
 ';
         foreach ($foreignKey as $key1 => $key2) {
-            $code .= '        $model->' . $key1 . ' = $this->' . $key2 . ';
+            echo '        $model->', $key1, ' = $this->', $key2, ';
 ';
         }
-        $code .= '        return $model;
+        echo '        return $model;
     }
 ';
-        echo $code;
     }
 }
 
@@ -169,7 +163,7 @@ if (array_key_exists($tableName, $buildRelations)) {
 foreach ($tableSchema->foreignKeys as $foreignKey) {
     $foreignTableName = $foreignKey[0];
     unset($foreignKey[0]);
-    /* @var $foreignModelClass string|\yii\db\ActiveRecord */
+    /* @var $foreignModelClass string|\yii\boost\db\ActiveRecord */
     $foreignModelClass = Helper::getModelClassByTableName($foreignTableName);
     if ($foreignModelClass && class_exists($foreignModelClass)) {
         $primaryKey = $foreignModelClass::primaryKey();
@@ -177,57 +171,56 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
             $attribute = array_search($primaryKey[0], $foreignKey);
             if ($attribute) {
                 $attributeArg = Inflector::variablize($attribute);
-                $conditionCode = '';
+                $listItemConditions = [];
                 if (count($foreignKey) > 1) {
-                    $conditions = [];
                     foreach (array_diff($foreignKey, $primaryKey) as $key1 => $key2) {
-                        $conditions[] = '\'' . $key2 . '\' => $this->' . $key1;
+                        $listItemConditions[] = '\'' . $key2 . '\' => $this->' . $key1;
                     }
-                    if (count($conditions) == 1) {
-                        $conditionCode = '[' . $conditions[0] . ']';
+                    if (count($listItemConditions) == 1) {
+                        $listItemConditions = $listItemConditions[0];
                     } else {
-                        $conditionCode = '[
-                ' . implode(',' . "\n" . '                ', $conditions) . '
-            ]';
+                        $listItemConditions = '
+                ' . implode(',
+                ', $listItemConditions) . '
+            ';
                     }
                 }
-                $code = '
+                echo '
     /**
-     * @param string|array|' . $dbExpression . ' $condition
+     * @param string|array|', $dbExpression, ' $condition
      * @param array $params
-     * @param string|array|' . $dbExpression . ' $orderBy
+     * @param string|array|', $dbExpression, ' $orderBy
      * @return array
      */
-    public function ' . $attributeArg . 'ListItems($condition = null, $params = [], $orderBy = null)
+    public function ', $attributeArg, 'ListItems($condition = null, $params = [], $orderBy = null)
     {
 ';
-                if ($conditionCode) {
-                    $code .= '        if (is_null($condition)) {
-            $condition = ' . $conditionCode . ';
+                if ($listItemConditions) {
+                    echo '        if (is_null($condition)) {
+            $condition = [', $listItemConditions, '];
         }
 ';
                 }
-                $code .= '        return ' . Inflector::classify($foreignTableName) . '::findListItems($condition, $params, $orderBy);
+                echo '        return ', $foreignModelClass::shortName(), '::findListItems($condition, $params, $orderBy);
     }
 
     /**
      * @param array $condition
-     * @param string|array|' . $dbExpression . ' $orderBy
+     * @param string|array|', $dbExpression, ' $orderBy
      * @return array
      */
-    public function ' . $attributeArg . 'FilterListItems(array $condition = [], $orderBy = null)
+    public function ', $attributeArg, 'FilterListItems(array $condition = [], $orderBy = null)
     {
 ';
-                if ($conditionCode) {
-                    $code .= '        if (!count($condition)) {
-            $condition = ' . $conditionCode . ';
+                if ($listItemConditions) {
+                    echo '        if (!count($condition)) {
+            $condition = [', $listItemConditions, '];
         }
 ';
                 }
-                $code .= '        return ' . Inflector::classify($foreignTableName) . '::findFilterListItems($condition, $orderBy);
+                echo '        return ', $foreignModelClass::shortName(), '::findFilterListItems($condition, $orderBy);
     }
 ';
-                echo $code;
             }
         }
     }

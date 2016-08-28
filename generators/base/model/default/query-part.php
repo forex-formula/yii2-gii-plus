@@ -82,14 +82,14 @@ if (count($primaryKey)) {
      */
     public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
-        return $this->andWhere([
+        return $this->andWhere($this->a([
 ';
         foreach ($primaryKey as $i => $attribute) {
             $comma = ($i < count($primaryKey) - 1) ? ',' : '';
-            echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
+            echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
 ';
         }
-        echo '        ]);
+        echo '        ]));
     }
 ';
         $methodName = Inflector::variablize(implode('_', $primaryKey));
@@ -105,14 +105,14 @@ if (count($primaryKey)) {
      */
     public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
-        return $this->andWhere([
+        return $this->andWhere($this->a([
 ';
         foreach ($primaryKey as $i => $attribute) {
             $comma = ($i < count($primaryKey) - 1) ? ',' : '';
-            echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
+            echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
 ';
         }
-        echo '        ]);
+        echo '        ]));
     }
 ';
     }
@@ -160,14 +160,14 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
      */
     public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
-        return $this->andWhere([
+        return $this->andWhere($this->a([
 ';
             foreach ($foreignKey as $i => $attribute) {
                 $comma = ($i < count($foreignKey) - 1) ? ',' : '';
-                echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
+                echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
 ';
             }
-            echo '        ]);
+            echo '        ]));
     }
 ';
         }
@@ -216,14 +216,14 @@ try {
      */
     public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
-        return $this->andWhere([
+        return $this->andWhere($this->a([
 ';
                 foreach ($uniqueKey as $i => $attribute) {
                     $comma = ($i < count($uniqueKey) - 1) ? ',' : '';
-                    echo '            $this->a(\'', $attribute, '\') => $', $attributeArgs[$i], $comma, '
+                    echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
 ';
                 }
-                echo '        ]);
+                echo '        ]));
     }
 ';
             }
@@ -277,8 +277,8 @@ foreach ($tableSchema->columns as $column) {
 
 // ...expires_at
 foreach ($tableSchema->columns as $column) {
-    if (preg_match('~(?:^|_)expires_at$~', $column->name) && in_array($column->type, [Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
-        $attribute = $column->name;
+    $attribute = $column->name;
+    if (preg_match('~(?:^|_)expires_at$~', $attribute) && in_array($column->type, [Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
         $attributeArg = Inflector::variablize(str_replace('expires_at', 'not_expired', $attribute));
         $methodName = $attributeArg;
         if (!in_array($methodName, $methods)) {
