@@ -88,9 +88,9 @@ class BaseModelTest extends TestCase
     {
         return [
             ['Type', []],
-            ['RootFolder', ['Type']],
-            ['Folder', ['RootFolder', 'Type']],
-            ['File', ['Folder', 'RootFolder']]
+            ['RootFolder', ['type']],
+            ['Folder', ['rootFolder', 'type']],
+            ['File', ['folder', 'rootFolder']]
         ];
     }
 
@@ -115,9 +115,9 @@ class BaseModelTest extends TestCase
     public function pluralRelationsDataProvider()
     {
         return [
-            ['Type', ['RootFolders']],
-            ['RootFolder', ['Folders']],
-            ['Folder', ['Files']],
+            ['Type', ['rootFolders']],
+            ['RootFolder', ['folders']],
+            ['Folder', ['files']],
             ['File', []]
         ];
     }
