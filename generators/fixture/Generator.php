@@ -129,7 +129,10 @@ class Generator extends GiiGenerator
                     'dataFile' => $dataFile
                 ];
                 $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $fixtureNs)) . '/' . $fixtureName . '.php', $this->render('fixture.php', $params));
-                $files[] = new CodeFile(Yii::getAlias($dataFile), $this->render('data-file.php', $params));
+                $filename = Yii::getAlias($dataFile);
+                if (!file_exists($filename)) {
+                    $files[] = new CodeFile($filename, $this->render('data-file.php', $params));
+                }
             }
         }
         return $files;
