@@ -138,15 +138,21 @@ if (count($displayField)) {
 ';
 }
 
+$methods = [];
+
 // build relations
 if (array_key_exists($tableName, $buildRelations)) {
     foreach ($buildRelations[$tableName] as $relationName => $buildRelation) {
         list ($nsClassName, $className, $foreignKey) = $buildRelation;
+        
+        $methodName = 'new' . Inflector::singularize($relationName);
+        if (!in_array($methodName, $methods)) {
+            $methods[] = $methodName;
         echo '
     /**
      * @return ', $className, '
      */
-    public function new', Inflector::singularize($relationName), '()
+    public function ', $methodName, '()
     {
         $model = new ', $className, ';
 ';
@@ -156,7 +162,10 @@ if (array_key_exists($tableName, $buildRelations)) {
         }
         echo '        return $model;
     }
-';
+';            
+        }
+        
+
     }
 }
 
