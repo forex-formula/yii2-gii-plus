@@ -27,13 +27,13 @@ install:
 
 before_script:
   - mysql -e 'CREATE DATABASE yii2_gii_plus_tests;'
-  - tests/yii migrate --interactive=0
-  - tests/yii gii/base_model --enableI18N=1 --interactive=0
-  - tests/yii gii/custom_model --interactive=0
-  - tests/yii gii/base_model --enableI18N=1 --interactive=0 --overwrite=1
-  - tests/yii gii/base_model --enableI18N=1 --interactive=0 --overwrite=1
-  - tests/yii gii/fixture --interactive=0 --generateDataFile=1
-  - tests/yii gii/fixture --interactive=0 --overwrite=1
+  - test-app/yii migrate --interactive=0
+  - test-app/yii gii/base_model --interactive=0 --enableI18N=1
+  - test-app/yii gii/custom_model --interactive=0
+  - test-app/yii gii/base_model --interactive=0 --overwrite=1 --enableI18N=1
+  - test-app/yii gii/base_model --interactive=0 --overwrite=1 --enableI18N=1
+  - test-app/yii gii/fixture --interactive=0 --generateDataFile=1
+  - test-app/yii gii/fixture --interactive=0 --overwrite=1
 
 script:
   - vendor/bin/phpunit
