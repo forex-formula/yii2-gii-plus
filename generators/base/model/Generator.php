@@ -23,7 +23,7 @@ class Generator extends GiiModelGenerator
     /**
      * @var string
      */
-    public $excludeFilter = 'migration|cache|source_message|message|log|auth_\w+';
+    public $excludeFilter = 'migration|cache|source_message|message|log|auth_\w+|trans_\w+';
 
     public $ns = 'app\models\base';
     public $tableName = '*';
