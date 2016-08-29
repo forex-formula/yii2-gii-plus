@@ -57,6 +57,14 @@ class Generator extends GiiGenerator
     }
 
     /**
+     * @inheritdoc
+     */
+    public function stickyAttributes()
+    {
+        return array_merge(parent::stickyAttributes(), ['baseModelClass']);
+    }
+
+    /**
      * @return JsExpression
      */
     public function getBaseModelClassAutoComplete()

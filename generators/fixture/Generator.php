@@ -87,6 +87,14 @@ class Generator extends GiiGenerator
     }
 
     /**
+     * @inheritdoc
+     */
+    public function stickyAttributes()
+    {
+        return array_merge(parent::stickyAttributes(), ['modelClass', 'fixtureNs', 'fixtureBaseClass', 'dataPath']);
+    }
+
+    /**
      * @return JsExpression
      */
     public function getModelClassAutoComplete()
