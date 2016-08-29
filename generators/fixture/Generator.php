@@ -29,6 +29,11 @@ class Generator extends GiiGenerator
     public $fixtureBaseClass = 'yii\boost\test\ActiveFixture';
 
     /**
+     * @var bool
+     */
+    public $generateDataFile = false;
+
+    /**
      * @var string
      */
     public $dataPath;
@@ -66,6 +71,7 @@ class Generator extends GiiGenerator
             }],
             [['fixtureNs'], 'match', 'pattern' => '~\\\\fixtures$~'],
             [['fixtureBaseClass'], 'validateClass', 'params' => ['extends' => 'yii\boost\test\ActiveFixture']],
+            [['generateDataFile'], 'boolean'],
             [['dataPath'], 'default', 'value' => function (Generator $model, $attribute) {
                 return '@' . str_replace('\\', '/', preg_replace('~\\\\fixtures$~', '\tests\data', $model->fixtureNs));
             }]
@@ -129,9 +135,8 @@ class Generator extends GiiGenerator
                     'dataFile' => $dataFile
                 ];
                 $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $fixtureNs)) . '/' . $fixtureName . '.php', $this->render('fixture.php', $params));
-                $filename = Yii::getAlias($dataFile);
-                if (!file_exists($filename)) {
-                    $files[] = new CodeFile($filename, $this->render('data-file.php', $params));
+                if ($this->generateDataFile) {
+                    $files[] = new CodeFile(Yii::getAlias($dataFile), $this->render('data-file.php', $params));
                 }
             }
         }

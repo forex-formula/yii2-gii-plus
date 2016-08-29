@@ -14,5 +14,5 @@ $DIR/yii gii/base_model --enableI18N=1 --interactive=0
 $DIR/yii gii/custom_model --interactive=0
 $DIR/yii gii/base_model --enableI18N=1 --interactive=0 --overwrite=1
 $DIR/yii gii/base_model --enableI18N=1 --interactive=0 --overwrite=1
-$DIR/yii gii/fixture --interactive=0
+$DIR/yii gii/fixture --interactive=0 --generateDataFile=1
 $DIR/yii gii/fixture --interactive=0 --overwrite=1
