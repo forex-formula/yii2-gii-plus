@@ -415,7 +415,7 @@ class Generator extends GiiModelGenerator
         foreach ($generatedRelations as $tableName => $tableRelations) {
             $tableSchema = $db->getTableSchema($tableName);
             $relations[$tableName] = [];
-            $this->relationUses[$tableName] = ['Yii'];
+            $this->relationUses[$tableName] = [];
             $this->buildRelations[$tableName] = [];
             foreach ($tableRelations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
@@ -541,10 +541,10 @@ class Generator extends GiiModelGenerator
             case 'model.php':
                 // fix uses
                 $tableName = $params['tableName'];
-                if (array_key_exists($tableName, $this->relationUses)) {
+                if (array_key_exists($tableName, $this->relationUses) && $this->relationUses[$tableName]) {
                     $uses = array_unique($this->relationUses[$tableName]);
                     Helper::sortUses($uses);
-                    $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
+                    $output = str_replace('use Yii;', 'use Yii;' . "\n" . 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
                 }
                 // fix rules
                 $output = preg_replace('~\'targetClass\' \=\> (\w+)Base\:\:className\(\)~', '\'targetClass\' => $1::className()', $output);
