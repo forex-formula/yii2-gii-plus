@@ -9,9 +9,10 @@ use yii\web\JsExpression;
 /* @var $form yii\widgets\ActiveForm */
 /* @var $generator Generator */
 
+$onSelect = new JsExpression('function (event, ui) { jQuery(\'#' . Html::getInputId($generator, 'queryNs') . '\').val(\'\'); }');
+
 echo $form->field($generator, 'includeFilter');
 echo $form->field($generator, 'excludeFilter');
-
 echo $form->field($generator, 'tableName')->widget(AutoComplete::className(), [
     'options' => ['table_prefix' => $generator->getTablePrefix()],
     'source' => $generator->getTableNameAutoComplete(true)
@@ -19,7 +20,7 @@ echo $form->field($generator, 'tableName')->widget(AutoComplete::className(), [
 echo $form->field($generator, 'modelClass');
 echo $form->field($generator, 'ns')->widget(AutoComplete::className(), [
     'source' => $generator->getNsAutoComplete(),
-    'clientOptions' => ['select' => new JsExpression('function (event, ui) { jQuery(\'#' . Html::getInputId($generator, 'queryNs') . '\').val(\'\'); }')]
+    'clientOptions' => ['select' => $onSelect]
 ]);
 echo $form->field($generator, 'baseClass')->widget(AutoComplete::className(), [
     'source' => $generator->getBaseClassAutoComplete()
