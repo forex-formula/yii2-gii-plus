@@ -1,6 +1,6 @@
 <?php
 
-namespace yii\gii\plus\tests;
+namespace app\tests;
 
 use ReflectionClass;
 use yii\phpunit\TestCase;
