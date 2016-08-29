@@ -7,7 +7,7 @@ DIR=$(dirname $0)
 
 rm -frv $DIR/models/*
 rm -frv $DIR/fixtures/*
-rm -frv $DIR/tests/*
+rm -frv $DIR/tests/data/*
 
 $DIR/yii migrate --interactive=0
 $DIR/yii gii/base_model --enableI18N=1 --interactive=0
