@@ -448,7 +448,9 @@ class Generator extends GiiModelGenerator
                             foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
                                 list ($subCode, $subClassName, $subHasMany) = $subRelation;
                                 /* @var $subNsClassName string|\yii\db\ActiveRecord */
-                                $subNsClassName = Helper::getModelClassByTableName(array_search($subClassName, $this->classNames));
+                                    $subTableName2 = array_search($subClassName, $this->classNames);
+                                    if ($subTableName2 != $tableName) {
+                                $subNsClassName = Helper::getModelClassByTableName($subTableName2);
                                 if ($subNsClassName && class_exists($subNsClassName)) {
                                     if (!$subHasMany && ($subRelationName != $className)) {
                                         if (!array_key_exists($subRelationName, $generatedRelations[$tableName])) {
@@ -458,6 +460,7 @@ class Generator extends GiiModelGenerator
                                         }
                                     }
                                 }
+                                    }
                             }
                         }
                     }
