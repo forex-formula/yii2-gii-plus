@@ -21,7 +21,7 @@ echo '<?php
 /* @see \\', $modelClass, ' */
 
 return [
-    [
+    /*[
 ';
 $columns = array_values($modelClass::getTableSchema()->columns);
 foreach ($columns as $i => $column) {
@@ -29,6 +29,6 @@ foreach ($columns as $i => $column) {
     echo '        \'', $column->name, '\' => \'\'', $comma, '
 ';
 }
-echo '    ]
+echo '    ]*/
 ];
 ';

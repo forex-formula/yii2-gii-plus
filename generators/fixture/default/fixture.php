@@ -42,9 +42,14 @@ $model = new $modelClass;
 // depends
 $depends = [];
 foreach ($modelClass::singularRelations() as $relationName) {
+    /* @var $relationClass string|\yii\boost\db\ActiveRecord */
     $relationClass = $model->getRelationClass($relationName);
-    if (class_exists($relationClass)) {
-        $depends[] = $relationClass;
+    if ($relationClass && class_exists($relationClass)) {
+        /* @var $relationFixtureClass string|\yii\boost\test\ActiveFixture */
+        $relationFixtureClass = $fixtureNs . '\\' . $relationClass::shortName();
+        if (class_exists($relationFixtureClass)) {
+            $depends[] = $relationFixtureClass;
+        }
     }
 }
 if (count($depends)) {
@@ -65,9 +70,14 @@ if (count($depends)) {
 // backDepends
 $backDepends = [];
 foreach ($modelClass::pluralRelations() as $relationName) {
+    /* @var $relationClass string|\yii\boost\db\ActiveRecord */
     $relationClass = $model->getRelationClass($relationName);
-    if (class_exists($relationClass)) {
-        $backDepends[] = $relationClass;
+    if ($relationClass && class_exists($relationClass)) {
+        /* @var $relationFixtureClass string|\yii\boost\test\ActiveFixture */
+        $relationFixtureClass = $fixtureNs . '\\' . $relationClass::shortName();
+        if (class_exists($relationFixtureClass)) {
+            $backDepends[] = $relationFixtureClass;
+        }
     }
 }
 if (count($backDepends)) {

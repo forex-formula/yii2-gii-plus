@@ -29,6 +29,11 @@ class Generator extends GiiGenerator
     public $fixtureBaseClass = 'yii\boost\test\ActiveFixture';
 
     /**
+     * @var bool
+     */
+    public $generateDataFile = false;
+
+    /**
      * @var string
      */
     public $dataPath;
@@ -62,11 +67,11 @@ class Generator extends GiiGenerator
             [['modelClass', 'fixtureBaseClass'], 'required'],
             [['modelClass'], 'match', 'pattern' => '~^(?:\w+\\\\)+(?:\w+|\*)$~'],
             [['fixtureNs'], 'default', 'value' => function (Generator $model, $attribute) {
-                //tests\codeception\common\fixtures
                 return preg_replace('~\\\\models\\\\(?:\w+|\*)$~', '\fixtures', $model->modelClass);
             }],
             [['fixtureNs'], 'match', 'pattern' => '~\\\\fixtures$~'],
             [['fixtureBaseClass'], 'validateClass', 'params' => ['extends' => 'yii\boost\test\ActiveFixture']],
+            [['generateDataFile'], 'boolean'],
             [['dataPath'], 'default', 'value' => function (Generator $model, $attribute) {
                 return '@' . str_replace('\\', '/', preg_replace('~\\\\fixtures$~', '\tests\data', $model->fixtureNs));
             }]
@@ -79,6 +84,14 @@ class Generator extends GiiGenerator
     public function requiredTemplates()
     {
         return ['fixture.php', 'data-file.php'];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function stickyAttributes()
+    {
+        return array_merge(parent::stickyAttributes(), ['modelClass', 'fixtureNs', 'fixtureBaseClass', 'dataPath']);
     }
 
     /**
@@ -130,7 +143,9 @@ class Generator extends GiiGenerator
                     'dataFile' => $dataFile
                 ];
                 $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $fixtureNs)) . '/' . $fixtureName . '.php', $this->render('fixture.php', $params));
-                $files[] = new CodeFile(Yii::getAlias($dataFile), $this->render('data-file.php', $params));
+                if ($this->generateDataFile) {
+                    $files[] = new CodeFile(Yii::getAlias($dataFile), $this->render('data-file.php', $params));
+                }
             }
         }
         return $files;

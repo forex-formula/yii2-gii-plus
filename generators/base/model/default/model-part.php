@@ -94,6 +94,7 @@ if (count($primaryKey)) {
 ';
 }
 
+// use
 if (array_key_exists($tableName, $relationUses) && in_array('yii\db\Expression', $relationUses[$tableName])) {
     $dbExpression = 'Expression';
 } else {
