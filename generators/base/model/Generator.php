@@ -415,7 +415,7 @@ class Generator extends GiiModelGenerator
         foreach ($generatedRelations as $tableName => $tableRelations) {
             $tableSchema = $db->getTableSchema($tableName);
             $relations[$tableName] = [];
-            $this->relationUses[$tableName] = ['Yii'];
+            $this->relationUses[$tableName] = [];
             $this->buildRelations[$tableName] = [];
             foreach ($tableRelations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
@@ -448,7 +448,9 @@ class Generator extends GiiModelGenerator
                             foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
                                 list ($subCode, $subClassName, $subHasMany) = $subRelation;
                                 /* @var $subNsClassName string|\yii\db\ActiveRecord */
-                                $subNsClassName = Helper::getModelClassByTableName(array_search($subClassName, $this->classNames));
+                                    $subTableName2 = array_search($subClassName, $this->classNames);
+                                    if ($subTableName2 != $tableName) {
+                                $subNsClassName = Helper::getModelClassByTableName($subTableName2);
                                 if ($subNsClassName && class_exists($subNsClassName)) {
                                     if (!$subHasMany && ($subRelationName != $className)) {
                                         if (!array_key_exists($subRelationName, $generatedRelations[$tableName])) {
@@ -458,6 +460,7 @@ class Generator extends GiiModelGenerator
                                         }
                                     }
                                 }
+                                    }
                             }
                         }
                     }
@@ -538,10 +541,10 @@ class Generator extends GiiModelGenerator
             case 'model.php':
                 // fix uses
                 $tableName = $params['tableName'];
-                if (array_key_exists($tableName, $this->relationUses)) {
+                if (array_key_exists($tableName, $this->relationUses) && $this->relationUses[$tableName]) {
                     $uses = array_unique($this->relationUses[$tableName]);
                     Helper::sortUses($uses);
-                    $output = str_replace('use Yii;', 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
+                    $output = str_replace('use Yii;', 'use Yii;' . "\n" . 'use ' . implode(';' . "\n" . 'use ', $uses) . ';', $output);
                 }
                 // fix rules
                 $output = preg_replace('~\'targetClass\' \=\> (\w+)Base\:\:className\(\)~', '\'targetClass\' => $1::className()', $output);
