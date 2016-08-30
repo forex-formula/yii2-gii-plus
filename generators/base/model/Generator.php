@@ -419,7 +419,7 @@ class Generator extends GiiModelGenerator
             $this->buildRelations[$tableName] = [];
             foreach ($tableRelations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
-                /* @var $nsClassName string|\yii\db\ActiveRecord */
+                /* @var $nsClassName string|\yii\boost\db\ActiveRecord */
                 $nsClassName = Helper::getModelClassByTableName(array_search($className, $this->classNames));
                 if ($nsClassName && class_exists($nsClassName)) {
                     $relations[$tableName][$relationName] = [$code, $className, $hasMany];
@@ -447,20 +447,20 @@ class Generator extends GiiModelGenerator
                             }
                             foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
                                 list ($subCode, $subClassName, $subHasMany) = $subRelation;
-                                /* @var $subNsClassName string|\yii\db\ActiveRecord */
-                                    $subTableName2 = array_search($subClassName, $this->classNames);
-                                    if ($subTableName2 != $tableName) {
-                                $subNsClassName = Helper::getModelClassByTableName($subTableName2);
-                                if ($subNsClassName && class_exists($subNsClassName)) {
-                                    if (!$subHasMany && ($subRelationName != $className)) {
-                                        if (!array_key_exists($subRelationName, $generatedRelations[$tableName])) {
-                                            $subCode = preg_replace('~;$~', "\n" . '            ->viaTable(\'' . $subTableName . ' via_' . $subTableName . '\', ' . $viaLink . ');', $subCode);
-                                            $relations[$tableName][$subRelationName] = [$subCode, $subClassName, $subHasMany];
-                                            $this->relationUses[$tableName][] = $subNsClassName;
+                                $tableName2 = array_search($subClassName, $this->classNames);
+                                if ($tableName2 != $tableName) {
+                                    /* @var $subNsClassName string|\yii\boost\db\ActiveRecord */
+                                    $subNsClassName = Helper::getModelClassByTableName($tableName2);
+                                    if ($subNsClassName && class_exists($subNsClassName)) {
+                                        if (!$subHasMany && ($subRelationName != $className)) {
+                                            if (!array_key_exists($subRelationName, $generatedRelations[$tableName])) {
+                                                $subCode = preg_replace('~;$~', "\n" . '            ->viaTable(\'' . $subTableName . ' via_' . $subTableName . '\', ' . $viaLink . ');', $subCode);
+                                                $relations[$tableName][$subRelationName] = [$subCode, $subClassName, $subHasMany];
+                                                $this->relationUses[$tableName][] = $subNsClassName;
+                                            }
                                         }
                                     }
                                 }
-                                    }
                             }
                         }
                     }
@@ -550,7 +550,7 @@ class Generator extends GiiModelGenerator
                 $output = preg_replace('~\'targetClass\' \=\> (\w+)Base\:\:className\(\)~', '\'targetClass\' => $1::className()', $output);
                 // fix relations
                 $nsClassName = $this->ns . '\\' . $params['className'];
-                if (class_exists($nsClassName) && is_subclass_of($nsClassName, 'yii\db\ActiveRecord')) {
+                if (class_exists($nsClassName) && is_subclass_of($nsClassName, 'yii\boost\db\ActiveRecord')) {
                     $model = new $nsClassName;
                     $output = preg_replace_callback('~@return \\\\(yii\\\\db\\\\ActiveQuery)\s+\*/\s+public function ([^\(]+)\(\)~', function ($match) use ($model) {
                         if (method_exists($model, $match[2])) {
