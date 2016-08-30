@@ -17,6 +17,8 @@ use yii\db\Schema;
 /* @var $relationUses array */
 /* @var $buildRelations array */
 
+$methods = [];
+
 // relations
 $singularRelations = [];
 $pluralRelations = [];
@@ -51,15 +53,15 @@ if (count($pluralRelations)) {
 ';
 }
 
-// title
-$title = Inflector::titleize($tableName);
+// modelTitle
+$modelTitle = Inflector::titleize($tableName);
 $db = $generator->getDbConnection();
 if ($generator->generateLabelsFromComments && in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
     $row = $db->createCommand('SHOW CREATE TABLE ' . $db->quoteTableName($tableName))->queryOne();
     if (is_array($row) && (count($row) == 2) && preg_match('~\)([^\)]*)$~', array_values($row)[1], $match)) {
         $tableOptions = $match[1];
         if (preg_match('~COMMENT\s*\=?\s*\'([^\']+)\'~i', $tableOptions, $match)) {
-            $title = $match[1];
+            $modelTitle = $match[1];
         }
     }
 }
@@ -67,14 +69,14 @@ echo '
     /**
      * @return string
      */
-    public static function title()
+    public static function modelTitle()
     {
 ';
 if ($generator->enableI18N) {
-    echo '        return Yii::t(\'', $generator->messageCategory, '\', \'', $title, '\');
+    echo '        return Yii::t(\'', $generator->messageCategory, '\', \'', $modelTitle, '\');
 ';
 } else {
-    echo '        return \'', $title, '\';
+    echo '        return \'', $modelTitle, '\';
 ';
 }
 echo '    }
@@ -138,17 +140,14 @@ if (count($displayField)) {
 ';
 }
 
-$methods = [];
-
 // build relations
 if (array_key_exists($tableName, $buildRelations)) {
     foreach ($buildRelations[$tableName] as $relationName => $buildRelation) {
         list ($nsClassName, $className, $foreignKey) = $buildRelation;
-        
         $methodName = 'new' . Inflector::singularize($relationName);
         if (!in_array($methodName, $methods)) {
             $methods[] = $methodName;
-        echo '
+            echo '
     /**
      * @return ', $className, '
      */
@@ -156,15 +155,15 @@ if (array_key_exists($tableName, $buildRelations)) {
     {
         $model = new ', $className, ';
 ';
-        foreach ($foreignKey as $key1 => $key2) {
-            echo '        $model->', $key1, ' = $this->', $key2, ';
+            foreach ($foreignKey as $key1 => $key2) {
+                echo '        $model->', $key1, ' = $this->', $key2, ';
+';
+            }
+            echo '        return $model;
+    }
 ';
         }
-        echo '        return $model;
-    }
-';            
-        }
-        
+
 
     }
 }
@@ -211,7 +210,7 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
         }
 ';
                 }
-                echo '        return ', $foreignModelClass::shortName(), '::findListItems($condition, $params, $orderBy);
+                echo '        return ', $foreignModelClass::classShortName(), '::findListItems($condition, $params, $orderBy);
     }
 
     /**
@@ -228,7 +227,7 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
         }
 ';
                 }
-                echo '        return ', $foreignModelClass::shortName(), '::findFilterListItems($condition, $orderBy);
+                echo '        return ', $foreignModelClass::classShortName(), '::findFilterListItems($condition, $orderBy);
     }
 ';
             }

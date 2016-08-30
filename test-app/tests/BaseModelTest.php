@@ -140,7 +140,7 @@ class BaseModelTest extends TestCase
     /**
      * @return array
      */
-    public function shortNameDataProvider()
+    public function classShortNameDataProvider()
     {
         return [
             ['Type', 'Type'],
@@ -152,23 +152,23 @@ class BaseModelTest extends TestCase
 
     /**
      * @param string $modelName
-     * @param string $shortName
-     * @dataProvider shortNameDataProvider
+     * @param string $classShortName
+     * @dataProvider classShortNameDataProvider
      */
-    public function testMethodShortName($modelName, $shortName)
+    public function testMethodShortName($modelName, $classShortName)
     {
         /* @var $modelClass string|\yii\boost\db\ActiveRecord */
         $modelClass = 'app\models\\' . $modelName;
         $reflection = new ReflectionClass($modelClass);
-        $this->assertTrue($reflection->hasMethod('shortName'));
-        $this->assertTrue($reflection->getMethod('shortName')->isStatic());
-        $this->assertEquals($shortName, $modelClass::shortName());
+        $this->assertTrue($reflection->hasMethod('classShortName'));
+        $this->assertTrue($reflection->getMethod('classShortName')->isStatic());
+        $this->assertEquals($classShortName, $modelClass::classShortName());
     }
 
     /**
      * @return array
      */
-    public function titleDataProvider()
+    public function modelTitleDataProvider()
     {
         return [
             ['Type', 'Тип'],
@@ -180,17 +180,17 @@ class BaseModelTest extends TestCase
 
     /**
      * @param string $modelName
-     * @param string $title
-     * @dataProvider titleDataProvider
+     * @param string $modelTitle
+     * @dataProvider modelTitleDataProvider
      */
-    public function testMethodTitle($modelName, $title)
+    public function testMethodModelTitle($modelName, $modelTitle)
     {
         /* @var $modelClass string|\yii\boost\db\ActiveRecord */
         $modelClass = 'app\models\\' . $modelName;
         $reflection = new ReflectionClass($modelClass);
-        $this->assertTrue($reflection->hasMethod('title'));
-        $this->assertTrue($reflection->getMethod('title')->isStatic());
-        $this->assertEquals($title, $modelClass::title());
+        $this->assertTrue($reflection->hasMethod('modelTitle'));
+        $this->assertTrue($reflection->getMethod('modelTitle')->isStatic());
+        $this->assertEquals($modelTitle, $modelClass::modelTitle());
     }
 
     /**
