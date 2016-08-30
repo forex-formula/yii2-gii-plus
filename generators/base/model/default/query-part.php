@@ -293,7 +293,7 @@ foreach ($tableSchema->columns as $column) {
 ';
             $funcName = ($column->type == Schema::TYPE_DATE) ? 'CURDATE' : 'NOW';
             if ($column->allowNull) {
-                echo '        $columnName = $this->a(\'', $attribute, '\');        
+                echo '        $columnName = $this->a(\'', $attribute, '\');
         if ($', $attributeArg, ') {
             return $this->andWhere($columnName . \' IS NULL OR \' . $columnName . \' > ', $funcName, '()\');
         } else {
