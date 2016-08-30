@@ -53,7 +53,7 @@ if (count($pluralRelations)) {
 ';
 }
 
-// modelTitle
+// model title
 $modelTitle = Inflector::titleize($tableName);
 $db = $generator->getDbConnection();
 if ($generator->generateLabelsFromComments && in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
@@ -163,8 +163,6 @@ if (array_key_exists($tableName, $buildRelations)) {
     }
 ';
         }
-
-
     }
 }
 
