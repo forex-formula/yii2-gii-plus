@@ -24,10 +24,12 @@ $singularRelations = [];
 $pluralRelations = [];
 foreach ($relations as $relationName => $relation) {
     list ($code, $_className, $hasMany) = $relation;
+    if (strpos($code, '->via') === false) {
     if ($hasMany) {
         $pluralRelations[] = lcfirst($relationName);
     } else {
         $singularRelations[] = lcfirst($relationName);
+    }
     }
 }
 if (count($singularRelations)) {
