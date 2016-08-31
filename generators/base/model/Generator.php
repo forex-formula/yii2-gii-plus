@@ -308,14 +308,18 @@ class Generator extends GiiModelGenerator
                 if (in_array($column->type, [Schema::TYPE_DECIMAL, Schema::TYPE_MONEY])) {
                     $scale = $column->scale;
                     $whole = $column->precision - $scale;
+                    $pattern = '~^';
+                    if (!$column->unsigned) {
+                        $pattern .= '\-?';
+                    }
                     if ($whole > 0) {
                         if ($whole == 1) {
-                            $pattern = '~^\d';
+                            $pattern .= '\d';
                         } else {
-                            $pattern = '~^\d{1,' . $whole . '}';
+                            $pattern .= '\d{1,' . $whole . '}';
                         }
                     } else {
-                        $pattern = '~^0';
+                        $pattern .= '0';
                     }
                     if ($scale > 0) {
                         if ($scale == 1) {

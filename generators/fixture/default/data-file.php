@@ -17,8 +17,8 @@ use yii\helpers\Inflector;
 echo '<?php
 
 /* ', Inflector::titleize($fixtureName), ' data-file */
-/* @see \\', $fixtureClass, ' */
-/* @see \\', $modelClass, ' */
+/* @see ', $fixtureClass, ' */
+/* @see ', $modelClass, ' */
 
 return [
     /*[
