@@ -19,7 +19,7 @@ use yii\db\Schema;
 
 $methods = [];
 
-// relations
+// singular/plural relations
 $singularRelations = [];
 $pluralRelations = [];
 foreach ($relations as $relationName => $relation) {
@@ -31,26 +31,56 @@ foreach ($relations as $relationName => $relation) {
     }
 }
 if (count($singularRelations)) {
-    echo '
+    if (count($singularRelations) > 1) {
+        echo '
     /**
      * @return string[]
      */
     public static function singularRelations()
     {
-        return [\'', implode('\', \'', $singularRelations), '\'];
+        return [
+            \'', implode('\',
+            \'', $singularRelations), '\'
+        ];
     }
 ';
+    } else {
+        echo '
+    /**
+     * @return string[]
+     */
+    public static function singularRelations()
+    {
+        return [\'', $singularRelations[0], '\'];
+    }
+';
+    }
 }
 if (count($pluralRelations)) {
-    echo '
+    if (count($pluralRelations) > 1) {
+        echo '
     /**
      * @return string[]
      */
     public static function pluralRelations()
     {
-        return [\'', implode('\', \'', $pluralRelations), '\'];
+        return [
+            \'', implode('\',
+            \'', $pluralRelations), '\'
+        ];
     }
 ';
+    } else {
+        echo '
+    /**
+     * @return string[]
+     */
+    public static function pluralRelations()
+    {
+        return [\'', $pluralRelations[0], '\'];
+    }
+';
+    }
 }
 
 // model title
