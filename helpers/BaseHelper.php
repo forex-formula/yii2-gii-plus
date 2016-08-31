@@ -178,4 +178,24 @@ class BaseHelper
             return strcasecmp($use1, $use2);
         });
     }
+
+    /**
+     * @param string[] $pieces
+     * @return string
+     */
+    public static function implode(array $pieces, $multiplier = 2)
+    {
+        if (count($pieces)) {
+            if (count($pieces) == 1) {
+                return '[\'' . $pieces[0] . '\']';
+            } else {
+                $glue = '\',' . "\n" . str_repeat('    ', $multiplier + 1) . '\'';
+                return '[' . "\n" .
+                str_repeat('    ', $multiplier + 1) . '\'' . implode($glue, $pieces) . '\'' . "\n" .
+                str_repeat('    ', $multiplier) . ']';
+            }
+        } else {
+            return '[]';
+        }
+    }
 }

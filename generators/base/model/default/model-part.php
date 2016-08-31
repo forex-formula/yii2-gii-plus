@@ -19,7 +19,7 @@ use yii\db\Schema;
 
 $methods = [];
 
-// relations
+// singular/plural relations
 $singularRelations = [];
 $pluralRelations = [];
 foreach ($relations as $relationName => $relation) {
@@ -37,7 +37,7 @@ if (count($singularRelations)) {
      */
     public static function singularRelations()
     {
-        return [\'', implode('\', \'', $singularRelations), '\'];
+        return ', Helper::implode($singularRelations), ';
     }
 ';
 }
@@ -48,7 +48,54 @@ if (count($pluralRelations)) {
      */
     public static function pluralRelations()
     {
-        return [\'', implode('\', \'', $pluralRelations), '\'];
+        return ', Helper::implode($pluralRelations), ';
+    }
+';
+}
+
+// boolean/date/datetime attributes
+$booleanAttributes = [];
+$dateAttributes = [];
+$datetimeAttributes = [];
+foreach ($tableSchema->columns as $column) {
+    if (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+        $booleanAttributes[] = $column->name;
+    } elseif ($column->type == Schema::TYPE_DATE) {
+        $dateAttributes[] = $column->name;
+    } elseif (in_array($column->type, [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
+        $datetimeAttributes[] = $column->name;
+    }
+}
+if (count($booleanAttributes)) {
+    echo '
+    /**
+     * @return string[]
+     */
+    public static function booleanAttributes()
+    {
+        return ', Helper::implode($booleanAttributes), ';
+    }
+';
+}
+if (count($dateAttributes)) {
+    echo '
+    /**
+     * @return string[]
+     */
+    public static function dateAttributes()
+    {
+        return ', Helper::implode($dateAttributes), ';
+    }
+';
+}
+if (count($datetimeAttributes)) {
+    echo '
+    /**
+     * @return string[]
+     */
+    public static function datetimeAttributes()
+    {
+        return ', Helper::implode($datetimeAttributes), ';
     }
 ';
 }
