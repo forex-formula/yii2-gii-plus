@@ -147,7 +147,15 @@ class Generator extends GiiGenerator
                 $ignore = false;
                 /* @var $modelClass \yii\boost\db\ActiveRecord */
                 $primaryKey = $modelClass::primaryKey();
-                if ((count($primaryKey) == 1) && ($primaryKey[0] == 'id')) {
+                foreach ($primaryKey as $primaryKey1) {
+                    $column = $modelClass::getTableSchema()->getColumn($primaryKey1);
+                    if (!$column->isPrimaryKey) {
+                        $ignore = true;
+                        break;
+                    }
+                }
+
+                if (!$ignore && (count($primaryKey) == 1) && ($primaryKey[0] == 'id')) {
                     $column = $modelClass::getTableSchema()->getColumn($primaryKey[0]);
                     if (($column->type == \yii\db\Schema::TYPE_SMALLINT) && ($column->size == 3) && !$column->autoIncrement) {
                         $ignore = true;
