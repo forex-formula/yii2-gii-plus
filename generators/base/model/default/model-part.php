@@ -37,7 +37,7 @@ if (count($singularRelations)) {
      */
     public static function singularRelations()
     {
-        return ', Helper::implode($singularRelations), ';
+        return ', Helper::implode($singularRelations, 2), ';
     }
 ';
 }
@@ -48,7 +48,7 @@ if (count($pluralRelations)) {
      */
     public static function pluralRelations()
     {
-        return ', Helper::implode($pluralRelations), ';
+        return ', Helper::implode($pluralRelations, 2), ';
     }
 ';
 }
@@ -73,7 +73,7 @@ if (count($booleanAttributes)) {
      */
     public static function booleanAttributes()
     {
-        return ', Helper::implode($booleanAttributes), ';
+        return ', Helper::implode($booleanAttributes, 2), ';
     }
 ';
 }
@@ -84,7 +84,7 @@ if (count($dateAttributes)) {
      */
     public static function dateAttributes()
     {
-        return ', Helper::implode($dateAttributes), ';
+        return ', Helper::implode($dateAttributes, 2), ';
     }
 ';
 }
@@ -95,7 +95,7 @@ if (count($datetimeAttributes)) {
      */
     public static function datetimeAttributes()
     {
-        return ', Helper::implode($datetimeAttributes), ';
+        return ', Helper::implode($datetimeAttributes, 2), ';
     }
 ';
 }
