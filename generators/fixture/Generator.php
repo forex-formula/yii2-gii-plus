@@ -142,9 +142,23 @@ class Generator extends GiiGenerator
                     'baseFixtureClass' => $baseFixtureClass,
                     'dataFile' => $dataFile
                 ];
+                
+                // static table
+                $ignore = false;
+                /* @var $modelClass \yii\boost\db\ActiveRecord */
+                $primaryKey = $modelClass::primaryKey();
+                if ((count($primaryKey) == 1) && ($primaryKey[0] == 'id')) {
+                    $column = $modelClass::getTableSchema()->getColumn($primaryKey[0]);
+                    if (($column->type == \yii\db\Schema::TYPE_SMALLINT) && ($column->size == 3) && !$column->autoIncrement) {
+                        $ignore = true;
+                    }
+                }
+
+                if (!$ignore) {
                 $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $fixtureNs)) . '/' . $fixtureName . '.php', $this->render('fixture.php', $params));
                 if ($this->generateDataFile) {
                     $files[] = new CodeFile(Yii::getAlias($dataFile), $this->render('data-file.php', $params));
+                }
                 }
             }
         }
