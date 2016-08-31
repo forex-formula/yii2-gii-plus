@@ -323,13 +323,12 @@ class Generator extends GiiModelGenerator
                     }
                     if ($scale > 0) {
                         if ($scale == 1) {
-                            $pattern .= '(?:\.\d)?$~';
+                            $pattern .= '(?:\.\d)?';
                         } else {
-                            $pattern .= '(?:\.\d{1,' . $scale . '})?$~';
+                            $pattern .= '(?:\.\d{1,' . $scale . '})?';
                         }
-                    } else {
-                        $pattern .= '$~';
                     }
+                    $pattern .= '$~';
                     $matchPatterns[$pattern][] = $column->name;
                 }
             } elseif ($column->type == Schema::TYPE_DATE) {
