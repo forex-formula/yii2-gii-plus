@@ -31,56 +31,26 @@ foreach ($relations as $relationName => $relation) {
     }
 }
 if (count($singularRelations)) {
-    if (count($singularRelations) > 1) {
-        echo '
+    echo '
     /**
      * @return string[]
      */
     public static function singularRelations()
     {
-        return [
-            \'', implode('\',
-            \'', $singularRelations), '\'
-        ];
+        return ', Helper::implode($singularRelations), ';
     }
 ';
-    } else {
-        echo '
-    /**
-     * @return string[]
-     */
-    public static function singularRelations()
-    {
-        return [\'', $singularRelations[0], '\'];
-    }
-';
-    }
 }
 if (count($pluralRelations)) {
-    if (count($pluralRelations) > 1) {
-        echo '
+    echo '
     /**
      * @return string[]
      */
     public static function pluralRelations()
     {
-        return [
-            \'', implode('\',
-            \'', $pluralRelations), '\'
-        ];
+        return ', Helper::implode($pluralRelations), ';
     }
 ';
-    } else {
-        echo '
-    /**
-     * @return string[]
-     */
-    public static function pluralRelations()
-    {
-        return [\'', $pluralRelations[0], '\'];
-    }
-';
-    }
 }
 
 // boolean/date/datetime attributes
@@ -97,82 +67,37 @@ foreach ($tableSchema->columns as $column) {
     }
 }
 if (count($booleanAttributes)) {
-    if (count($booleanAttributes) > 1) {
-        echo '
+    echo '
     /**
      * @return string[]
      */
     public static function booleanAttributes()
     {
-        return [
-            \'', implode('\',
-            \'', $booleanAttributes), '\'
-        ];
+        return ', Helper::implode($booleanAttributes), ';
     }
 ';
-    } else {
-        echo '
-    /**
-     * @return string[]
-     */
-    public static function booleanAttributes()
-    {
-        return [\'', $booleanAttributes[0], '\'];
-    }
-';
-    }
 }
 if (count($dateAttributes)) {
-    if (count($dateAttributes) > 1) {
-        echo '
+    echo '
     /**
      * @return string[]
      */
     public static function dateAttributes()
     {
-        return [
-            \'', implode('\',
-            \'', $dateAttributes), '\'
-        ];
+        return ', Helper::implode($dateAttributes), ';
     }
 ';
-    } else {
-        echo '
-    /**
-     * @return string[]
-     */
-    public static function dateAttributes()
-    {
-        return [\'', $dateAttributes[0], '\'];
-    }
-';
-    }
 }
 if (count($datetimeAttributes)) {
-    if (count($datetimeAttributes) > 1) {
-        echo '
+    echo '
     /**
      * @return string[]
      */
     public static function datetimeAttributes()
     {
-        return [
-            \'', implode('\',
-            \'', $datetimeAttributes), '\'
-        ];
+        return ', Helper::implode($datetimeAttributes), ';
     }
 ';
-    } else {
-        echo '
-    /**
-     * @return string[]
-     */
-    public static function datetimeAttributes()
-    {
-        return [\'', $datetimeAttributes[0], '\'];
-    }
-';
-    }
 }
 
 // model title

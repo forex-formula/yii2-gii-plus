@@ -65,7 +65,7 @@ class BaseModelTest extends TestCase
      */
     public function testMethodTableName($modelName, $tableName)
     {
-        /* @var $modelClass string|\yii\db\ActiveRecord */
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
         $modelClass = 'app\models\\' . $modelName;
         $this->assertEquals($tableName, $modelClass::tableName());
     }
@@ -76,7 +76,7 @@ class BaseModelTest extends TestCase
      */
     public function testMethodFind($modelName)
     {
-        /* @var $modelClass string|\yii\db\ActiveRecord */
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
         $modelClass = 'app\models\\' . $modelName;
         $this->assertEquals('app\models\query\\' . $modelName . 'Query', get_class($modelClass::find()));
     }
@@ -213,7 +213,7 @@ class BaseModelTest extends TestCase
      */
     public function testMethodPrimaryKey($modelName, array $primaryKey)
     {
-        /* @var $modelClass string|\yii\db\ActiveRecord */
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
         $modelClass = 'app\models\\' . $modelName;
         $this->assertEquals($primaryKey, $modelClass::primaryKey());
     }
