@@ -53,18 +53,9 @@ foreach ($modelClass::singularRelations() as $relationName) {
     }
 }
 if (count($depends)) {
-    if (count($depends) == 1) {
-        echo '
-    public $depends = [\'', $depends[0], '\'];
+    echo '
+    public $depends = ', Helper::implode($depends, 1), ';
 ';
-    } else {
-        echo '
-    public $depends = [
-        \'', implode('\',
-        \'', $depends), '\'
-    ];
-';
-    }
 }
 
 // backDepends
@@ -81,18 +72,9 @@ foreach ($modelClass::pluralRelations() as $relationName) {
     }
 }
 if (count($backDepends)) {
-    if (count($backDepends) == 1) {
-        echo '
-    public $backDepends = [\'', $backDepends[0], '\'];
+    echo '
+    public $backDepends = ', Helper::implode($backDepends, 1), ';
 ';
-    } else {
-        echo '
-    public $backDepends = [
-        \'', implode('\',
-        \'', $backDepends), '\'
-    ];
-';
-    }
 }
 
 echo '

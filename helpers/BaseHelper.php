@@ -181,9 +181,10 @@ class BaseHelper
 
     /**
      * @param string[] $pieces
+     * @param int $multiplier
      * @return string
      */
-    public static function implode(array $pieces, $multiplier = 2)
+    public static function implode(array $pieces, $multiplier)
     {
         if (count($pieces)) {
             if (count($pieces) == 1) {
