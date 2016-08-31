@@ -83,6 +83,98 @@ if (count($pluralRelations)) {
     }
 }
 
+// boolean/date/datetime attributes
+$booleanAttributes = [];
+$dateAttributes = [];
+$datetimeAttributes = [];
+foreach ($tableSchema->columns as $column) {
+    if (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+        $booleanAttributes[] = $column->name;
+    } elseif ($column->type == Schema::TYPE_DATE) {
+        $dateAttributes[] = $column->name;
+    } elseif (in_array($column->type, [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
+        $datetimeAttributes[] = $column->name;
+    }
+}
+if (count($booleanAttributes)) {
+    if (count($booleanAttributes) > 1) {
+        echo '
+    /**
+     * @return string[]
+     */
+    public static function booleanAttributes()
+    {
+        return [
+            \'', implode('\',
+            \'', $booleanAttributes), '\'
+        ];
+    }
+';
+    } else {
+        echo '
+    /**
+     * @return string[]
+     */
+    public static function booleanAttributes()
+    {
+        return [\'', $booleanAttributes[0], '\'];
+    }
+';
+    }
+}
+if (count($dateAttributes)) {
+    if (count($dateAttributes) > 1) {
+        echo '
+    /**
+     * @return string[]
+     */
+    public static function dateAttributes()
+    {
+        return [
+            \'', implode('\',
+            \'', $dateAttributes), '\'
+        ];
+    }
+';
+    } else {
+        echo '
+    /**
+     * @return string[]
+     */
+    public static function dateAttributes()
+    {
+        return [\'', $dateAttributes[0], '\'];
+    }
+';
+    }
+}
+if (count($datetimeAttributes)) {
+    if (count($datetimeAttributes) > 1) {
+        echo '
+    /**
+     * @return string[]
+     */
+    public static function datetimeAttributes()
+    {
+        return [
+            \'', implode('\',
+            \'', $datetimeAttributes), '\'
+        ];
+    }
+';
+    } else {
+        echo '
+    /**
+     * @return string[]
+     */
+    public static function datetimeAttributes()
+    {
+        return [\'', $datetimeAttributes[0], '\'];
+    }
+';
+    }
+}
+
 // model title
 $modelTitle = Inflector::titleize($tableName);
 $db = $generator->getDbConnection();
