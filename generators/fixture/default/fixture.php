@@ -48,7 +48,7 @@ foreach ($modelClass::singularRelations() as $relationName) {
     if ($relationClass && class_exists($relationClass)) {
         /* @var $relationFixtureClass string|\yii\boost\test\ActiveFixture */
         $relationFixtureClass = $fixtureNs . '\\' . $relationClass::classShortName();
-        if (class_exists($relationFixtureClass)) {
+        if (($relationFixtureClass!=$fixtureClass)&&class_exists($relationFixtureClass)) {
             
             $primaryKey = $relationClass::primaryKey();
         if ((count($primaryKey) == 1) && (array_keys($model->getRelationLink($relationName))[0] == 'id')) {
@@ -71,7 +71,7 @@ foreach ($modelClass::pluralRelations() as $relationName) {
 
         /* @var $relationFixtureClass string|\yii\boost\test\ActiveFixture */
         $relationFixtureClass = $fixtureNs . '\\' . $relationClass::classShortName();
-        if (class_exists($relationFixtureClass)) {
+        if (($relationFixtureClass!=$fixtureClass)&&class_exists($relationFixtureClass)) {
             $backDepends[] = $relationFixtureClass;
         }            
         
