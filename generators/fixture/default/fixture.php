@@ -51,7 +51,7 @@ foreach ($modelClass::singularRelations() as $relationName) {
         if (class_exists($relationFixtureClass)) {
             
             $primaryKey = $relationClass::primaryKey();
-        if ((count($primaryKey) == 1) && ($primaryKey[0] == 'id')) {
+        if ((count($primaryKey) == 1) && (array_keys($model->getRelationLink($relationName))[0] == 'id')) {
 $depends[] = $relationFixtureClass;
         }else{
 $backDepends[] = $relationFixtureClass;
