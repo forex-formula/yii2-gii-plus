@@ -69,14 +69,11 @@ foreach ($modelClass::pluralRelations() as $relationName) {
     $relationClass = $model->getRelationClass($relationName);
     if ($relationClass && class_exists($relationClass)) {
 
-                $primaryKey = $relationClass::primaryKey();
-        if ((count($primaryKey) == 1) && ($primaryKey[0] == 'id')) {
         /* @var $relationFixtureClass string|\yii\boost\test\ActiveFixture */
         $relationFixtureClass = $fixtureNs . '\\' . $relationClass::classShortName();
         if (class_exists($relationFixtureClass)) {
             $backDepends[] = $relationFixtureClass;
         }            
-        }
         
 
     }
