@@ -2,10 +2,38 @@
 
 namespace yii\gii\plus\db\mysql;
 
+use yii\gii\plus\db\ColumnSchema;
 use yii\db\mysql\Schema as MysqlSchema;
+use yii\gii\plus\db\TableSchema;
 
 class Schema extends MysqlSchema
 {
+
+    /**
+     * @inheritdoc
+     * @return TableSchema
+     */
+    protected function loadTableSchema($name)
+    {
+        $table = parent::loadTableSchema($name);
+        if (is_object($table)) {
+            $table = new TableSchema(get_object_vars($table));
+        }
+        return $table;
+    }
+
+    /**
+     * @inheritdoc
+     * @return ColumnSchema
+     */
+    protected function loadColumnSchema($info)
+    {
+        $column = parent::loadColumnSchema($info);
+        if (is_object($column)) {
+            $column = new ColumnSchema(get_object_vars($column));
+        }
+        return $column;
+    }
 
     /**
      * @inheritdoc
