@@ -7,6 +7,7 @@ class m160209_192728_init extends Migration
 
     public function up()
     {
+        // type
         $this->createTableWithComment('type', [
             'id' => $this->tinyInteger()->unsigned(),
             'name' => $this->string(25)->notNull()->unique()->comment('Название'),
@@ -17,6 +18,7 @@ class m160209_192728_init extends Migration
         $this->insert('type', ['id' => 1, 'name' => 'Музыка', 'code' => 'music']);
         $this->insert('type', ['id' => 2, 'name' => 'Видео', 'code' => 'video']);
 
+        // root_folder
         $this->createTableWithComment('root_folder', [
             'id' => $this->primaryKey(),
             'type_id' => $this->tinyInteger()->unsigned()->notNull()->comment('Тип'),
@@ -26,6 +28,7 @@ class m160209_192728_init extends Migration
 
         $this->addForeignKey(null, 'root_folder', ['type_id'], 'type', ['id']);
 
+        // folder
         $this->createTableWithComment('folder', [
             'id' => $this->primaryKey(),
             'root_folder_id' => $this->integer()->unsigned()->notNull()->comment('Корневая папка'),
@@ -39,6 +42,7 @@ class m160209_192728_init extends Migration
 
         $this->addForeignKey(null, 'folder', ['root_folder_id'], 'root_folder', ['id']);
 
+        // file
         $this->createTable('file', [
             'id' => $this->primaryKey(),
             'root_folder_id' => $this->integer()->unsigned()->notNull()->comment('Корневая папка'),
@@ -54,6 +58,16 @@ class m160209_192728_init extends Migration
         $this->createIndex(null, 'folder', ['id', 'root_folder_id']);
         $this->addForeignKey(null, 'file', ['folder_id', 'root_folder_id'], 'folder', ['id', 'root_folder_id']);
 
+        // file_info
+        $this->createTable('file_info', [
+            'file_id' => $this->integer()->unsigned()->notNull(),
+            'info' => $this->text()
+        ]);
+        $this->addPrimaryKey(null, 'file_info', ['file_id']);
+
+        $this->addForeignKey(null, 'file_info', ['file_id'], 'file', ['id']);
+
+        // something
         $this->createTable('something', [
             'tiny_id' => $this->tinyInteger()->unsigned(),
             'small_id' => $this->smallInteger()->unsigned(),
