@@ -4,6 +4,7 @@ namespace yii\gii\plus\db\mysql;
 
 use yii\gii\plus\db\ColumnSchema;
 use yii\db\mysql\Schema as MysqlSchema;
+use yii\base\NotSupportedException;
 use yii\gii\plus\db\TableSchema;
 
 class Schema extends MysqlSchema
@@ -18,6 +19,11 @@ class Schema extends MysqlSchema
         $table = parent::loadTableSchema($name);
         if (is_object($table)) {
             $table = new TableSchema(get_object_vars($table));
+            try {
+                $table->uniqueKeys = $this->findUniqueIndexes($table);
+            } catch (NotSupportedException $e) {
+                // do nothing
+            }
         }
         return $table;
     }
