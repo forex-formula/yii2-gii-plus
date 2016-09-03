@@ -105,14 +105,8 @@ if (count($datetimeAttributes)) {
 // model title
 $modelTitle = Inflector::titleize($tableName);
 $db = $generator->getDbConnection();
-if ($generator->generateLabelsFromComments && in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
-    $row = $db->createCommand('SHOW CREATE TABLE ' . $db->quoteTableName($tableName))->queryOne();
-    if (is_array($row) && (count($row) == 2) && preg_match('~\)([^\)]*)$~', array_values($row)[1], $match)) {
-        $tableOptions = $match[1];
-        if (preg_match('~COMMENT\s*\=?\s*\'([^\']+)\'~i', $tableOptions, $match)) {
-            $modelTitle = $match[1];
-        }
-    }
+if ($generator->generateLabelsFromComments && $tableSchema->comment) {
+    $modelTitle = $tableSchema->comment;
 }
 echo '
     /**
