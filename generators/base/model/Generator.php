@@ -294,13 +294,13 @@ class Generator extends GiiModelGenerator
             }
             if ($column->getIsBoolean()) {
                 $booleanAttributes[] = $column->name;
-            } elseif (in_array($column->type, [Schema::TYPE_SMALLINT, Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
+            } elseif ($column->getIsInteger()) {
                 if ($column->unsigned) {
                     $uIntegerAttributes[] = $column->name;
                 } else {
                     $integerAttributes[] = $column->name;
                 }
-            } elseif (in_array($column->type, [Schema::TYPE_FLOAT, Schema::TYPE_DOUBLE, Schema::TYPE_DECIMAL, Schema::TYPE_MONEY])) {
+            } elseif ($column->getIsNumber()) {
                 if ($column->unsigned) {
                     $uNumberAttributes[] = $column->name;
                 } else {

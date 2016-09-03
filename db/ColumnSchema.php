@@ -25,4 +25,20 @@ class ColumnSchema extends BaseColumnSchema
     {
         return $this->type == Schema::TYPE_BOOLEAN;
     }
+
+    /**
+     * @return bool
+     */
+    public function getIsInteger()
+    {
+        return in_array($this->type, [Schema::TYPE_SMALLINT, Schema::TYPE_INTEGER, Schema::TYPE_BIGINT]);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsNumber()
+    {
+        return in_array($this->type, [Schema::TYPE_FLOAT, Schema::TYPE_DOUBLE, Schema::TYPE_DECIMAL, Schema::TYPE_MONEY]);
+    }
 }
