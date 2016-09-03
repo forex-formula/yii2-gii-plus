@@ -306,31 +306,8 @@ class Generator extends GiiModelGenerator
                 } else {
                     $numberAttributes[] = $column->name;
                 }
-                if (in_array($column->type, [Schema::TYPE_DECIMAL, Schema::TYPE_MONEY])) {
-                    $scale = $column->scale;
-                    $whole = $column->precision - $scale;
-                    $pattern = '~^';
-                    if (!$column->unsigned) {
-                        $pattern .= '\-?';
-                    }
-                    if ($whole > 0) {
-                        if ($whole == 1) {
-                            $pattern .= '\d';
-                        } else {
-                            $pattern .= '\d{1,' . $whole . '}';
-                        }
-                    } else {
-                        $pattern .= '0';
-                    }
-                    if ($scale > 0) {
-                        if ($scale == 1) {
-                            $pattern .= '(?:\.\d)?';
-                        } else {
-                            $pattern .= '(?:\.\d{1,' . $scale . '})?';
-                        }
-                    }
-                    $pattern .= '$~';
-                    $matchPatterns[$pattern][] = $column->name;
+                if ($column->getHasPattern()) {
+                    $matchPatterns[$column->getPattern()][] = $column->name;
                 }
             } elseif ($column->type == Schema::TYPE_DATE) {
                 $dateAttributes[] = $column->name;
