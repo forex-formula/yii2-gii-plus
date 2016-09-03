@@ -6,4 +6,9 @@ use yii\base\Object;
 
 class PrimaryKeySchema extends Object
 {
+
+    /**
+     * @var string[]
+     */
+    public $primaryKey = [];
 }

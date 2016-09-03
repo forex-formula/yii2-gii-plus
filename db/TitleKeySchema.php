@@ -6,4 +6,9 @@ use yii\base\Object;
 
 class TitleKeySchema extends Object
 {
+
+    /**
+     * @var string[]
+     */
+    public $titleKey = [];
 }

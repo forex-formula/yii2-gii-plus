@@ -6,4 +6,9 @@ use yii\base\Object;
 
 class ForeignKeySchema extends Object
 {
+
+    /**
+     * @var array
+     */
+    public $foreignKey = [];
 }
