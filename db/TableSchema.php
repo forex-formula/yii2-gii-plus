@@ -13,6 +13,16 @@ class TableSchema extends BaseTableSchema
     public $comment;
 
     /**
+     * @var bool
+     */
+    public $isView;
+
+    /**
+     * @var bool
+     */
+    public $isStatic;
+
+    /**
      * @var array
      */
     public $uniqueKeys = [];
