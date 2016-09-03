@@ -495,14 +495,6 @@ class Generator extends GiiModelGenerator
     /**
      * @inheritdoc
      */
-    public function getDbConnection()
-    {
-        return parent::getDbConnection();
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function render($template, $params = [])
     {
         $output = parent::render($template, $params);

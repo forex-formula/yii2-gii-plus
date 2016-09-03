@@ -26,6 +26,7 @@ class Schema extends MysqlSchema
                 // do nothing
             }
             $this->findComment($table);
+            $this->findTitleKey($table);
             $table->fix();
         }
         return $table;
@@ -92,6 +93,24 @@ class Schema extends MysqlSchema
             $tableOptions = $match[1];
             if (preg_match('~COMMENT\s*\=?\s*\'([^\']+)\'~', $tableOptions, $match)) {
                 $table->comment = $match[1];
+            }
+        }
+    }
+
+    /**
+     * @param TableSchema $table
+     */
+    protected function findTitleKey(TableSchema $table)
+    {
+        $table->titleKey = $table->primaryKey;
+        foreach ($table->uniqueKeys as $uniqueKey) {
+            $types = [];
+            foreach ($uniqueKey as $attribute) {
+                $types[] = $table->getColumn($attribute)->type;
+            }
+            if (in_array(Schema::TYPE_CHAR, $types) || in_array(Schema::TYPE_STRING, $types)) {
+                $table->titleKey = $uniqueKey;
+                break;
             }
         }
     }
