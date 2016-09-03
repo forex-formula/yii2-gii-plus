@@ -20,10 +20,10 @@ $keyAttributes = [];
 // deleted
 $column = $tableSchema->getColumn('deleted');
 if ($column && $column->getIsBoolean()) {
+    $attribute = $column->name;
     $methodName = 'init';
     if (!in_array($methodName, $methods)) {
         $methods[] = $methodName;
-        $attribute = $column->name;
         echo '
     public function init()
     {
@@ -300,20 +300,20 @@ foreach ($tableSchema->columns as $column) {
     public function ', $methodName, '($', $attributeArg, ' = true)
     {
 ';
-            $funcName = ($column->getIsDate()) ? 'CURDATE' : 'NOW';
+            $functionName = $column->getIsDate() ? 'CURDATE' : 'NOW';
             if ($column->allowNull) {
                 echo '        $columnName = $this->a(\'', $attribute, '\');
         if ($', $attributeArg, ') {
-            return $this->andWhere($columnName . \' IS NULL OR \' . $columnName . \' > ', $funcName, '()\');
+            return $this->andWhere($columnName . \' IS NULL OR \' . $columnName . \' > ', $functionName, '()\');
         } else {
-            return $this->andWhere($columnName . \' IS NOT NULL AND \' . $columnName . \' <= ', $funcName, '()\');
+            return $this->andWhere($columnName . \' IS NOT NULL AND \' . $columnName . \' <= ', $functionName, '()\');
         }
 ';
             } else {
                 echo '        if ($', $attributeArg, ') {
-            return $this->andWhere($this->a(\'', $attribute, '\') . \' > ', $funcName, '()\');
+            return $this->andWhere($this->a(\'', $attribute, '\') . \' > ', $functionName, '()\');
         } else {
-            return $this->andWhere($this->a(\'', $attribute, '\') . \' <= ', $funcName, '()\');
+            return $this->andWhere($this->a(\'', $attribute, '\') . \' <= ', $functionName, '()\');
         }
 ';
             }
