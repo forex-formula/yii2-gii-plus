@@ -127,7 +127,7 @@ echo '    }
 
 // primary key
 $primaryKey = $tableSchema->pk;
-if ($primaryKey->getCount()) {
+if ($primaryKey) {
     echo '
     /**
      * @inheritdoc

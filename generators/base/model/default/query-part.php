@@ -14,8 +14,8 @@ use yii\base\NotSupportedException;
 /* @var $relations array */
 /* @var $modelClassName string */
 
-$keyAttributes = [];
 $methods = [];
+$keyAttributes = [];
 
 // deleted
 $column = $tableSchema->getColumn('deleted');
@@ -35,16 +35,17 @@ if ($column && $column->getIsBoolean()) {
 }
 
 // primary key
-$primaryKey = $tableSchema->primaryKey;
-if (count($primaryKey)) {
-    $keyAttributes = array_merge($keyAttributes, $primaryKey);
-    if (count($primaryKey) == 1) {
-        $methodName = 'pk';
-        $methods[] = $methodName;
-        $attribute = $primaryKey[0];
+$primaryKey = $tableSchema->pk;
+if ($primaryKey) {
+    $keyAttributes = array_merge($keyAttributes, $primaryKey->key);
+    if ($primaryKey->getCount() == 1) {
+        $attribute = $primaryKey->key[0];
         $attributeArg = Inflector::variablize($attribute);
         $attributeType = $tableSchema->getColumn($attribute)->phpType;
-        echo '
+        $methodName = 'pk';
+        if (!in_array($methodName, $methods)) {
+            $methods[] = $methodName;
+            echo '
     /**
      * @param ', $attributeType, ' $', $attributeArg, '
      * @return $this
@@ -54,9 +55,11 @@ if (count($primaryKey)) {
         return $this->andWhere([$this->a(\'', $attribute, '\') => $', $attributeArg, ']);
     }
 ';
+        }
         $methodName = $attributeArg;
-        $methods[] = $methodName;
-        echo '
+        if (!in_array($methodName, $methods)) {
+            $methods[] = $methodName;
+            echo '
     /**
      * @param ', $attributeType, ' $', $attributeArg, '
      * @return $this
@@ -66,6 +69,7 @@ if (count($primaryKey)) {
         return $this->andWhere([$this->a(\'', $attribute, '\') => $', $attributeArg, ']);
     }
 ';
+        }
     } else {
         $methodName = 'pk';
         $methods[] = $methodName;

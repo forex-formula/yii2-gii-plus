@@ -61,8 +61,10 @@ class TableSchema extends BaseTableSchema
         foreach ($this->columns as $column) {
             $column->fix($this);
         }
-        $this->pk = new PrimaryKeySchema;
-        $this->pk->fix($this);
+        if (count($this->primaryKey)) {
+            $this->pk = new PrimaryKeySchema;
+            $this->pk->fix($this);
+        }
         $this->fks = [];
         foreach ($this->foreignKeys as $foreignKey) {
             $fk = new ForeignKeySchema;
@@ -75,7 +77,9 @@ class TableSchema extends BaseTableSchema
             $uk->fix($this, $uniqueKey);
             $this->uks[] = $uk;
         }
-        $this->tk = new TitleKeySchema;
-        $this->tk->fix($this);
+        if (count($this->titleKey)) {
+            $this->tk = new TitleKeySchema;
+            $this->tk->fix($this);
+        }
     }
 }
