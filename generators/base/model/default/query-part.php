@@ -245,10 +245,10 @@ foreach ($tableSchema->uks as $uniqueKey) {
 // primary/foreign/unique keys
 foreach ($keyAttributes as $attribute) {
     $attributeArg = Inflector::variablize($attribute);
+    $attributeType = $tableSchema->getColumn($attribute)->phpType;
     $methodName = $attributeArg;
     if (!in_array($methodName, $methods)) {
         $methods[] = $methodName;
-        $attributeType = $tableSchema->getColumn($attribute)->phpType;
         echo '
     /**
      * @param ', $attributeType, ' $', $attributeArg, '
