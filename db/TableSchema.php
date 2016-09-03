@@ -18,6 +18,11 @@ class TableSchema extends BaseTableSchema
     public $uniqueKeys = [];
 
     /**
+     * @var string[]
+     */
+    public $titleKey = [];
+
+    /**
      * @var PrimaryKeySchema
      */
     public $pk;
@@ -31,4 +36,9 @@ class TableSchema extends BaseTableSchema
      * @var UniqueKeySchema[]
      */
     public $uks = [];
+
+    /**
+     * @var TitleKeySchema
+     */
+    public $tk;
 }
