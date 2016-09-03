@@ -20,15 +20,18 @@ $methods = [];
 // deleted
 $column = $tableSchema->getColumn('deleted');
 if ($column && $column->getIsBoolean()) {
-    $methods[] = 'init';
-    $attribute = $column->name;
-    echo '
+    $methodName = 'init';
+    if (!in_array($methodName, $methods)) {
+        $methods[] = $methodName;
+        $attribute = $column->name;
+        echo '
     public function init()
     {
         parent::init();
         $this->where(new \yii\boost\db\Expression(\'{a}.', $attribute, ' = 0\', [], [\'query\' => $this]));
     }
 ';
+    }
 }
 
 // primary key
