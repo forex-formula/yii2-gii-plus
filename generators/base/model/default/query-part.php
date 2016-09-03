@@ -186,19 +186,17 @@ foreach ($tableSchema->fks as $foreignKey) {
     }
 }
 
-// unique indexes
-try {
-    $uniqueIndexes = $generator->getDbConnection()->getSchema()->findUniqueIndexes($tableSchema);
-    foreach ($uniqueIndexes as $uniqueKey) {
-        $keyAttributes = array_merge($keyAttributes, $uniqueKey);
-        if (count($uniqueKey) == 1) {
-            $attribute = $uniqueKey[0];
-            $attributeArg = Inflector::variablize($attribute);
-            $methodName = $attributeArg;
-            if (!in_array($methodName, $methods)) {
-                $methods[] = $methodName;
-                $attributeType = $tableSchema->getColumn($attribute)->phpType;
-                echo '
+// unique keys
+foreach ($tableSchema->uks as $uniqueKey) {
+    $keyAttributes = array_merge($keyAttributes, $uniqueKey->key);
+    if ($uniqueKey->getCount() == 1) {
+        $attribute = $uniqueKey->key[0];
+        $attributeArg = Inflector::variablize($attribute);
+        $attributeType = $tableSchema->getColumn($attribute)->phpType;
+        $methodName = $attributeArg;
+        if (!in_array($methodName, $methods)) {
+            $methods[] = $methodName;
+            echo '
     /**
      * @param ', $attributeType, ' $', $attributeArg, '
      * @return $this
@@ -208,41 +206,40 @@ try {
         return $this->andWhere([$this->a(\'', $attribute, '\') => $', $attributeArg, ']);
     }
 ';
-            }
-        } else {
-            $methodName = Inflector::variablize(implode('_', $uniqueKey));
-            if (!in_array($methodName, $methods)) {
-                $methods[] = $methodName;
-                $attributeArgs = [];
-                $attributeTypes = [];
-                echo '
+        }
+    } else {
+        $attributeArgs = [];
+        $attributeTypes = [];
+        foreach ($uniqueKey->key as $i => $attribute) {
+            $attributeArgs[$i] = Inflector::variablize($attribute);
+            $attributeTypes[$i] = $tableSchema->getColumn($attribute)->phpType;
+        }
+        $methodName = Inflector::variablize(implode('_', $uniqueKey->key));
+        if (!in_array($methodName, $methods)) {
+            $methods[] = $methodName;
+            echo '
     /**
 ';
-                foreach ($uniqueKey as $i => $attribute) {
-                    $attributeArgs[$i] = Inflector::variablize($attribute);
-                    $attributeTypes[$i] = $tableSchema->getColumn($attribute)->phpType;
-                    echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
+            foreach ($uniqueKey->key as $i => $attribute) {
+                echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
 ';
-                }
-                echo '     * @return $this
+            }
+            echo '     * @return $this
      */
     public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
         return $this->andWhere($this->a([
 ';
-                foreach ($uniqueKey as $i => $attribute) {
-                    $comma = ($i < count($uniqueKey) - 1) ? ',' : '';
-                    echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
-';
-                }
-                echo '        ]));
-    }
+            foreach ($uniqueKey->key as $i => $attribute) {
+                $comma = ($i < $uniqueKey->getCount() - 1) ? ',' : '';
+                echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
 ';
             }
+            echo '        ]));
+    }
+';
         }
     }
-} catch (NotSupportedException $e) {
-    // do nothing
 }
 
 // primary/foreign/unique keys
