@@ -62,9 +62,9 @@ $datetimeAttributes = [];
 foreach ($tableSchema->columns as $column) {
     if ($column->getIsBoolean()) {
         $booleanAttributes[] = $column->name;
-    } elseif ($column->type == Schema::TYPE_DATE) {
+    } elseif ($column->getIsDate()) {
         $dateAttributes[] = $column->name;
-    } elseif (in_array($column->type, [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
+    } elseif ($column->getIsDatetime()) {
         $datetimeAttributes[] = $column->name;
     }
 }

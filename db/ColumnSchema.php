@@ -9,6 +9,9 @@ use yii\db\Schema;
  * @property bool $isBoolean
  * @property bool $isInteger
  * @property bool $isNumber
+ * @property bool $isDate
+ * @property bool $isTime
+ * @property bool $isDatetime
  * @property bool $hasPattern
  * @property string|null $pattern
  */
@@ -47,6 +50,30 @@ class ColumnSchema extends BaseColumnSchema
     public function getIsNumber()
     {
         return in_array($this->type, [Schema::TYPE_FLOAT, Schema::TYPE_DOUBLE, Schema::TYPE_DECIMAL, Schema::TYPE_MONEY]);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsDate()
+    {
+        return $this->type == Schema::TYPE_DATE;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsTime()
+    {
+        return $this->type == Schema::TYPE_TIME;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsDatetime()
+    {
+        return in_array($this->type, [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP]);
     }
 
     /**

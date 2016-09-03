@@ -309,11 +309,11 @@ class Generator extends GiiModelGenerator
                 if ($column->getHasPattern()) {
                     $matchPatterns[$column->getPattern()][] = $column->name;
                 }
-            } elseif ($column->type == Schema::TYPE_DATE) {
+            } elseif ($column->getIsDate()) {
                 $dateAttributes[] = $column->name;
-            } elseif ($column->type == Schema::TYPE_TIME) {
+            } elseif ($column->getIsTime()) {
                 $timeAttributes[] = $column->name;
-            } elseif (in_array($column->type, [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
+            } elseif ($column->getIsDatetime()) {
                 $datetimeAttributes[] = $column->name;
             }
             if (!is_null($column->defaultValue)) {

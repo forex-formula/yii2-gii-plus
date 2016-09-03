@@ -278,7 +278,7 @@ foreach ($tableSchema->columns as $column) {
 // ...expires_at
 foreach ($tableSchema->columns as $column) {
     $attribute = $column->name;
-    if (preg_match('~(?:^|_)expires_at$~', $attribute) && in_array($column->type, [Schema::TYPE_DATE, Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
+    if (preg_match('~(?:^|_)expires_at$~', $attribute) && ($column->getIsDate() || $column->getIsDatetime())) {
         $attributeArg = Inflector::variablize(str_replace('expires_at', 'not_expired', $attribute));
         $methodName = $attributeArg;
         if (!in_array($methodName, $methods)) {
@@ -291,7 +291,7 @@ foreach ($tableSchema->columns as $column) {
     public function ', $methodName, '($', $attributeArg, ' = true)
     {
 ';
-            $funcName = ($column->type == Schema::TYPE_DATE) ? 'CURDATE' : 'NOW';
+            $funcName = ($column->getIsDate()) ? 'CURDATE' : 'NOW';
             if ($column->allowNull) {
                 echo '        $columnName = $this->a(\'', $attribute, '\');
         if ($', $attributeArg, ') {
