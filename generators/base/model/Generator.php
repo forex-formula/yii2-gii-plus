@@ -323,26 +323,26 @@ class Generator extends GiiModelGenerator
         }
         $rules = [];
         if (count($booleanAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $booleanAttributes) . '\'], \'filter\', \'filter\' => function ($value) {' . "\n" . '                return $value ? 1 : 0;' . "\n" . '            }, \'skipOnEmpty\' => true]';
-            $rules[] = '[[\'' . implode('\', \'', $booleanAttributes) . '\'], \'boolean\']';
+            $rules[] = '[' . Helper::implode($booleanAttributes, 3) . ', \'filter\', \'filter\' => function ($value) {' . "\n" . '                return $value ? 1 : 0;' . "\n" . '            }, \'skipOnEmpty\' => true]';
+            $rules[] = '[' . Helper::implode($booleanAttributes, 3) . ', \'boolean\']';
         }
         if (count($integerAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $integerAttributes) . '\'], \'integer\']';
+            $rules[] = '[' . Helper::implode($integerAttributes, 3) . ', \'integer\']';
         }
         if (count($uIntegerAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $uIntegerAttributes) . '\'], \'integer\', \'min\' => 0]';
+            $rules[] = '[' . Helper::implode($uIntegerAttributes, 3) . ', \'integer\', \'min\' => 0]';
         }
         if (count($numberAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $numberAttributes) . '\'], \'number\']';
+            $rules[] = '[' . Helper::implode($numberAttributes, 3) . ', \'number\']';
         }
         if (count($uNumberAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $uNumberAttributes) . '\'], \'number\', \'min\' => 0]';
+            $rules[] = '[' . Helper::implode($uNumberAttributes, 3) . ', \'number\', \'min\' => 0]';
         }
         foreach ($dateFormats as $dateFormat => $attributes) {
-            $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'date\', \'format\' => \'' . $dateFormat . '\']';
+            $rules[] = '[' . Helper::implode($attributes, 3) . ', \'date\', \'format\' => \'' . $dateFormat . '\']';
         }
         foreach ($matchPatterns as $matchPattern => $attributes) {
-            $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'match\', \'pattern\' => \'' . $matchPattern . '\']';
+            $rules[] = '[' . Helper::implode($attributes, 3) . ', \'match\', \'pattern\' => \'' . $matchPattern . '\']';
         }
         foreach (parent::generateRules($table) as $rule) {
             if (!preg_match('~, \'(?:safe|boolean|integer|number)\'\]$~', $rule)) {
@@ -350,13 +350,13 @@ class Generator extends GiiModelGenerator
             }
         }
         foreach ($defaultExpressions as $defaultExpression => $attributes) {
-            $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'default\', \'value\' => new Expression(\'' . $defaultExpression . '\')]';
+            $rules[] = '[' . Helper::implode($attributes, 3) . ', \'default\', \'value\' => new Expression(\'' . $defaultExpression . '\')]';
         }
         foreach ($defaultValues as $defaultValue => $attributes) {
-            $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'default\', \'value\' => \'' . $defaultValue . '\']';
+            $rules[] = '[' . Helper::implode($attributes, 3) . ', \'default\', \'value\' => \'' . $defaultValue . '\']';
         }
         if (count($defaultNullAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $defaultNullAttributes) . '\'], \'default\', \'value\' => null]';
+            $rules[] = '[' . Helper::implode($defaultNullAttributes, 3) . ', \'default\', \'value\' => null]';
         }
         return $rules;
     }
