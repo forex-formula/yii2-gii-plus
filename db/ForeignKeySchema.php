@@ -18,5 +18,6 @@ class ForeignKeySchema extends Object
      */
     public function fix(TableSchema $table, array $key)
     {
+        $this->key = $key;
     }
 }

@@ -23,6 +23,11 @@ class TableSchema extends BaseTableSchema
     public $isStatic;
 
     /**
+     * @var ColumnSchema[]
+     */
+    public $columns = [];
+
+    /**
      * @var array
      */
     public $uniqueKeys = [];
@@ -54,6 +59,9 @@ class TableSchema extends BaseTableSchema
 
     public function fix()
     {
+        foreach ($this->columns as $column) {
+            $column->fix($this);
+        }
         $this->pk = new PrimaryKeySchema;
         $this->pk->fix($this);
         $this->fks = [];
