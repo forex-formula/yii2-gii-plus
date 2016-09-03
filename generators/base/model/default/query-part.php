@@ -71,56 +71,62 @@ if ($primaryKey) {
 ';
         }
     } else {
-        $methodName = 'pk';
-        $methods[] = $methodName;
         $attributeArgs = [];
         $attributeTypes = [];
-        echo '
-    /**
-';
-        foreach ($primaryKey as $i => $attribute) {
+        foreach ($primaryKey->key as $i => $attribute) {
             $attributeArgs[$i] = Inflector::variablize($attribute);
             $attributeTypes[$i] = $tableSchema->getColumn($attribute)->phpType;
-            echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
-';
         }
-        echo '     * @return $this
-     */
-    public function ', $methodName, '($', implode(', $', $attributeArgs), ')
-    {
-        return $this->andWhere($this->a([
-';
-        foreach ($primaryKey as $i => $attribute) {
-            $comma = ($i < count($primaryKey) - 1) ? ',' : '';
-            echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
-';
-        }
-        echo '        ]));
-    }
-';
-        $methodName = Inflector::variablize(implode('_', $primaryKey));
-        $methods[] = $methodName;
-        echo '
+        $methodName = 'pk';
+        if (!in_array($methodName, $methods)) {
+            $methods[] = $methodName;
+            echo '
     /**
 ';
-        foreach ($primaryKey as $i => $attribute) {
-            echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
+            foreach ($primaryKey->key as $i => $attribute) {
+                echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
 ';
-        }
-        echo '     * @return $this
+            }
+            echo '     * @return $this
      */
     public function ', $methodName, '($', implode(', $', $attributeArgs), ')
     {
         return $this->andWhere($this->a([
 ';
-        foreach ($primaryKey as $i => $attribute) {
-            $comma = ($i < count($primaryKey) - 1) ? ',' : '';
-            echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
+            foreach ($primaryKey->key as $i => $attribute) {
+                $comma = ($i < $primaryKey->getCount() - 1) ? ',' : '';
+                echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
 ';
-        }
-        echo '        ]));
+            }
+            echo '        ]));
     }
 ';
+        }
+        $methodName = Inflector::variablize(implode('_', $primaryKey->key));
+        if (!in_array($methodName, $methods)) {
+            $methods[] = $methodName;
+            echo '
+    /**
+';
+            foreach ($primaryKey->key as $i => $attribute) {
+                echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
+';
+            }
+            echo '     * @return $this
+     */
+    public function ', $methodName, '($', implode(', $', $attributeArgs), ')
+    {
+        return $this->andWhere($this->a([
+';
+            foreach ($primaryKey->key as $i => $attribute) {
+                $comma = ($i < $primaryKey->getCount() - 1) ? ',' : '';
+                echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
+';
+            }
+            echo '        ]));
+    }
+';
+        }
     }
 }
 
