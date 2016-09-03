@@ -131,17 +131,15 @@ if ($primaryKey) {
 }
 
 // foreign keys
-foreach ($tableSchema->foreignKeys as $foreignKey) {
-    unset($foreignKey[0]);
-    $foreignKey = array_keys($foreignKey);
-    $keyAttributes = array_merge($keyAttributes, $foreignKey);
-    if (count($foreignKey) == 1) {
-        $attribute = $foreignKey[0];
+foreach ($tableSchema->fks as $foreignKey) {
+    $keyAttributes = array_merge($keyAttributes, $foreignKey->key);
+    if ($foreignKey->getCount() == 1) {
+        $attribute = $foreignKey->key[0];
         $attributeArg = Inflector::variablize($attribute);
+        $attributeType = $tableSchema->getColumn($attribute)->phpType;
         $methodName = $attributeArg;
         if (!in_array($methodName, $methods)) {
             $methods[] = $methodName;
-            $attributeType = $tableSchema->getColumn($attribute)->phpType;
             echo '
     /**
      * @param ', $attributeType, ' $', $attributeArg, '
@@ -154,17 +152,19 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
 ';
         }
     } else {
-        $methodName = Inflector::variablize(implode('_', $foreignKey));
+        $attributeArgs = [];
+        $attributeTypes = [];
+        foreach ($foreignKey->key as $i => $attribute) {
+            $attributeArgs[$i] = Inflector::variablize($attribute);
+            $attributeTypes[$i] = $tableSchema->getColumn($attribute)->phpType;
+        }
+        $methodName = Inflector::variablize(implode('_', $foreignKey->key));
         if (!in_array($methodName, $methods)) {
             $methods[] = $methodName;
-            $attributeArgs = [];
-            $attributeTypes = [];
             echo '
     /**
 ';
-            foreach ($foreignKey as $i => $attribute) {
-                $attributeArgs[$i] = Inflector::variablize($attribute);
-                $attributeTypes[$i] = $tableSchema->getColumn($attribute)->phpType;
+            foreach ($foreignKey->key as $i => $attribute) {
                 echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
 ';
             }
@@ -174,8 +174,8 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
     {
         return $this->andWhere($this->a([
 ';
-            foreach ($foreignKey as $i => $attribute) {
-                $comma = ($i < count($foreignKey) - 1) ? ',' : '';
+            foreach ($foreignKey->key as $i => $attribute) {
+                $comma = ($i < $foreignKey->getCount() - 1) ? ',' : '';
                 echo '            \'', $attribute, '\' => $', $attributeArgs[$i], $comma, '
 ';
             }
