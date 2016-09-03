@@ -10,5 +10,12 @@ class PrimaryKeySchema extends Object
     /**
      * @var string[]
      */
-    public $primaryKey = [];
+    public $key = [];
+
+    /**
+     * @param TableSchema $table
+     */
+    public function fix(TableSchema $table)
+    {
+    }
 }

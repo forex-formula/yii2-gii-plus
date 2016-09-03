@@ -10,5 +10,12 @@ class TitleKeySchema extends Object
     /**
      * @var string[]
      */
-    public $titleKey = [];
+    public $key = [];
+
+    /**
+     * @param TableSchema $table
+     */
+    public function fix(TableSchema $table)
+    {
+    }
 }

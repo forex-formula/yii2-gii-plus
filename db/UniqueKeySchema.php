@@ -10,5 +10,13 @@ class UniqueKeySchema extends Object
     /**
      * @var string[]
      */
-    public $uniqueKey = [];
+    public $key = [];
+
+    /**
+     * @param TableSchema $table
+     * @param array $key
+     */
+    public function fix(TableSchema $table, array $key)
+    {
+    }
 }

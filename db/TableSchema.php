@@ -51,4 +51,24 @@ class TableSchema extends BaseTableSchema
      * @var TitleKeySchema
      */
     public $tk;
+
+    public function fix()
+    {
+        $this->pk = new PrimaryKeySchema;
+        $this->pk->fix($this);
+        $this->fks = [];
+        foreach ($this->foreignKeys as $foreignKey) {
+            $fk = new ForeignKeySchema;
+            $fk->fix($this, $foreignKey);
+            $this->fks[] = $fk;
+        }
+        $this->uks = [];
+        foreach ($this->uniqueKeys as $uniqueKey) {
+            $uk = new UniqueKeySchema;
+            $uk->fix($this, $uniqueKey);
+            $this->uks[] = $uk;
+        }
+        $this->tk = new TitleKeySchema;
+        $this->tk->fix($this);
+    }
 }
