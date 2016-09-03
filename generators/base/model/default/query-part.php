@@ -2,7 +2,6 @@
 
 use yii\helpers\Inflector;
 use yii\base\NotSupportedException;
-use yii\db\Schema;
 
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\base\model\Generator */

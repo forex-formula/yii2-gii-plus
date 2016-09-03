@@ -9,7 +9,6 @@ use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
 use yii\helpers\Json;
-use yii\db\Schema;
 use Yii;
 
 class Generator extends GiiModelGenerator
@@ -23,7 +22,7 @@ class Generator extends GiiModelGenerator
     /**
      * @var string
      */
-    public $excludeFilter = 'migration|cache|source_message|message|log|auth_\w+|trans_\w+';
+    public $excludeFilter = 'migration|cache|source_message|message|log|auth_\w+';
 
     public $ns = 'app\models\base';
     public $tableName = '*';
