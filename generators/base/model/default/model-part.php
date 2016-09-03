@@ -126,15 +126,15 @@ echo '    }
 ';
 
 // primary key
-$primaryKey = $tableSchema->primaryKey;
-if (count($primaryKey)) {
+$primaryKey = $tableSchema->pk;
+if ($primaryKey->getCount()) {
     echo '
     /**
      * @inheritdoc
      */
     public static function primaryKey()
     {
-        return [\'', implode('\', \'', $primaryKey), '\'];
+        return ', Helper::implode($primaryKey->key, 2), ';
     }
 ';
 }
@@ -147,7 +147,7 @@ if (array_key_exists($tableName, $relationUses) && in_array('yii\db\Expression',
 }
 
 // display field
-$displayField = $primaryKey;
+$displayField = $tableSchema->primaryKey;
 try {
     $uniqueIndexes = $db->getSchema()->findUniqueIndexes($tableSchema);
     foreach ($uniqueIndexes as $uniqueKey) {

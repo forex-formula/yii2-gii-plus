@@ -4,6 +4,9 @@ namespace yii\gii\plus\db;
 
 use yii\base\Object;
 
+/**
+ * @property int $count
+ */
 class ForeignKeySchema extends Object
 {
 
@@ -18,6 +21,15 @@ class ForeignKeySchema extends Object
      */
     public function fix(TableSchema $table, array $key)
     {
+        unset($key[0]);
         $this->key = $key;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCount()
+    {
+        return count($this->key);
     }
 }

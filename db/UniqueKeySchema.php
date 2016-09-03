@@ -4,6 +4,9 @@ namespace yii\gii\plus\db;
 
 use yii\base\Object;
 
+/**
+ * @property int $count
+ */
 class UniqueKeySchema extends Object
 {
 
@@ -19,5 +22,13 @@ class UniqueKeySchema extends Object
     public function fix(TableSchema $table, array $key)
     {
         $this->key = $key;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCount()
+    {
+        return count($this->key);
     }
 }
