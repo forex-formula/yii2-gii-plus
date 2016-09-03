@@ -24,6 +24,7 @@ class Schema extends MysqlSchema
             } catch (NotSupportedException $e) {
                 // do nothing
             }
+            $table->fix();
         }
         return $table;
     }

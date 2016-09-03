@@ -272,6 +272,7 @@ class Generator extends GiiModelGenerator
 
     /**
      * @inheritdoc
+     * @param \yii\gii\plus\db\TableSchema $table
      */
     public function generateRules($table)
     {
@@ -291,7 +292,7 @@ class Generator extends GiiModelGenerator
             if ($column->autoIncrement) {
                 continue;
             }
-            if (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+            if ($column->getIsBoolean()) {
                 $booleanAttributes[] = $column->name;
             } elseif (in_array($column->type, [Schema::TYPE_SMALLINT, Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
                 if ($column->unsigned) {

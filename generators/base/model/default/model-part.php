@@ -10,7 +10,7 @@ use yii\db\Schema;
 /* @var $tableName string */
 /* @var $className string */
 /* @var $queryClassName string */
-/* @var $tableSchema yii\db\TableSchema */
+/* @var $tableSchema yii\gii\plus\db\TableSchema */
 /* @var $labels string[] */
 /* @var $rules string[] */
 /* @var $relations array */
@@ -60,7 +60,7 @@ $booleanAttributes = [];
 $dateAttributes = [];
 $datetimeAttributes = [];
 foreach ($tableSchema->columns as $column) {
-    if (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+    if ($column->getIsBoolean()) {
         $booleanAttributes[] = $column->name;
     } elseif ($column->type == Schema::TYPE_DATE) {
         $dateAttributes[] = $column->name;

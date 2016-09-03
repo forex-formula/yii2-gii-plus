@@ -17,4 +17,12 @@ class ColumnSchema extends BaseColumnSchema
             $this->type = Schema::TYPE_BOOLEAN;
         }
     }
+
+    /**
+     * @return bool
+     */
+    public function getIsBoolean()
+    {
+        return $this->type == Schema::TYPE_BOOLEAN;
+    }
 }

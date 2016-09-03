@@ -9,7 +9,7 @@ use yii\db\Schema;
 /* @var $tableName string */
 /* @var $className string */
 /* @var $queryClassName string */
-/* @var $tableSchema yii\db\TableSchema */
+/* @var $tableSchema yii\gii\plus\db\TableSchema */
 /* @var $labels string[] */
 /* @var $rules string[] */
 /* @var $relations array */
@@ -20,7 +20,7 @@ $methods = [];
 
 // deleted
 $column = $tableSchema->getColumn('deleted');
-if ($column && in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+if ($column && $column->getIsBoolean()) {
     $methods[] = 'init';
     $attribute = $column->name;
     echo '
@@ -255,7 +255,7 @@ foreach ($keyAttributes as $attribute) {
 
 // boolean
 foreach ($tableSchema->columns as $column) {
-    if (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+    if ($column->getIsBoolean()) {
         $attribute = $column->name;
         $attributeArg = Inflector::variablize($attribute);
         $methodName = $attributeArg;

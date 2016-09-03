@@ -4,6 +4,10 @@ namespace yii\gii\plus\db;
 
 use yii\db\TableSchema as BaseTableSchema;
 
+/**
+ * @property ColumnSchema[] $columns
+ * @method ColumnSchema getColumn(string $name)
+ */
 class TableSchema extends BaseTableSchema
 {
 
@@ -21,11 +25,6 @@ class TableSchema extends BaseTableSchema
      * @var bool
      */
     public $isStatic;
-
-    /**
-     * @var ColumnSchema[]
-     */
-    public $columns = [];
 
     /**
      * @var array
