@@ -12,10 +12,10 @@ use yii\db\Schema;
  * @property bool $isDate
  * @property bool $isTime
  * @property bool $isDatetime
+ * @property bool $hasDateFormat
+ * @property string|null $dateFormat
  * @property bool $hasPattern
  * @property string|null $pattern
- * @property bool $hasFormat
- * @property string|null $format
  */
 class ColumnSchema extends BaseColumnSchema
 {
@@ -81,6 +81,29 @@ class ColumnSchema extends BaseColumnSchema
     /**
      * @return bool
      */
+    public function getHasDateFormat()
+    {
+        return in_array($this->type, [Schema::TYPE_DATE, Schema::TYPE_TIME, Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP]);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDateFormat()
+    {
+        if ($this->type == Schema::TYPE_DATE) {
+            return 'php:Y-m-d';
+        } elseif ($this->type == Schema::TYPE_TIME) {
+            return 'php:H:i:s';
+        } elseif (in_array($this->type, [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
+            return 'php:Y-m-d H:i:s';
+        }
+        return null;
+    }
+
+    /**
+     * @return bool
+     */
     public function getHasPattern()
     {
         return in_array($this->type, [Schema::TYPE_DECIMAL, Schema::TYPE_MONEY]);
@@ -116,29 +139,6 @@ class ColumnSchema extends BaseColumnSchema
             }
             $pattern .= '$~';
             return $pattern;
-        }
-        return null;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getHasFormat()
-    {
-        return in_array($this->type, [Schema::TYPE_DATE, Schema::TYPE_TIME, Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP]);
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getFormat()
-    {
-        if ($this->type == Schema::TYPE_DATE) {
-            return 'php:Y-m-d';
-        } elseif ($this->type == Schema::TYPE_TIME) {
-            return 'php:H:i:s';
-        } elseif (in_array($this->type, [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
-            return 'php:Y-m-d H:i:s';
         }
         return null;
     }

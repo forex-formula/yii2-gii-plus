@@ -280,10 +280,8 @@ class Generator extends GiiModelGenerator
         $uIntegerAttributes = [];
         $numberAttributes = [];
         $uNumberAttributes = [];
+        $dateFormats = [];
         $matchPatterns = [];
-        $dateAttributes = [];
-        $timeAttributes = [];
-        $datetimeAttributes = [];
         $defaultExpressions = [];
         $defaultValues = [];
         $defaultNullAttributes = [];
@@ -305,15 +303,12 @@ class Generator extends GiiModelGenerator
                 } else {
                     $numberAttributes[] = $column->name;
                 }
-                if ($column->getHasPattern()) {
-                    $matchPatterns[$column->getPattern()][] = $column->name;
-                }
-            } elseif ($column->getIsDate()) {
-                $dateAttributes[] = $column->name;
-            } elseif ($column->getIsTime()) {
-                $timeAttributes[] = $column->name;
-            } elseif ($column->getIsDatetime()) {
-                $datetimeAttributes[] = $column->name;
+            }
+            if ($column->getHasDateFormat()) {
+                $dateFormats[$column->getDateFormat()][] = $column->name;
+            }
+            if ($column->getHasPattern()) {
+                $matchPatterns[$column->getPattern()][] = $column->name;
             }
             if (!is_null($column->defaultValue)) {
                 if ($column->defaultValue instanceof Expression) {
@@ -343,17 +338,11 @@ class Generator extends GiiModelGenerator
         if (count($uNumberAttributes)) {
             $rules[] = '[[\'' . implode('\', \'', $uNumberAttributes) . '\'], \'number\', \'min\' => 0]';
         }
+        foreach ($dateFormats as $dateFormat => $attributes) {
+            $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'date\', \'format\' => \'' . $dateFormat . '\']';
+        }
         foreach ($matchPatterns as $matchPattern => $attributes) {
             $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'match\', \'pattern\' => \'' . $matchPattern . '\']';
-        }
-        if (count($dateAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $dateAttributes) . '\'], \'date\', \'format\' => \'php:Y-m-d\']';
-        }
-        if (count($timeAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $timeAttributes) . '\'], \'date\', \'format\' => \'php:H:i:s\']';
-        }
-        if (count($datetimeAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $datetimeAttributes) . '\'], \'date\', \'format\' => \'php:Y-m-d H:i:s\']';
         }
         foreach (parent::generateRules($table) as $rule) {
             if (!preg_match('~, \'(?:safe|boolean|integer|number)\'\]$~', $rule)) {
