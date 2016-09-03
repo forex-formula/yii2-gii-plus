@@ -14,6 +14,8 @@ use yii\db\Schema;
  * @property bool $isDatetime
  * @property bool $hasPattern
  * @property string|null $pattern
+ * @property bool $hasFormat
+ * @property string|null $format
  */
 class ColumnSchema extends BaseColumnSchema
 {
@@ -89,7 +91,6 @@ class ColumnSchema extends BaseColumnSchema
      */
     public function getPattern()
     {
-        $pattern = null;
         if (in_array($this->type, [Schema::TYPE_DECIMAL, Schema::TYPE_MONEY])) {
             $scale = $this->scale;
             $whole = $this->precision - $scale;
@@ -114,7 +115,31 @@ class ColumnSchema extends BaseColumnSchema
                 }
             }
             $pattern .= '$~';
+            return $pattern;
         }
-        return $pattern;
+        return null;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getHasFormat()
+    {
+        return in_array($this->type, [Schema::TYPE_DATE, Schema::TYPE_TIME, Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP]);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFormat()
+    {
+        if ($this->type == Schema::TYPE_DATE) {
+            return 'php:Y-m-d';
+        } elseif ($this->type == Schema::TYPE_TIME) {
+            return 'php:H:i:s';
+        } elseif (in_array($this->type, [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
+            return 'php:Y-m-d H:i:s';
+        }
+        return null;
     }
 }
