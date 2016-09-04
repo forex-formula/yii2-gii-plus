@@ -67,6 +67,12 @@ class m160209_192728_init extends Migration
 
         $this->addForeignKey(null, 'file_info', ['file_id'], 'file', ['id']);
 
+        $sql = <<<SQL
+CREATE VIEW `file_view`
+AS SELECT * FROM `file`;
+SQL;
+        $this->db->createCommand($sql)->execute();
+
         // something
         $this->createTable('something', [
             'tiny_id' => $this->tinyInteger()->unsigned(),

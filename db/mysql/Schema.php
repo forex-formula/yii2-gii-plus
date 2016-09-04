@@ -50,14 +50,16 @@ class Schema extends MysqlSchema
             if (!count($table->primaryKey)) {
                 foreach ($table->columns as $column) {
                     if (preg_match('~^pk_~', $column->name)) {
-                        $table->primaryKey[] = $column->name;
                         $column->isPrimaryKey = true;
+                        $table->primaryKey[] = $column->name;
                     }
                 }
                 if (!count($table->primaryKey)) {
-                    $column = $table->columns[0];
-                    $table->primaryKey[] = $column->name;
-                    $column->isPrimaryKey = true;
+                    foreach ($table->columns as $column) {
+                        $column->isPrimaryKey = true;
+                        $table->primaryKey[] = $column->name;
+                        break;
+                    }
                 }
             }
             return true;
