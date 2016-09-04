@@ -48,6 +48,9 @@ class PrimaryKeySchema extends Object
                     break;
                 }
             }
+            if ($this->isForeignKey) {
+                break;
+            }
         }
         $this->isStatic = false;
         if (!$this->isForeignKey && ($this->getCount() == 1)) {
