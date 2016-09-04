@@ -31,6 +31,11 @@ class ForeignKeySchema extends Object
     public $inTableKey = [];
 
     /**
+     * @var bool
+     */
+    public $isPrimaryKey;
+
+    /**
      * @return int
      */
     public function getCount()
@@ -49,5 +54,12 @@ class ForeignKeySchema extends Object
         $this->link = $key;
         $this->key = array_keys($this->link);
         $this->inTableKey = array_values($this->link);
+        $this->isPrimaryKey = false;
+        foreach ($this->key as $columnName) {
+            if (in_array($columnName, $table->primaryKey)) {
+                $this->isPrimaryKey = true;
+                break;
+            }
+        }
     }
 }

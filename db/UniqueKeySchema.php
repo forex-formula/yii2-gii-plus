@@ -16,6 +16,11 @@ class UniqueKeySchema extends Object
     public $key = [];
 
     /**
+     * @var bool
+     */
+    public $isPrimaryKey;
+
+    /**
      * @return int
      */
     public function getCount()
@@ -30,5 +35,12 @@ class UniqueKeySchema extends Object
     public function fix(TableSchema $table, array $key)
     {
         $this->key = $key;
+        $this->isPrimaryKey = false;
+        foreach ($this->key as $columnName) {
+            if (in_array($columnName, $table->primaryKey)) {
+                $this->isPrimaryKey = true;
+                break;
+            }
+        }
     }
 }

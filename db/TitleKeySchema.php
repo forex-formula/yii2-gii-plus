@@ -16,6 +16,11 @@ class TitleKeySchema extends Object
     public $key = [];
 
     /**
+     * @var bool
+     */
+    public $isPrimaryKey;
+
+    /**
      * @return int
      */
     public function getCount()
@@ -29,5 +34,12 @@ class TitleKeySchema extends Object
     public function fix(TableSchema $table)
     {
         $this->key = $table->titleKey;
+        $this->isPrimaryKey = false;
+        foreach ($this->key as $columnName) {
+            if (in_array($columnName, $table->primaryKey)) {
+                $this->isPrimaryKey = true;
+                break;
+            }
+        }
     }
 }
