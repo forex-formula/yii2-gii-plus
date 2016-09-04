@@ -136,13 +136,6 @@ if ($primaryKey) {
 ';
 }
 
-// use
-if (array_key_exists($tableName, $relationUses) && in_array('yii\db\Expression', $relationUses[$tableName])) {
-    $dbExpression = 'Expression';
-} else {
-    $dbExpression = '\yii\db\Expression';
-}
-
 // title key
 $titleKey = $tableSchema->tk;
 if ($titleKey) {
@@ -189,6 +182,13 @@ if (array_key_exists($tableName, $buildRelations)) {
 ';
         }
     }
+}
+
+// use
+if (array_key_exists($tableName, $relationUses) && in_array('yii\db\Expression', $relationUses[$tableName])) {
+    $dbExpression = 'Expression';
+} else {
+    $dbExpression = '\yii\db\Expression';
 }
 
 // list items
