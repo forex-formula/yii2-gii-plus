@@ -78,6 +78,14 @@ class TableSchema extends BaseTableSchema
     }
 
     /**
+     * @return bool
+     */
+    public function hasForeignKey(array $key)
+    {
+        return (bool)$this->getForeignKey($key);
+    }
+
+    /**
      * @return UniqueKeySchema|null
      */
     public function getUniqueKey(array $key)
@@ -88,6 +96,14 @@ class TableSchema extends BaseTableSchema
             }
         }
         return null;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasUniqueKey(array $key)
+    {
+        return (bool)$this->getUniqueKey($key);
     }
 
     /**

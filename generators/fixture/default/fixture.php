@@ -50,7 +50,7 @@ foreach ($modelClass::singularRelations() as $relationName) {
         /* @var $relationFixtureClass string|yii\boost\test\ActiveFixture */
         $relationFixtureClass = $fixtureNs . '\\' . $relationClass::classShortName();
         if (($relationFixtureClass != $fixtureClass) && class_exists($relationFixtureClass)) {
-            if ($tableSchema->getForeignKey(array_values($model->getRelationLink($relationName)))) {
+            if ($tableSchema->hasForeignKey(array_values($model->getRelationLink($relationName)))) {
                 $depends[] = $relationFixtureClass;
             } else {
                 $backDepends[] = $relationFixtureClass;
