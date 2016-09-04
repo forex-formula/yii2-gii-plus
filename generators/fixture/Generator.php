@@ -91,7 +91,12 @@ class Generator extends GiiGenerator
      */
     public function stickyAttributes()
     {
-        return array_merge(parent::stickyAttributes(), ['modelClass', 'fixtureNs', 'fixtureBaseClass', 'dataPath']);
+        return array_merge(parent::stickyAttributes(), [
+            'modelClass',
+            'fixtureNs',
+            'fixtureBaseClass',
+            'dataPath'
+        ]);
     }
 
     /**

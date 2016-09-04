@@ -128,7 +128,10 @@ class Generator extends GiiModelGenerator
      */
     public function stickyAttributes()
     {
-        return array_merge(array_diff(parent::stickyAttributes(), ['queryNs']), ['includeFilter', 'excludeFilter']);
+        return array_merge(array_diff(parent::stickyAttributes(), ['queryNs']), [
+            'includeFilter',
+            'excludeFilter'
+        ]);
     }
 
     /**
