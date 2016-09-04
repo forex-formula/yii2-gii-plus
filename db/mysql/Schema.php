@@ -21,6 +21,7 @@ class Schema extends MysqlSchema
         if (is_object($table)) {
             $table = new TableSchema(get_object_vars($table));
             $this->findComment($table);
+            $this->findIsView($table);
             $this->findUniqueKeys($table);
             $this->findTitleKey($table);
             $table->fix();
@@ -94,6 +95,18 @@ class Schema extends MysqlSchema
             if (preg_match('~COMMENT\s*\=?\s*\'([^\']+)\'~', $tableOptions, $match)) {
                 $table->comment = $match[1];
             }
+        }
+    }
+
+    /**
+     * @param TableSchema $table
+     */
+    protected function findIsView(TableSchema $table)
+    {
+        $sql = 'SHOW CREATE TABLE ' . $this->db->quoteTableName($table->fullName);
+        $row = $this->db->createCommand($sql)->queryOne();
+        if (is_array($row)) {
+            $table->isView = array_key_exists('View', $row);
         }
     }
 
