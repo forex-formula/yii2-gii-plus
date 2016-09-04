@@ -156,5 +156,9 @@ class ColumnSchema extends BaseColumnSchema
         if ($this->getIsInteger() && ($this->size == 1) && $this->unsigned) {
             $this->type = Schema::TYPE_BOOLEAN;
         }
+        $this->isPrimaryKey = false;
+        if (in_array($this->name, $table->primaryKey)) {
+            $this->isPrimaryKey = true;
+        }
     }
 }
