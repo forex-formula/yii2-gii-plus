@@ -56,6 +56,48 @@ class TableSchema extends BaseTableSchema
      */
     public $tk;
 
+    /**
+     * @return PrimaryKeySchema
+     */
+    public function getPrimaryKey()
+    {
+        return $this->pk;
+    }
+
+    /**
+     * @return ForeignKeySchema|null
+     */
+    public function getForeignKey(array $key)
+    {
+        foreach ($this->fks as $fk) {
+            if (!array_diff($fk->key, $key) && !array_diff($key, $fk->key)) {
+                return $fk;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return UniqueKeySchema|null
+     */
+    public function getUniqueKey(array $key)
+    {
+        foreach ($this->uks as $uk) {
+            if (!array_diff($uk->key, $key) && !array_diff($key, $uk->key)) {
+                return $uk;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return TitleKeySchema
+     */
+    public function getTitleKey()
+    {
+        return $this->tk;
+    }
+
     public function fix()
     {
         foreach ($this->columns as $column) {
