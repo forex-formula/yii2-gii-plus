@@ -119,6 +119,15 @@ class Schema extends MysqlSchema
             // do nothing
         }
         if (!count($table->uniqueKeys)) {
+            $uniqueKey = [];
+            foreach ($table->columns as $column) {
+                if (preg_match('~^uk_~', $column->name)) {
+                    $uniqueKey[] = $column->name;
+                }
+            }
+            if (count($uniqueKey)) {
+                $table->uniqueKeys[] = $uniqueKey;
+            }
         }
     }
 

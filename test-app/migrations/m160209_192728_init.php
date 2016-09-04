@@ -67,13 +67,14 @@ class m160209_192728_init extends Migration
 
         $this->addForeignKey(null, 'file_info', ['file_id'], 'file', ['id']);
 
+        // file_view
         $sql = <<<SQL
 CREATE VIEW `file_view`
 AS SELECT
     f.id,
     f.root_folder_id,
-    f.folder_id AS `tk_folder_id`,
-    f.name AS `tk_name`,
+    f.folder_id AS `uk_folder_id`,
+    f.name AS `uk_name`,
     f.visible,
     f.created_at,
     f.updated_at,
