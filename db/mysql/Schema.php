@@ -76,9 +76,9 @@ class Schema extends MysqlSchema
     {
         parent::findConstraints($table);
         if (!count($table->foreignKeys)) {
-            foreach ($table->getColumnNames() as $columnName) {
-                if (preg_match('~^((?:pk_)?(\w+)_id)$~', $columnName, $match) && $this->getTableSchema($match[2])) {
-                    $table->foreignKeys[] = [$match[2], $match[1] => 'id'];
+            foreach ($table->columns as $column) {
+                if (preg_match('~^(?:pk_)?(\w+)_id$~', $column->name, $match) && $this->getTableSchema($match[1])) {
+                    $table->foreignKeys[] = [$match[1], $match[0] => 'id'];
                 }
             }
         }
