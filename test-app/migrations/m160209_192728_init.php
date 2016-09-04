@@ -69,7 +69,16 @@ class m160209_192728_init extends Migration
 
         $sql = <<<SQL
 CREATE VIEW `file_view`
-AS SELECT * FROM `file`;
+AS SELECT
+    f.id,
+    f.root_folder_id,
+    f.folder_id AS `tk_folder_id`,
+    f.name AS `tk_name`,
+    f.visible,
+    f.created_at,
+    f.updated_at,
+    f.deleted
+FROM `file` f;
 SQL;
         $this->db->createCommand($sql)->execute();
 

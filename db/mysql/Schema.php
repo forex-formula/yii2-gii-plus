@@ -51,13 +51,11 @@ class Schema extends MysqlSchema
             if (!count($table->primaryKey)) {
                 foreach ($table->columns as $column) {
                     if (preg_match('~^pk_~', $column->name)) {
-                        $column->isPrimaryKey = true;
                         $table->primaryKey[] = $column->name;
                     }
                 }
                 if (!count($table->primaryKey)) {
                     foreach ($table->columns as $column) {
-                        $column->isPrimaryKey = true;
                         $table->primaryKey[] = $column->name;
                         break;
                     }
@@ -140,7 +138,14 @@ class Schema extends MysqlSchema
             }
         }
         if (!count($table->titleKey)) {
-            $table->titleKey = $table->primaryKey;
+            foreach ($table->columns as $column) {
+                if (preg_match('~^tk_~', $column->name)) {
+                    $table->titleKey[] = $column->name;
+                }
+            }
+            if (!count($table->titleKey)) {
+                $table->titleKey = $table->primaryKey;
+            }
         }
     }
 }
