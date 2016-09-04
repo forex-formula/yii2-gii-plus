@@ -52,14 +52,16 @@ class Schema extends MysqlSchema
     {
         if (parent::findColumns($table)) {
             if (!count($table->primaryKey)) {
-                $columnNames = $table->getColumnNames();
-                foreach ($columnNames as $columnName) {
-                    if (preg_match('~^pk_~', $columnName)) {
-                        $table->primaryKey[] = $columnName;
+                foreach ($table->columns as $column) {
+                    if (preg_match('~^pk_~', $column->name)) {
+                        $table->primaryKey[] = $column->name;
+                        $column->isPrimaryKey = true;
                     }
                 }
                 if (!count($table->primaryKey)) {
-                    $table->primaryKey[] = $columnNames[0];
+                    $column = $table->columns[0];
+                    $table->primaryKey[] = $column->name;
+                    $column->isPrimaryKey = true;
                 }
             }
             return true;
