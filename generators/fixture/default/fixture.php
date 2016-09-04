@@ -7,12 +7,12 @@ use yii\helpers\Inflector;
 /* @var $generator yii\gii\plus\generators\fixture\Generator */
 /* @var $ns string */
 /* @var $modelName string */
-/* @var $modelClass string|\yii\boost\db\ActiveRecord */
+/* @var $modelClass string|yii\boost\db\ActiveRecord */
 /* @var $fixtureNs string */
 /* @var $fixtureName string */
-/* @var $fixtureClass string|\yii\boost\test\ActiveFixture */
+/* @var $fixtureClass string|yii\boost\test\ActiveFixture */
 /* @var $baseFixtureName string */
-/* @var $baseFixtureClass string|\yii\boost\test\ActiveFixture */
+/* @var $baseFixtureClass string|yii\boost\test\ActiveFixture */
 /* @var $dataFile string */
 /* @var $tableSchema yii\gii\plus\db\TableSchema */
 
@@ -37,17 +37,17 @@ class ', $fixtureName, ' extends ', $baseFixtureName, '
     public $modelClass = \'', $modelClass, '\';
 ';
 
-/* @var $model \yii\boost\db\ActiveRecord */
+/* @var $model yii\boost\db\ActiveRecord */
 $model = new $modelClass;
 
 // depends
 $depends = [];
 $backDepends = [];
 foreach ($modelClass::singularRelations() as $relationName) {
-    /* @var $relationClass string|\yii\boost\db\ActiveRecord */
+    /* @var $relationClass string|yii\boost\db\ActiveRecord */
     $relationClass = $model->getRelationClass($relationName);
     if ($relationClass && class_exists($relationClass)) {
-        /* @var $relationFixtureClass string|\yii\boost\test\ActiveFixture */
+        /* @var $relationFixtureClass string|yii\boost\test\ActiveFixture */
         $relationFixtureClass = $fixtureNs . '\\' . $relationClass::classShortName();
         if (($relationFixtureClass!=$fixtureClass)&&class_exists($relationFixtureClass)) {
             
@@ -66,11 +66,11 @@ $backDepends[] = $relationFixtureClass;
     }
 }
 foreach ($modelClass::pluralRelations() as $relationName) {
-    /* @var $relationClass string|\yii\boost\db\ActiveRecord */
+    /* @var $relationClass string|yii\boost\db\ActiveRecord */
     $relationClass = $model->getRelationClass($relationName);
     if ($relationClass && class_exists($relationClass)) {
 
-        /* @var $relationFixtureClass string|\yii\boost\test\ActiveFixture */
+        /* @var $relationFixtureClass string|yii\boost\test\ActiveFixture */
         $relationFixtureClass = $fixtureNs . '\\' . $relationClass::classShortName();
         if (($relationFixtureClass!=$fixtureClass)&&class_exists($relationFixtureClass)) {
             $backDepends[] = $relationFixtureClass;

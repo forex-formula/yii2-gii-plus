@@ -88,13 +88,15 @@ class Generator extends GiiGenerator
                 $modelName = basename($filename, 'Base.php');
                 $modelClass = $ns . '\\' . $modelName;
                 $baseModelName = basename($filename, '.php');
+                /* @var $baseModelClass string|\yii\boost\db\ActiveRecord */
                 $baseModelClass = $ns . '\base\\' . $baseModelName;
                 $queryNs = $ns . '\query';
                 $queryName = $modelName . 'Query';
                 $queryClass = $queryNs . '\\' . $queryName;
                 $baseQueryName = $modelName . 'QueryBase';
                 $baseQueryClass = $queryNs . '\base\\' . $baseQueryName;
-                /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+                /* @var $tableSchema \yii\gii\plus\db\TableSchema */
+                $tableSchema = $baseModelClass::getTableSchema();
                 $params = [
                     'ns' => $ns,
                     'modelName' => $modelName,
@@ -106,7 +108,7 @@ class Generator extends GiiGenerator
                     'queryClass' => $queryClass,
                     'baseQueryName' => $baseQueryName,
                     'baseQueryClass' => $baseQueryClass,
-                    'tableSchema' => $modelClass::getTableSchema()
+                    'tableSchema' => $tableSchema
                 ];
                 $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $ns)) . '/' . $modelName . '.php', $this->render('model.php', $params));
                 $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $queryNs)) . '/' . $queryName . '.php', $this->render('query.php', $params));
