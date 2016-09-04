@@ -15,6 +15,7 @@ use yii\helpers\Inflector;
 /* @var $queryClass string|\yii\boost\db\ActiveQuery */
 /* @var $baseQueryName string */
 /* @var $baseQueryClass string|\yii\boost\db\ActiveQuery */
+/* @var $tableSchema yii\gii\plus\db\TableSchema */
 
 $uses = [
     $baseModelClass
