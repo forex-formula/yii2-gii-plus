@@ -18,22 +18,12 @@ class PrimaryKeySchema extends Object
     /**
      * @var bool
      */
-    public $isStatic;
+    public $isForeignKey;
 
     /**
-     * @param TableSchema $table
+     * @var bool
      */
-    public function fix(TableSchema $table)
-    {
-        $this->key = $table->primaryKey;
-        $this->isStatic = false;
-        if ($this->getCount() == 1) {
-            $column = $table->getColumn($this->key[0]);
-            if ($column && ($column->name == 'id') && $column->getIsInteger() && ($column->size == 3) && !$column->autoIncrement) {
-                $this->isStatic = true;
-            }
-        }
-    }
+    public $isStatic;
 
     /**
      * @return int
@@ -41,5 +31,30 @@ class PrimaryKeySchema extends Object
     public function getCount()
     {
         return count($this->key);
+    }
+
+    /**
+     * @param TableSchema $table
+     */
+    public function fix(TableSchema $table)
+    {
+        $this->key = $table->primaryKey;
+        $this->isForeignKey = false;
+        foreach ($this->key as $columnName) {
+            foreach ($table->foreignKeys as $foreignKey) {
+                unset($foreignKey[0]);
+                if (array_key_exists($columnName, $foreignKey)) {
+                    $this->isForeignKey = true;
+                    break;
+                }
+            }
+        }
+        $this->isStatic = false;
+        if (!$this->isForeignKey && ($this->getCount() == 1)) {
+            $column = $table->getColumn($this->key[0]);
+            if ($column && $column->getIsInteger() && ($column->size == 3) && $column->unsigned) {
+                $this->isStatic = !$column->autoIncrement;
+            }
+        }
     }
 }

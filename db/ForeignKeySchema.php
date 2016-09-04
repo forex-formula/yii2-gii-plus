@@ -28,7 +28,15 @@ class ForeignKeySchema extends Object
     /**
      * @var string[]
      */
-    public $primaryKey = [];
+    public $inTableKey = [];
+
+    /**
+     * @return int
+     */
+    public function getCount()
+    {
+        return count($this->key);
+    }
 
     /**
      * @param TableSchema $table
@@ -40,14 +48,6 @@ class ForeignKeySchema extends Object
         unset($key[0]);
         $this->link = $key;
         $this->key = array_keys($this->link);
-        $this->primaryKey = array_values($this->link);
-    }
-
-    /**
-     * @return int
-     */
-    public function getCount()
-    {
-        return count($this->key);
+        $this->inTableKey = array_values($this->link);
     }
 }

@@ -21,16 +21,6 @@ class ColumnSchema extends BaseColumnSchema
 {
 
     /**
-     * @param TableSchema $table
-     */
-    public function fix(TableSchema $table)
-    {
-        if (($this->type == Schema::TYPE_SMALLINT) && ($this->size == 1) && $this->unsigned) {
-            $this->type = Schema::TYPE_BOOLEAN;
-        }
-    }
-
-    /**
      * @return bool
      */
     public function getIsBoolean()
@@ -43,7 +33,11 @@ class ColumnSchema extends BaseColumnSchema
      */
     public function getIsInteger()
     {
-        return in_array($this->type, [Schema::TYPE_SMALLINT, Schema::TYPE_INTEGER, Schema::TYPE_BIGINT]);
+        return in_array($this->type, [
+            Schema::TYPE_SMALLINT,
+            Schema::TYPE_INTEGER,
+            Schema::TYPE_BIGINT
+        ]);
     }
 
     /**
@@ -51,7 +45,12 @@ class ColumnSchema extends BaseColumnSchema
      */
     public function getIsNumber()
     {
-        return in_array($this->type, [Schema::TYPE_FLOAT, Schema::TYPE_DOUBLE, Schema::TYPE_DECIMAL, Schema::TYPE_MONEY]);
+        return in_array($this->type, [
+            Schema::TYPE_FLOAT,
+            Schema::TYPE_DOUBLE,
+            Schema::TYPE_DECIMAL,
+            Schema::TYPE_MONEY
+        ]);
     }
 
     /**
@@ -75,7 +74,10 @@ class ColumnSchema extends BaseColumnSchema
      */
     public function getIsDatetime()
     {
-        return in_array($this->type, [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP]);
+        return in_array($this->type, [
+            Schema::TYPE_DATETIME,
+            Schema::TYPE_TIMESTAMP
+        ]);
     }
 
     /**
@@ -83,7 +85,7 @@ class ColumnSchema extends BaseColumnSchema
      */
     public function getHasDateFormat()
     {
-        return in_array($this->type, [Schema::TYPE_DATE, Schema::TYPE_TIME, Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP]);
+        return $this->getIsDate() || $this->getIsTime() || $this->getIsDatetime();
     }
 
     /**
@@ -91,11 +93,11 @@ class ColumnSchema extends BaseColumnSchema
      */
     public function getDateFormat()
     {
-        if ($this->type == Schema::TYPE_DATE) {
+        if ($this->getIsDate()) {
             return 'php:Y-m-d';
-        } elseif ($this->type == Schema::TYPE_TIME) {
+        } elseif ($this->getIsTime()) {
             return 'php:H:i:s';
-        } elseif (in_array($this->type, [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
+        } elseif ($this->getIsDatetime()) {
             return 'php:Y-m-d H:i:s';
         }
         return null;
@@ -106,7 +108,10 @@ class ColumnSchema extends BaseColumnSchema
      */
     public function getHasPattern()
     {
-        return in_array($this->type, [Schema::TYPE_DECIMAL, Schema::TYPE_MONEY]);
+        return in_array($this->type, [
+            Schema::TYPE_DECIMAL,
+            Schema::TYPE_MONEY
+        ]);
     }
 
     /**
@@ -141,5 +146,15 @@ class ColumnSchema extends BaseColumnSchema
             return $pattern;
         }
         return null;
+    }
+
+    /**
+     * @param TableSchema $table
+     */
+    public function fix(TableSchema $table)
+    {
+        if ($this->getIsInteger() && ($this->size == 1) && $this->unsigned) {
+            $this->type = Schema::TYPE_BOOLEAN;
+        }
     }
 }

@@ -16,18 +16,18 @@ class TitleKeySchema extends Object
     public $key = [];
 
     /**
-     * @param TableSchema $table
-     */
-    public function fix(TableSchema $table)
-    {
-        $this->key = $table->titleKey;
-    }
-
-    /**
      * @return int
      */
     public function getCount()
     {
         return count($this->key);
+    }
+
+    /**
+     * @param TableSchema $table
+     */
+    public function fix(TableSchema $table)
+    {
+        $this->key = $table->titleKey;
     }
 }
