@@ -20,12 +20,8 @@ class Schema extends MysqlSchema
         $table = parent::loadTableSchema($name);
         if (is_object($table)) {
             $table = new TableSchema(get_object_vars($table));
-            try {
-                $table->uniqueKeys = $this->findUniqueIndexes($table);
-            } catch (NotSupportedException $e) {
-                // do nothing
-            }
             $this->findComment($table);
+            $this->findUniqueKeys($table);
             $this->findTitleKey($table);
             $table->fix();
         }
@@ -96,6 +92,18 @@ class Schema extends MysqlSchema
             if (preg_match('~COMMENT\s*\=?\s*\'([^\']+)\'~', $tableOptions, $match)) {
                 $table->comment = $match[1];
             }
+        }
+    }
+
+    /**
+     * @param TableSchema $table
+     */
+    protected function findUniqueKeys(TableSchema $table)
+    {
+        try {
+            $table->uniqueKeys = $this->findUniqueIndexes($table);
+        } catch (NotSupportedException $e) {
+            // do nothing
         }
     }
 
