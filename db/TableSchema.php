@@ -64,6 +64,7 @@ class TableSchema extends BaseTableSchema
         if (count($this->primaryKey)) {
             $this->pk = new PrimaryKeySchema;
             $this->pk->fix($this);
+            $this->isStatic = $this->pk->isStatic;
         }
         $this->fks = [];
         foreach ($this->foreignKeys as $foreignKey) {

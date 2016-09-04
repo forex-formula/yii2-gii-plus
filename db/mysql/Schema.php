@@ -22,7 +22,6 @@ class Schema extends MysqlSchema
             $table = new TableSchema(get_object_vars($table));
             $this->findComment($table);
             $this->findIsView($table);
-            $this->findIsStatic($table);
             $this->findUniqueKeys($table);
             $this->findTitleKey($table);
             $table->fix();
@@ -109,27 +108,6 @@ class Schema extends MysqlSchema
         if (is_array($row)) {
             $table->isView = array_key_exists('View', $row);
         }
-    }
-
-    /**
-     * @param TableSchema $table
-     */
-    protected function findIsStatic(TableSchema $table)
-    {
-
-//        // static table
-//        $ignore = false;
-//        /* @var $modelClass \yii\boost\db\ActiveRecord */
-//        $primaryKey = $modelClass::primaryKey();
-//
-//        if (!$ignore && (count($primaryKey) == 1) && ($primaryKey[0] == 'id')) {
-//            $column = $modelClass::getTableSchema()->getColumn($primaryKey[0]);
-//            if (($column->type == \yii\db\Schema::TYPE_SMALLINT) && ($column->size == 3) && !$column->autoIncrement) {
-//                $ignore = true;
-//            }
-//        }
-
-        $table->isStatic = true;
     }
 
     /**

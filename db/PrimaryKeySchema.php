@@ -16,11 +16,23 @@ class PrimaryKeySchema extends Object
     public $key = [];
 
     /**
+     * @var bool
+     */
+    public $isStatic;
+
+    /**
      * @param TableSchema $table
      */
     public function fix(TableSchema $table)
     {
         $this->key = $table->primaryKey;
+        $this->isStatic = false;
+        if ($this->getCount() == 1) {
+            $column = $table->getColumn($this->key[0]);
+            if ($column && ($column->name == 'id') && $column->getIsInteger() && ($column->size == 3) && !$column->autoIncrement) {
+                $this->isStatic = true;
+            }
+        }
     }
 
     /**
