@@ -33,7 +33,7 @@ foreach ($relations as $relationName => $relation) {
 if (count($singularRelations)) {
     echo '
     /**
-     * @return string[]
+     * @inheritdoc
      */
     public static function singularRelations()
     {
@@ -44,7 +44,7 @@ if (count($singularRelations)) {
 if (count($pluralRelations)) {
     echo '
     /**
-     * @return string[]
+     * @inheritdoc
      */
     public static function pluralRelations()
     {
@@ -69,7 +69,7 @@ foreach ($tableSchema->columns as $column) {
 if (count($booleanAttributes)) {
     echo '
     /**
-     * @return string[]
+     * @inheritdoc
      */
     public static function booleanAttributes()
     {
@@ -80,7 +80,7 @@ if (count($booleanAttributes)) {
 if (count($dateAttributes)) {
     echo '
     /**
-     * @return string[]
+     * @inheritdoc
      */
     public static function dateAttributes()
     {
@@ -91,7 +91,7 @@ if (count($dateAttributes)) {
 if (count($datetimeAttributes)) {
     echo '
     /**
-     * @return string[]
+     * @inheritdoc
      */
     public static function datetimeAttributes()
     {
@@ -107,7 +107,7 @@ if ($generator->generateLabelsFromComments && $tableSchema->comment) {
 }
 echo '
     /**
-     * @return string
+     * @inheritdoc
      */
     public static function modelTitle()
     {
@@ -148,7 +148,7 @@ $titleKey = $tableSchema->tk;
 if ($titleKey) {
     echo '
     /**
-     * @return string[]|', $dbExpression, '
+     * @inheritdoc
      */
     public static function titleKey()
     {
@@ -156,9 +156,9 @@ if ($titleKey) {
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getTitleField()
+    public function getTitleText()
     {
         return $this->', implode(' . static::TITLE_SEPARATOR . $this->', $titleKey->key), ';
     }
