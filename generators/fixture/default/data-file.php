@@ -13,6 +13,7 @@ use yii\helpers\Inflector;
 /* @var $baseFixtureName string */
 /* @var $baseFixtureClass string|\yii\boost\test\ActiveFixture */
 /* @var $dataFile string */
+/* @var $tableSchema yii\gii\plus\db\TableSchema */
 
 echo '<?php
 
@@ -23,7 +24,8 @@ echo '<?php
 return [
     /*[
 ';
-$columns = array_values($modelClass::getTableSchema()->columns);
+/* @var $columns yii\gii\plus\db\ColumnSchema[] */
+$columns = array_values($tableSchema->columns);
 foreach ($columns as $i => $column) {
     $comma = ($i < count($columns) - 1) ? ',' : '';
     echo '        \'', $column->name, '\' => \'\'', $comma, '

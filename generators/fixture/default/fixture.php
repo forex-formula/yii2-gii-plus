@@ -14,6 +14,7 @@ use yii\helpers\Inflector;
 /* @var $baseFixtureName string */
 /* @var $baseFixtureClass string|\yii\boost\test\ActiveFixture */
 /* @var $dataFile string */
+/* @var $tableSchema yii\gii\plus\db\TableSchema */
 
 $uses = [
     $baseFixtureClass

@@ -131,6 +131,7 @@ class Generator extends GiiGenerator
                 $baseFixtureName = preg_replace('~^(?:\w+\\\\)*\w+\\\\(\w+)$~', '$1', $this->fixtureBaseClass);
                 $baseFixtureClass = $this->fixtureBaseClass;
                 $dataFile = $this->dataPath . '/' . Inflector::underscore($modelName) . '.php';
+                /* @var $modelClass string|\yii\boost\db\ActiveRecord */
                 $params = [
                     'ns' => $ns,
                     'modelName' => $modelName,
@@ -140,9 +141,10 @@ class Generator extends GiiGenerator
                     'fixtureClass' => $fixtureClass,
                     'baseFixtureName' => $baseFixtureName,
                     'baseFixtureClass' => $baseFixtureClass,
-                    'dataFile' => $dataFile
+                    'dataFile' => $dataFile,
+                    'tableSchema' => $modelClass::getTableSchema()
                 ];
-                
+
                 // static table
                 $ignore = false;
                 /* @var $modelClass \yii\boost\db\ActiveRecord */
@@ -163,10 +165,10 @@ class Generator extends GiiGenerator
                 }
 
                 if (!$ignore) {
-                $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $fixtureNs)) . '/' . $fixtureName . '.php', $this->render('fixture.php', $params));
-                if ($this->generateDataFile) {
-                    $files[] = new CodeFile(Yii::getAlias($dataFile), $this->render('data-file.php', $params));
-                }
+                    $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $fixtureNs)) . '/' . $fixtureName . '.php', $this->render('fixture.php', $params));
+                    if ($this->generateDataFile) {
+                        $files[] = new CodeFile(Yii::getAlias($dataFile), $this->render('data-file.php', $params));
+                    }
                 }
             }
         }
