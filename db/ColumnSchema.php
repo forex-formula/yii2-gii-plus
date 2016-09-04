@@ -21,6 +21,11 @@ class ColumnSchema extends BaseColumnSchema
 {
 
     /**
+     * @var bool
+     */
+    public $isForeignKey;
+
+    /**
      * @return bool
      */
     public function getIsBoolean()
@@ -159,6 +164,14 @@ class ColumnSchema extends BaseColumnSchema
         $this->isPrimaryKey = false;
         if (in_array($this->name, $table->primaryKey)) {
             $this->isPrimaryKey = true;
+        }
+        $this->isForeignKey = false;
+        foreach ($table->foreignKeys as $foreignKey) {
+            unset($foreignKey[0]);
+            if (array_key_exists($this->name, $foreignKey)) {
+                $this->isForeignKey = true;
+                break;
+            }
         }
     }
 }

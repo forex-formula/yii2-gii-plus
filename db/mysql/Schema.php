@@ -120,6 +120,8 @@ class Schema extends MysqlSchema
         } catch (NotSupportedException $e) {
             // do nothing
         }
+        if (!count($table->uniqueKeys)) {
+        }
     }
 
     /**
@@ -127,16 +129,18 @@ class Schema extends MysqlSchema
      */
     protected function findTitleKey(TableSchema $table)
     {
-        $table->titleKey = $table->primaryKey;
         foreach ($table->uniqueKeys as $uniqueKey) {
             $types = [];
-            foreach ($uniqueKey as $attribute) {
-                $types[] = $table->getColumn($attribute)->type;
+            foreach ($uniqueKey as $columnName) {
+                $types[] = $table->getColumn($columnName)->type;
             }
             if (in_array(Schema::TYPE_CHAR, $types) || in_array(Schema::TYPE_STRING, $types)) {
                 $table->titleKey = $uniqueKey;
                 break;
             }
+        }
+        if (!count($table->titleKey)) {
+            $table->titleKey = $table->primaryKey;
         }
     }
 }
