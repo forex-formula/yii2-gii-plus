@@ -2,15 +2,13 @@
 
 use yii\gii\plus\helpers\Helper;
 use yii\helpers\Inflector;
-use yii\base\NotSupportedException;
-use yii\db\Schema;
 
 /* @var $this yii\web\View */
 /* @var $generator yii\gii\plus\generators\base\model\Generator */
 /* @var $tableName string */
 /* @var $className string */
 /* @var $queryClassName string */
-/* @var $tableSchema yii\db\TableSchema */
+/* @var $tableSchema yii\gii\plus\db\TableSchema */
 /* @var $labels string[] */
 /* @var $rules string[] */
 /* @var $relations array */
@@ -25,17 +23,17 @@ $pluralRelations = [];
 foreach ($relations as $relationName => $relation) {
     list ($code, $_className, $hasMany) = $relation;
     if (strpos($code, '->via') === false) {
-    if ($hasMany) {
-        $pluralRelations[] = lcfirst($relationName);
-    } else {
-        $singularRelations[] = lcfirst($relationName);
-    }
+        if ($hasMany) {
+            $pluralRelations[] = lcfirst($relationName);
+        } else {
+            $singularRelations[] = lcfirst($relationName);
+        }
     }
 }
 if (count($singularRelations)) {
     echo '
     /**
-     * @return string[]
+     * @inheritdoc
      */
     public static function singularRelations()
     {
@@ -46,7 +44,7 @@ if (count($singularRelations)) {
 if (count($pluralRelations)) {
     echo '
     /**
-     * @return string[]
+     * @inheritdoc
      */
     public static function pluralRelations()
     {
@@ -60,18 +58,18 @@ $booleanAttributes = [];
 $dateAttributes = [];
 $datetimeAttributes = [];
 foreach ($tableSchema->columns as $column) {
-    if (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+    if ($column->getIsBoolean()) {
         $booleanAttributes[] = $column->name;
-    } elseif ($column->type == Schema::TYPE_DATE) {
+    } elseif ($column->getIsDate()) {
         $dateAttributes[] = $column->name;
-    } elseif (in_array($column->type, [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
+    } elseif ($column->getIsDatetime()) {
         $datetimeAttributes[] = $column->name;
     }
 }
 if (count($booleanAttributes)) {
     echo '
     /**
-     * @return string[]
+     * @inheritdoc
      */
     public static function booleanAttributes()
     {
@@ -82,7 +80,7 @@ if (count($booleanAttributes)) {
 if (count($dateAttributes)) {
     echo '
     /**
-     * @return string[]
+     * @inheritdoc
      */
     public static function dateAttributes()
     {
@@ -93,7 +91,7 @@ if (count($dateAttributes)) {
 if (count($datetimeAttributes)) {
     echo '
     /**
-     * @return string[]
+     * @inheritdoc
      */
     public static function datetimeAttributes()
     {
@@ -104,19 +102,12 @@ if (count($datetimeAttributes)) {
 
 // model title
 $modelTitle = Inflector::titleize($tableName);
-$db = $generator->getDbConnection();
-if ($generator->generateLabelsFromComments && in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
-    $row = $db->createCommand('SHOW CREATE TABLE ' . $db->quoteTableName($tableName))->queryOne();
-    if (is_array($row) && (count($row) == 2) && preg_match('~\)([^\)]*)$~', array_values($row)[1], $match)) {
-        $tableOptions = $match[1];
-        if (preg_match('~COMMENT\s*\=?\s*\'([^\']+)\'~i', $tableOptions, $match)) {
-            $modelTitle = $match[1];
-        }
-    }
+if ($generator->generateLabelsFromComments && $tableSchema->comment) {
+    $modelTitle = $tableSchema->comment;
 }
 echo '
     /**
-     * @return string
+     * @inheritdoc
      */
     public static function modelTitle()
     {
@@ -132,59 +123,37 @@ echo '    }
 ';
 
 // primary key
-$primaryKey = $tableSchema->primaryKey;
-if (count($primaryKey)) {
+$primaryKey = $tableSchema->pk;
+if ($primaryKey) {
     echo '
     /**
      * @inheritdoc
      */
     public static function primaryKey()
     {
-        return [\'', implode('\', \'', $primaryKey), '\'];
+        return ', Helper::implode($primaryKey->key, 2), ';
     }
 ';
 }
 
-// use
-if (array_key_exists($tableName, $relationUses) && in_array('yii\db\Expression', $relationUses[$tableName])) {
-    $dbExpression = 'Expression';
-} else {
-    $dbExpression = '\yii\db\Expression';
-}
-
-// display field
-$displayField = $primaryKey;
-try {
-    $uniqueIndexes = $db->getSchema()->findUniqueIndexes($tableSchema);
-    foreach ($uniqueIndexes as $uniqueKey) {
-        $uniqueKeyTypeMap = [];
-        foreach ($uniqueKey as $attribute) {
-            $uniqueKeyTypeMap[$attribute] = $tableSchema->getColumn($attribute)->type;
-        }
-        if (in_array(Schema::TYPE_CHAR, $uniqueKeyTypeMap) || in_array(Schema::TYPE_STRING, $uniqueKeyTypeMap)) {
-            $displayField = $uniqueKey;
-            break;
-        }
-    }
-} catch (NotSupportedException $e) {
-    // do nothing
-}
-if (count($displayField)) {
+// title key
+$titleKey = $tableSchema->tk;
+if ($titleKey) {
     echo '
     /**
-     * @return string[]|', $dbExpression, '
+     * @inheritdoc
      */
-    public static function displayField()
+    public static function titleKey()
     {
-        return [\'', implode('\', \'', $displayField), '\'];
+        return ', Helper::implode($titleKey->key, 2), ';
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getDisplayField()
+    public function getTitleText()
     {
-        return $this->', implode(' . static::DISPLAY_FIELD_SEPARATOR . $this->', $displayField), ';
+        return $this->', implode(' . static::TITLE_SEPARATOR . $this->', $titleKey->key), ';
     }
 ';
 }
@@ -213,6 +182,13 @@ if (array_key_exists($tableName, $buildRelations)) {
 ';
         }
     }
+}
+
+// use
+if (array_key_exists($tableName, $relationUses) && in_array('yii\db\Expression', $relationUses[$tableName])) {
+    $dbExpression = 'Expression';
+} else {
+    $dbExpression = '\yii\db\Expression';
 }
 
 // list items

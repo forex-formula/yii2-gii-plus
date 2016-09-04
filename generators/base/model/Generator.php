@@ -9,7 +9,6 @@ use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
 use yii\helpers\Json;
-use yii\db\Schema;
 use Yii;
 
 class Generator extends GiiModelGenerator
@@ -23,7 +22,7 @@ class Generator extends GiiModelGenerator
     /**
      * @var string
      */
-    public $excludeFilter = 'migration|cache|source_message|message|log|auth_\w+|trans_\w+';
+    public $excludeFilter = 'migration|cache|source_message|message|log|auth_\w+';
 
     public $ns = 'app\models\base';
     public $tableName = '*';
@@ -129,7 +128,10 @@ class Generator extends GiiModelGenerator
      */
     public function stickyAttributes()
     {
-        return array_merge(array_diff(parent::stickyAttributes(), ['queryNs']), ['includeFilter', 'excludeFilter']);
+        return array_merge(array_diff(parent::stickyAttributes(), ['queryNs']), [
+            'includeFilter',
+            'excludeFilter'
+        ]);
     }
 
     /**
@@ -272,6 +274,7 @@ class Generator extends GiiModelGenerator
 
     /**
      * @inheritdoc
+     * @param \yii\gii\plus\db\TableSchema $table
      */
     public function generateRules($table)
     {
@@ -280,10 +283,8 @@ class Generator extends GiiModelGenerator
         $uIntegerAttributes = [];
         $numberAttributes = [];
         $uNumberAttributes = [];
+        $dateFormats = [];
         $matchPatterns = [];
-        $dateAttributes = [];
-        $timeAttributes = [];
-        $datetimeAttributes = [];
         $defaultExpressions = [];
         $defaultValues = [];
         $defaultNullAttributes = [];
@@ -291,53 +292,26 @@ class Generator extends GiiModelGenerator
             if ($column->autoIncrement) {
                 continue;
             }
-            if (in_array($column->type, [Schema::TYPE_BOOLEAN, Schema::TYPE_SMALLINT]) && ($column->size == 1) && $column->unsigned) {
+            if ($column->getIsBoolean()) {
                 $booleanAttributes[] = $column->name;
-            } elseif (in_array($column->type, [Schema::TYPE_SMALLINT, Schema::TYPE_INTEGER, Schema::TYPE_BIGINT])) {
+            } elseif ($column->getIsInteger()) {
                 if ($column->unsigned) {
                     $uIntegerAttributes[] = $column->name;
                 } else {
                     $integerAttributes[] = $column->name;
                 }
-            } elseif (in_array($column->type, [Schema::TYPE_FLOAT, Schema::TYPE_DOUBLE, Schema::TYPE_DECIMAL, Schema::TYPE_MONEY])) {
+            } elseif ($column->getIsNumber()) {
                 if ($column->unsigned) {
                     $uNumberAttributes[] = $column->name;
                 } else {
                     $numberAttributes[] = $column->name;
                 }
-                if (in_array($column->type, [Schema::TYPE_DECIMAL, Schema::TYPE_MONEY])) {
-                    $scale = $column->scale;
-                    $whole = $column->precision - $scale;
-                    $pattern = '~^';
-                    if (!$column->unsigned) {
-                        $pattern .= '\-?';
-                    }
-                    if ($whole > 0) {
-                        if ($whole == 1) {
-                            $pattern .= '\d';
-                        } else {
-                            $pattern .= '\d{1,' . $whole . '}';
-                        }
-                    } else {
-                        $pattern .= '0';
-                    }
-                    if ($scale > 0) {
-                        if ($scale == 1) {
-                            $pattern .= '(?:\.\d)?$~';
-                        } else {
-                            $pattern .= '(?:\.\d{1,' . $scale . '})?$~';
-                        }
-                    } else {
-                        $pattern .= '$~';
-                    }
-                    $matchPatterns[$pattern][] = $column->name;
-                }
-            } elseif ($column->type == Schema::TYPE_DATE) {
-                $dateAttributes[] = $column->name;
-            } elseif ($column->type == Schema::TYPE_TIME) {
-                $timeAttributes[] = $column->name;
-            } elseif (in_array($column->type, [Schema::TYPE_DATETIME, Schema::TYPE_TIMESTAMP])) {
-                $datetimeAttributes[] = $column->name;
+            }
+            if ($column->getHasDateFormat()) {
+                $dateFormats[$column->getDateFormat()][] = $column->name;
+            }
+            if ($column->getHasPattern()) {
+                $matchPatterns[$column->getPattern()][] = $column->name;
             }
             if (!is_null($column->defaultValue)) {
                 if ($column->defaultValue instanceof Expression) {
@@ -352,32 +326,26 @@ class Generator extends GiiModelGenerator
         }
         $rules = [];
         if (count($booleanAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $booleanAttributes) . '\'], \'filter\', \'filter\' => function ($value) {' . "\n" . '                return $value ? 1 : 0;' . "\n" . '            }, \'skipOnEmpty\' => true]';
-            $rules[] = '[[\'' . implode('\', \'', $booleanAttributes) . '\'], \'boolean\']';
+            $rules[] = '[' . Helper::implode($booleanAttributes, 3) . ', \'filter\', \'filter\' => function ($value) {' . "\n" . '                return $value ? 1 : 0;' . "\n" . '            }, \'skipOnEmpty\' => true]';
+            $rules[] = '[' . Helper::implode($booleanAttributes, 3) . ', \'boolean\']';
         }
         if (count($integerAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $integerAttributes) . '\'], \'integer\']';
+            $rules[] = '[' . Helper::implode($integerAttributes, 3) . ', \'integer\']';
         }
         if (count($uIntegerAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $uIntegerAttributes) . '\'], \'integer\', \'min\' => 0]';
+            $rules[] = '[' . Helper::implode($uIntegerAttributes, 3) . ', \'integer\', \'min\' => 0]';
         }
         if (count($numberAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $numberAttributes) . '\'], \'number\']';
+            $rules[] = '[' . Helper::implode($numberAttributes, 3) . ', \'number\']';
         }
         if (count($uNumberAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $uNumberAttributes) . '\'], \'number\', \'min\' => 0]';
+            $rules[] = '[' . Helper::implode($uNumberAttributes, 3) . ', \'number\', \'min\' => 0]';
+        }
+        foreach ($dateFormats as $dateFormat => $attributes) {
+            $rules[] = '[' . Helper::implode($attributes, 3) . ', \'date\', \'format\' => \'' . $dateFormat . '\']';
         }
         foreach ($matchPatterns as $matchPattern => $attributes) {
-            $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'match\', \'pattern\' => \'' . $matchPattern . '\']';
-        }
-        if (count($dateAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $dateAttributes) . '\'], \'date\', \'format\' => \'php:Y-m-d\']';
-        }
-        if (count($timeAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $timeAttributes) . '\'], \'date\', \'format\' => \'php:H:i:s\']';
-        }
-        if (count($datetimeAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $datetimeAttributes) . '\'], \'date\', \'format\' => \'php:Y-m-d H:i:s\']';
+            $rules[] = '[' . Helper::implode($attributes, 3) . ', \'match\', \'pattern\' => \'' . $matchPattern . '\']';
         }
         foreach (parent::generateRules($table) as $rule) {
             if (!preg_match('~, \'(?:safe|boolean|integer|number)\'\]$~', $rule)) {
@@ -385,13 +353,13 @@ class Generator extends GiiModelGenerator
             }
         }
         foreach ($defaultExpressions as $defaultExpression => $attributes) {
-            $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'default\', \'value\' => new Expression(\'' . $defaultExpression . '\')]';
+            $rules[] = '[' . Helper::implode($attributes, 3) . ', \'default\', \'value\' => new Expression(\'' . $defaultExpression . '\')]';
         }
         foreach ($defaultValues as $defaultValue => $attributes) {
-            $rules[] = '[[\'' . implode('\', \'', $attributes) . '\'], \'default\', \'value\' => \'' . $defaultValue . '\']';
+            $rules[] = '[' . Helper::implode($attributes, 3) . ', \'default\', \'value\' => \'' . $defaultValue . '\']';
         }
         if (count($defaultNullAttributes)) {
-            $rules[] = '[[\'' . implode('\', \'', $defaultNullAttributes) . '\'], \'default\', \'value\' => null]';
+            $rules[] = '[' . Helper::implode($defaultNullAttributes, 3) . ', \'default\', \'value\' => null]';
         }
         return $rules;
     }
@@ -525,14 +493,6 @@ class Generator extends GiiModelGenerator
             }
         }
         return $queryClassName;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getDbConnection()
-    {
-        return parent::getDbConnection();
     }
 
     /**

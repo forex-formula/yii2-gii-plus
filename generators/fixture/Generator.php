@@ -91,7 +91,12 @@ class Generator extends GiiGenerator
      */
     public function stickyAttributes()
     {
-        return array_merge(parent::stickyAttributes(), ['modelClass', 'fixtureNs', 'fixtureBaseClass', 'dataPath']);
+        return array_merge(parent::stickyAttributes(), [
+            'modelClass',
+            'fixtureNs',
+            'fixtureBaseClass',
+            'dataPath'
+        ]);
     }
 
     /**
@@ -124,6 +129,7 @@ class Generator extends GiiGenerator
             foreach (glob(Yii::getAlias('@' . str_replace('\\', '/', $match[1])) . '/' . $match[2] . '.php') as $filename) {
                 $ns = $match[1];
                 $modelName = basename($filename, '.php');
+                /* @var $modelClass string|\yii\boost\db\ActiveRecord */
                 $modelClass = $ns . '\\' . $modelName;
                 $fixtureNs = $this->fixtureNs;
                 $fixtureName = $modelName;
@@ -131,6 +137,8 @@ class Generator extends GiiGenerator
                 $baseFixtureName = preg_replace('~^(?:\w+\\\\)*\w+\\\\(\w+)$~', '$1', $this->fixtureBaseClass);
                 $baseFixtureClass = $this->fixtureBaseClass;
                 $dataFile = $this->dataPath . '/' . Inflector::underscore($modelName) . '.php';
+                /* @var $tableSchema \yii\gii\plus\db\TableSchema */
+                $tableSchema = $modelClass::getTableSchema();
                 $params = [
                     'ns' => $ns,
                     'modelName' => $modelName,
@@ -140,33 +148,14 @@ class Generator extends GiiGenerator
                     'fixtureClass' => $fixtureClass,
                     'baseFixtureName' => $baseFixtureName,
                     'baseFixtureClass' => $baseFixtureClass,
-                    'dataFile' => $dataFile
+                    'dataFile' => $dataFile,
+                    'tableSchema' => $tableSchema
                 ];
-                
-                // static table
-                $ignore = false;
-                /* @var $modelClass \yii\boost\db\ActiveRecord */
-                $primaryKey = $modelClass::primaryKey();
-                foreach ($primaryKey as $primaryKey1) {
-                    $column = $modelClass::getTableSchema()->getColumn($primaryKey1);
-                    if (!$column->isPrimaryKey) {
-                        $ignore = true;
-                        break;
+                if (!$tableSchema->isView && !$tableSchema->isStatic) {
+                    $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $fixtureNs)) . '/' . $fixtureName . '.php', $this->render('fixture.php', $params));
+                    if ($this->generateDataFile) {
+                        $files[] = new CodeFile(Yii::getAlias($dataFile), $this->render('data-file.php', $params));
                     }
-                }
-
-                if (!$ignore && (count($primaryKey) == 1) && ($primaryKey[0] == 'id')) {
-                    $column = $modelClass::getTableSchema()->getColumn($primaryKey[0]);
-                    if (($column->type == \yii\db\Schema::TYPE_SMALLINT) && ($column->size == 3) && !$column->autoIncrement) {
-                        $ignore = true;
-                    }
-                }
-
-                if (!$ignore) {
-                $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $fixtureNs)) . '/' . $fixtureName . '.php', $this->render('fixture.php', $params));
-                if ($this->generateDataFile) {
-                    $files[] = new CodeFile(Yii::getAlias($dataFile), $this->render('data-file.php', $params));
-                }
                 }
             }
         }

@@ -7,14 +7,15 @@ use yii\helpers\Inflector;
 /* @var $generator yii\gii\plus\generators\custom\model\Generator */
 /* @var $ns string */
 /* @var $modelName string */
-/* @var $modelClass string|\yii\boost\db\ActiveRecord */
+/* @var $modelClass string|yii\boost\db\ActiveRecord */
 /* @var $baseModelName string */
-/* @var $baseModelClass string|\yii\boost\db\ActiveRecord */
+/* @var $baseModelClass string|yii\boost\db\ActiveRecord */
 /* @var $queryNs string */
 /* @var $queryName string */
-/* @var $queryClass string|\yii\boost\db\ActiveQuery */
+/* @var $queryClass string|yii\boost\db\ActiveQuery */
 /* @var $baseQueryName string */
-/* @var $baseQueryClass string|\yii\boost\db\ActiveQuery */
+/* @var $baseQueryClass string|yii\boost\db\ActiveQuery */
+/* @var $tableSchema yii\gii\plus\db\TableSchema */
 
 $uses = [
     $baseModelClass
