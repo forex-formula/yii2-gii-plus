@@ -446,6 +446,18 @@ class Generator extends GiiModelGenerator
 
     /**
      * @inheritdoc
+     * @param \yii\gii\plus\db\TableSchema $table
+     */
+    protected function generateRelationName($relations, $table, $key, $multiple)
+    {
+        if ($table->isView) {
+            $key = preg_replace('~^(?:pk_|fk_|uk_|tk_)?(\w+_id)$~', '$1', $key);
+        }
+        return parent::generateRelationName($relations, $table, $key, $multiple);
+    }
+
+    /**
+     * @inheritdoc
      */
     protected function getTableNames()
     {
