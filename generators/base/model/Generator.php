@@ -540,8 +540,7 @@ class Generator extends GiiModelGenerator
                 $params['buildRelations'] = $this->buildRelations;
                 $output = preg_replace('~\}(\s*)$~', parent::render('model-part.php', $params) . '}$1', $output);
                 break;
-            case
-            'query.php':
+            case 'query.php':
                 $code = <<<CODE
     /*public function active()
     {
