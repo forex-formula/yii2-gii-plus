@@ -69,6 +69,7 @@ class TableSchema extends BaseTableSchema
      */
     public function getForeignKey(array $key)
     {
+        $key = array_values($key);
         foreach ($this->fks as $fk) {
             if (!array_diff($fk->key, $key) && !array_diff($key, $fk->key)) {
                 return $fk;

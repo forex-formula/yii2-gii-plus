@@ -17,6 +17,30 @@ use yii\helpers\Inflector;
 
 $methods = [];
 
+// isView/isStatic
+if ($tableSchema->isView) {
+    echo '
+    /**
+     * @inheritdoc
+     */
+    public static function tableIsView()
+    {
+        return true;
+    }
+';
+}
+if ($tableSchema->isStatic) {
+    echo '
+    /**
+     * @inheritdoc
+     */
+    public static function tableIsStatic()
+    {
+        return true;
+    }
+';
+}
+
 // singular/plural relations
 $singularRelations = [];
 $pluralRelations = [];
