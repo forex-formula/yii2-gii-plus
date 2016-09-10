@@ -343,9 +343,10 @@ class Generator extends GiiModelGenerator
             $rules[] = '[' . Helper::implode($attributes, 3) . ', \'match\', \'pattern\' => \'' . $matchPattern . '\']';
         }
         foreach (parent::generateRules($table) as $rule) {
-            if (!preg_match('~, \'(?:safe|boolean|integer|number)\'\]$~', $rule)) {
-                $rules[] = $rule;
+            if (preg_match('~, \'(?:safe|boolean|integer|number)\'\]$~', $rule)) {
+                continue;
             }
+            $rules[] = $rule;
         }
         foreach ($defaultExpressions as $defaultExpression => $attributes) {
             $rules[] = '[' . Helper::implode($attributes, 3) . ', \'default\', \'value\' => new Expression(\'' . $defaultExpression . '\')]';
