@@ -126,7 +126,8 @@ class Generator extends GiiGenerator
     {
         $files = [];
         if (preg_match('~^((?:\w+\\\\)*\w+)\\\\(\w+|\*)$~', $this->modelClass, $match)) {
-            foreach (glob(Yii::getAlias('@' . str_replace('\\', '/', $match[1])) . '/' . $match[2] . '.php') as $filename) {
+            $pattern = Yii::getAlias('@' . str_replace('\\', '/', $match[1])) . '/' . $match[2] . '.php';
+            foreach (glob($pattern) as $filename) {
                 $ns = $match[1];
                 $modelName = basename($filename, '.php');
                 /* @var $modelClass string|\yii\boost\db\ActiveRecord */
@@ -152,9 +153,11 @@ class Generator extends GiiGenerator
                     'tableSchema' => $tableSchema
                 ];
                 if (!$tableSchema->isView && !$tableSchema->isStatic) {
-                    $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $fixtureNs)) . '/' . $fixtureName . '.php', $this->render('fixture.php', $params));
+                    $path = Yii::getAlias('@' . str_replace('\\', '/', $fixtureNs)) . '/' . $fixtureName . '.php';
+                    $files[] = new CodeFile($path, $this->render('fixture.php', $params));
                     if ($this->generateDataFile) {
-                        $files[] = new CodeFile(Yii::getAlias($dataFile), $this->render('data-file.php', $params));
+                        $path = Yii::getAlias($dataFile);
+                        $files[] = new CodeFile($path, $this->render('data-file.php', $params));
                     }
                 }
             }
