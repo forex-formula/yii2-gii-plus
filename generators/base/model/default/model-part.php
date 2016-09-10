@@ -191,11 +191,12 @@ if (array_key_exists($tableName, $buildRelations)) {
             $methods[] = $methodName;
             echo '
     /**
+     * @param array $config
      * @return ', $className, '
      */
-    public function ', $methodName, '()
+    public function ', $methodName, '(array $config = [])
     {
-        $model = new ', $className, ';
+        $model = new ', $className, '($config);
 ';
             foreach ($foreignKey as $key1 => $key2) {
                 echo '        $model->', $key1, ' = $this->', $key2, ';
