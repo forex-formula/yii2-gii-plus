@@ -39,13 +39,6 @@ class Generator extends GiiModelGenerator
     public function init()
     {
         parent::init();
-        $db = $this->getDbConnection();
-        if (in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
-            $db->schemaMap = array_merge($db->schemaMap, [
-                'mysql' => 'yii\gii\plus\db\mysql\Schema',
-                'mysqli' => 'yii\gii\plus\db\mysql\Schema'
-            ]);
-        }
         if (Yii::getAlias('@common', false)) {
             $this->ns = 'common\models\base';
         }
