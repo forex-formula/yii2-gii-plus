@@ -83,7 +83,8 @@ class Generator extends GiiGenerator
     {
         $files = [];
         if (preg_match('~^((?:\w+\\\\)*\w+)\\\\base\\\\(\w+|\*)Base$~', $this->baseModelClass, $match)) {
-            foreach (glob(Yii::getAlias('@' . str_replace('\\', '/', $match[1])) . '/base/' . $match[2] . 'Base.php') as $filename) {
+            $pattern = Yii::getAlias('@' . str_replace('\\', '/', $match[1])) . '/base/' . $match[2] . 'Base.php';
+            foreach (glob($pattern) as $filename) {
                 $ns = $match[1];
                 $modelName = basename($filename, 'Base.php');
                 $modelClass = $ns . '\\' . $modelName;
@@ -110,8 +111,12 @@ class Generator extends GiiGenerator
                     'baseQueryClass' => $baseQueryClass,
                     'tableSchema' => $tableSchema
                 ];
-                $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $ns)) . '/' . $modelName . '.php', $this->render('model.php', $params));
-                $files[] = new CodeFile(Yii::getAlias('@' . str_replace('\\', '/', $queryNs)) . '/' . $queryName . '.php', $this->render('query.php', $params));
+                // model
+                $path = Yii::getAlias('@' . str_replace('\\', '/', $ns)) . '/' . $modelName . '.php';
+                $files[] = new CodeFile($path, $this->render('model.php', $params));
+                // query
+                $path = Yii::getAlias('@' . str_replace('\\', '/', $queryNs)) . '/' . $queryName . '.php';
+                $files[] = new CodeFile($path, $this->render('query.php', $params));
             }
         }
         return $files;

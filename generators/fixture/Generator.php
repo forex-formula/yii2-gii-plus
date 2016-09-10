@@ -153,8 +153,10 @@ class Generator extends GiiGenerator
                     'tableSchema' => $tableSchema
                 ];
                 if (!$tableSchema->isView && !$tableSchema->isStatic) {
+                    // fixture
                     $path = Yii::getAlias('@' . str_replace('\\', '/', $fixtureNs)) . '/' . $fixtureName . '.php';
                     $files[] = new CodeFile($path, $this->render('fixture.php', $params));
+                    // data-file
                     if ($this->generateDataFile) {
                         $path = Yii::getAlias($dataFile);
                         $files[] = new CodeFile($path, $this->render('data-file.php', $params));
