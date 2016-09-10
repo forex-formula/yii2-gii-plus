@@ -133,7 +133,9 @@ class Generator extends GiiModelGenerator
      */
     protected function createAutoComplete(array $data)
     {
-        return new JsExpression('function (request, response) { response(' . Json::htmlEncode($data) . '[jQuery(\'#' . Html::getInputId($this, 'db') . '\').val()]); }');
+        $js = 'function (request, response) { response(' . Json::htmlEncode($data) .
+            '[jQuery(\'#' . Html::getInputId($this, 'db') . '\').val()]); }';
+        return new JsExpression($js);
     }
 
     /**
