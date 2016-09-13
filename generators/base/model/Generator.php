@@ -39,13 +39,6 @@ class Generator extends GiiModelGenerator
     public function init()
     {
         parent::init();
-        $db = $this->getDbConnection();
-        if (in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
-            $db->schemaMap = array_merge($db->schemaMap, [
-                'mysql' => 'yii\gii\plus\db\mysql\Schema',
-                'mysqli' => 'yii\gii\plus\db\mysql\Schema'
-            ]);
-        }
         if (Yii::getAlias('@common', false)) {
             $this->ns = 'common\models\base';
         }
@@ -140,7 +133,9 @@ class Generator extends GiiModelGenerator
      */
     protected function createAutoComplete(array $data)
     {
-        return new JsExpression('function (request, response) { response(' . Json::htmlEncode($data) . '[jQuery(\'#' . Html::getInputId($this, 'db') . '\').val()]); }');
+        $js = 'function (request, response) { response(' . Json::htmlEncode($data) .
+            '[jQuery(\'#' . Html::getInputId($this, 'db') . '\').val()]); }';
+        return new JsExpression($js);
     }
 
     /**
@@ -348,9 +343,10 @@ class Generator extends GiiModelGenerator
             $rules[] = '[' . Helper::implode($attributes, 3) . ', \'match\', \'pattern\' => \'' . $matchPattern . '\']';
         }
         foreach (parent::generateRules($table) as $rule) {
-            if (!preg_match('~, \'(?:safe|boolean|integer|number)\'\]$~', $rule)) {
-                $rules[] = $rule;
+            if (preg_match('~, \'(?:safe|boolean|integer|number)\'\]$~', $rule)) {
+                continue;
             }
+            $rules[] = $rule;
         }
         foreach ($defaultExpressions as $defaultExpression => $attributes) {
             $rules[] = '[' . Helper::implode($attributes, 3) . ', \'default\', \'value\' => new Expression(\'' . $defaultExpression . '\')]';

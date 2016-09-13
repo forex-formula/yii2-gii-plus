@@ -15,6 +15,13 @@ class Module extends GiiModule
     public function bootstrap($app)
     {
         parent::bootstrap($app);
+        $db = $app->getDb();
+        if (in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
+            $db->schemaMap = array_merge($db->schemaMap, [
+                'mysql' => 'yii\gii\plus\db\mysql\Schema',
+                'mysqli' => 'yii\gii\plus\db\mysql\Schema'
+            ]);
+        }
         if ($app instanceof WebApplication) {
             $this->setViewPath(Yii::getAlias('@yii/gii/views'));
         }
