@@ -381,6 +381,7 @@ class Generator extends GiiModelGenerator
         $this->buildRelations = [];
         $generatedRelations = parent::generateRelations();
         foreach ($generatedRelations as $tableName => $tableRelations) {
+            /* @var $tableSchema \yii\gii\plus\db\TableSchema */
             $tableSchema = $db->getTableSchema($tableName);
             $relations[$tableName] = [];
             $this->relationUses[$tableName] = [];
@@ -404,7 +405,7 @@ class Generator extends GiiModelGenerator
                     // via relations
                     if (!$hasMany) {
                         $subTableName = $nsClassName::getTableSchema()->fullName;
-                        if ($tableName != $subTableName) {
+                        if ($subTableName != $tableName) {
                             $viaLink = '[]';
                             foreach ($tableSchema->foreignKeys as $foreignKey) {
                                 if ($foreignKey[0] == $subTableName) {
