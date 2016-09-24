@@ -406,7 +406,7 @@ class Generator extends GiiModelGenerator
                     if (!$hasMany) {
                         $subTableName = $nsClassName::getTableSchema()->fullName;
                         if ($subTableName != $tableName) {
-                            $viaLink = '[]';
+                            $viaLink = null;
                             foreach ($tableSchema->foreignKeys as $foreignKey) {
                                 if ($foreignKey[0] == $subTableName) {
                                     unset($foreignKey[0]);
@@ -414,18 +414,29 @@ class Generator extends GiiModelGenerator
                                     break;
                                 }
                             }
-                            foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
-                                list ($subCode, $subClassName, $subHasMany) = $subRelation;
-                                $tableName2 = array_search($subClassName, $this->classNames);
-                                if ($tableName2 != $tableName) {
-                                    /* @var $subNsClassName string|\yii\boost\db\ActiveRecord */
-                                    $subNsClassName = Helper::getModelClassByTableName($tableName2);
-                                    if ($subNsClassName && class_exists($subNsClassName)) {
-                                        if (!$subHasMany && ($subRelationName != $className)) {
-                                            if (!array_key_exists($subRelationName, $generatedRelations[$tableName])) {
-                                                $subCode = preg_replace('~;$~', "\n" . '            ->viaTable(\'' . $subTableName . ' via_' . $subTableName . '\', ' . $viaLink . ');', $subCode);
-                                                $relations[$tableName][$subRelationName] = [$subCode, $subClassName, $subHasMany];
-                                                $this->relationUses[$tableName][] = $subNsClassName;
+                            if (is_null($viaLink)) {
+                                foreach ($nsClassName::getTableSchema()->foreignKeys as $foreignKey) {
+                                    if ($foreignKey[0] == $tableName) {
+                                        unset($foreignKey[0]);
+                                        $viaLink = $this->generateRelationLink($foreignKey);
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!is_null($viaLink)) {
+                                foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
+                                    list ($subCode, $subClassName, $subHasMany) = $subRelation;
+                                    $tableName2 = array_search($subClassName, $this->classNames);
+                                    if ($tableName2 != $tableName) {
+                                        /* @var $subNsClassName string|\yii\boost\db\ActiveRecord */
+                                        $subNsClassName = Helper::getModelClassByTableName($tableName2);
+                                        if ($subNsClassName && class_exists($subNsClassName)) {
+                                            if (!$subHasMany && ($subRelationName != $className)) {
+                                                if (!array_key_exists($subRelationName, $generatedRelations[$tableName])) {
+                                                    $subCode = preg_replace('~;$~', "\n" . '            ->viaTable(\'' . $subTableName . ' via_' . $subTableName . '\', ' . $viaLink . ');', $subCode);
+                                                    $relations[$tableName][$subRelationName] = [$subCode, $subClassName, $subHasMany];
+                                                    $this->relationUses[$tableName][] = $subNsClassName;
+                                                }
                                             }
                                         }
                                     }
