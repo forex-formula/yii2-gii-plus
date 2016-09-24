@@ -14,7 +14,6 @@ class m160209_192728_init extends Migration
             'code' => $this->string(25)->notNull()->unique()->comment('Код')
         ], 'Тип корневой папки');
         $this->addPrimaryKey(null, 'root_folder_type', ['id']);
-
         $this->insert('root_folder_type', ['id' => 1, 'name' => 'Музыка', 'code' => 'music']);
         $this->insert('root_folder_type', ['id' => 2, 'name' => 'Видео', 'code' => 'video']);
 
@@ -24,7 +23,6 @@ class m160209_192728_init extends Migration
             'root_folder_type_id' => $this->tinyInteger()->unsigned()->notNull()->comment('Тип корневой папки'),
             'name' => $this->string(50)->notNull()->unique()->comment('Название')
         ], 'Корневая папка');
-
         $this->addForeignKey(null, 'root_folder', ['root_folder_type_id'], 'root_folder_type', ['id']);
 
         // folder
@@ -38,7 +36,6 @@ class m160209_192728_init extends Migration
             'deleted' => $this->deletedShortcut()
         ], 'Папка');
         $this->createUnique(null, 'folder', ['root_folder_id', 'name']);
-
         $this->addForeignKey(null, 'folder', ['root_folder_id'], 'root_folder', ['id']);
 
         // file
@@ -53,7 +50,6 @@ class m160209_192728_init extends Migration
             'deleted' => $this->deletedShortcut()
         ], 'Файл');
         $this->createUnique(null, 'file', ['folder_id', 'name']);
-
         $this->addForeignKey(null, 'file', ['root_folder_id'], 'root_folder', ['id']);
         $this->createIndex(null, 'folder', ['id', 'root_folder_id']);
         $this->addForeignKey(null, 'file', ['folder_id', 'root_folder_id'], 'folder', ['id', 'root_folder_id']);
@@ -65,7 +61,6 @@ class m160209_192728_init extends Migration
             'code' => $this->string(25)->notNull()->unique()->comment('Код')
         ], 'Тип информации о файле');
         $this->addPrimaryKey(null, 'file_info_type', ['id']);
-
         $this->insert('file_info_type', ['id' => 1, 'name' => 'Музыка', 'code' => 'music']);
         $this->insert('file_info_type', ['id' => 2, 'name' => 'Видео', 'code' => 'video']);
 
@@ -76,7 +71,6 @@ class m160209_192728_init extends Migration
             'info' => $this->text()
         ], 'Информация о файле');
         $this->addPrimaryKey(null, 'file_info', ['file_id']);
-
         $this->addForeignKey(null, 'file_info', ['file_id'], 'file', ['id']);
         $this->addForeignKey(null, 'file_info', ['file_info_type_id'], 'file_info_type', ['id']);
 
@@ -106,6 +100,14 @@ SQL;
             'fourth_expires_at' => $this->dateTime()->notNull()
         ]);
         $this->addPrimaryKey(null, 'something', ['tiny_id', 'small_id']);
+
+        // sequence
+        $this->createTable('sequence', [
+            'id' => $this->primaryKey(),
+            'parent_id' => $this->integer()->unsigned()->null()->unique(),
+            'value' => $this->integer()
+        ]);
+        $this->addForeignKey(null, 'sequence', ['parent_id'], 'sequence', ['id']);
     }
 
     public function down()

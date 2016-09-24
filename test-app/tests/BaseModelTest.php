@@ -20,6 +20,7 @@ class BaseModelTest extends TestCase
             ['FileInfoType'],
             ['FileInfo'],
             ['FileReport'],
+            ['Sequence'],
             ['Something']
         ];
     }
@@ -61,6 +62,7 @@ class BaseModelTest extends TestCase
             ['FileInfoType', 'file_info_type'],
             ['FileInfo', 'file_info'],
             ['FileReport', 'file_report'],
+            ['Sequence', 'sequence'],
             ['Something', 'something']
         ];
     }
@@ -101,6 +103,7 @@ class BaseModelTest extends TestCase
             ['FileInfoType', false, true],
             ['FileInfo', false, false],
             ['FileReport', true, false],
+            ['Sequence', false, false],
             ['Something', false, false]
         ];
     }
@@ -144,6 +147,7 @@ class BaseModelTest extends TestCase
             ['FileInfoType', []],
             ['FileInfo', ['file', 'fileInfoType']],
             ['FileReport', ['rootFolder', 'folder']],
+            ['Sequence', ['parent', 'sequence']],
             ['Something', []]
         ];
     }
@@ -176,6 +180,7 @@ class BaseModelTest extends TestCase
             ['FileInfoType', ['fileInfos']],
             ['FileInfo', []],
             ['FileReport', []],
+            ['Sequence', []],
             ['Something', []]
         ];
     }
@@ -208,6 +213,7 @@ class BaseModelTest extends TestCase
             ['FileInfoType', 'FileInfoType'],
             ['FileInfo', 'FileInfo'],
             ['FileReport', 'FileReport'],
+            ['Sequence', 'Sequence'],
             ['Something', 'Something']
         ];
     }
@@ -237,6 +243,7 @@ class BaseModelTest extends TestCase
             ['FileInfoType', 'Тип информации о файле'],
             ['FileInfo', 'Информация о файле'],
             ['FileReport', 'File report'],
+            ['Sequence', 'Sequence'],
             ['Something', 'Something']
         ];
     }
@@ -266,6 +273,7 @@ class BaseModelTest extends TestCase
             ['FileInfoType', ['id']],
             ['FileInfo', ['file_id']],
             ['FileReport', ['pk_id', 'pk_root_folder_id']],
+            ['Sequence', ['id']],
             ['Something', ['tiny_id', 'small_id']]
         ];
     }
@@ -295,6 +303,7 @@ class BaseModelTest extends TestCase
             ['FileInfoType', ['name']],
             ['FileInfo', ['file_id']],
             ['FileReport', ['uk_folder_id', 'uk_name']],
+            ['Sequence', ['id']],
             ['Something', ['tiny_id', 'small_id']]
         ];
     }
