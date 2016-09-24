@@ -203,6 +203,96 @@ class BaseModelTest extends TestCase
     /**
      * @return array
      */
+    public function booleanAttributesDataProvider()
+    {
+        return [ // [$modelName, $booleanAttributes]
+            ['RootFolderType', []],
+            ['RootFolder', []],
+            ['Folder', ['visible', 'deleted']],
+            ['File', ['visible', 'deleted']],
+            ['FileInfoType', []],
+            ['FileInfo', []],
+            ['FileReport', ['visible', 'deleted']],
+            ['Sequence', []],
+            ['Something', []]
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string[] $booleanAttributes
+     * @dataProvider booleanAttributesDataProvider
+     */
+    public function testBooleanAttributes($modelName, $booleanAttributes)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        static::assertEquals($booleanAttributes, $modelClass::booleanAttributes());
+    }
+
+    /**
+     * @return array
+     */
+    public function dateAttributesDataProvider()
+    {
+        return [ // [$modelName, $dateAttributes]
+            ['RootFolderType', []],
+            ['RootFolder', []],
+            ['Folder', []],
+            ['File', []],
+            ['FileInfoType', []],
+            ['FileInfo', []],
+            ['FileReport', []],
+            ['Sequence', []],
+            ['Something', ['expires_at', 'second_expires_at']]
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string[] $dateAttributes
+     * @dataProvider dateAttributesDataProvider
+     */
+    public function testDateAttributes($modelName, $dateAttributes)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        static::assertEquals($dateAttributes, $modelClass::dateAttributes());
+    }
+
+    /**
+     * @return array
+     */
+    public function datetimeAttributesDataProvider()
+    {
+        return [ // [$modelName, $datetimeAttributes]
+            ['RootFolderType', []],
+            ['RootFolder', []],
+            ['Folder', ['created_at', 'updated_at']],
+            ['File', ['created_at', 'updated_at']],
+            ['FileInfoType', []],
+            ['FileInfo', []],
+            ['FileReport', ['created_at', 'updated_at']],
+            ['Sequence', []],
+            ['Something', ['third_expires_at', 'fourth_expires_at']]
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string[] $datetimeAttributes
+     * @dataProvider datetimeAttributesDataProvider
+     */
+    public function testDatetimeAttributes($modelName, $datetimeAttributes)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        static::assertEquals($datetimeAttributes, $modelClass::datetimeAttributes());
+    }
+
+    /**
+     * @return array
+     */
     public function classShortNameDataProvider()
     {
         return [ // [$modelName, $classShortName]
