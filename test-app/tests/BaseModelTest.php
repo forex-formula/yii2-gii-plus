@@ -94,7 +94,7 @@ class BaseModelTest extends TestCase
      */
     public function tableIsViewStaticDataProvider()
     {
-        return [ // [$modelName, $tableIsView]
+        return [ // [$modelName, $tableIsView, $tableIsStatic]
             ['RootFolderType', false, true],
             ['RootFolder', false, false],
             ['Folder', false, false],
@@ -132,34 +132,35 @@ class BaseModelTest extends TestCase
         static::assertEquals($tableIsStatic, $modelClass::tableIsStatic());
     }
 
-//    /**
-//     * @return array
-//     */
-//    public function singularRelationsDataProvider()
-//    {
-//        return [
-//            ['Type', []],
-//            ['RootFolder', ['type']],
-//            ['Folder', ['rootFolder', 'type']],
-//            ['File', ['folder', 'rootFolder']]
-//        ];
-//    }
-//
-//    /**
-//     * @param string $modelName
-//     * @param string[] $singularRelations
-//     * @dataProvider singularRelationsDataProvider
-//     */
-//    public function testMethodSingularRelations($modelName, array $singularRelations)
-//    {
-//        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
-//        $modelClass = 'app\models\\' . $modelName;
-//        $reflection = new ReflectionClass($modelClass);
-//        static::assertTrue($reflection->hasMethod('singularRelations'));
-//        static::assertTrue($reflection->getMethod('singularRelations')->isStatic());
-//        static::assertEquals($singularRelations, $modelClass::singularRelations());
-//    }
-//
+    /**
+     * @return array
+     */
+    public function singularRelationsDataProvider()
+    {
+        return [ // [$modelName, $singularRelations]
+            ['RootFolderType', []],
+            ['RootFolder', ['rootFolderType']],
+            ['Folder', ['rootFolder']],
+            ['File', ['folder', 'rootFolder', 'fileInfo']],
+            ['FileInfoType', []],
+            ['FileInfo', ['file', 'fileInfoType']],
+            ['FileReport', ['rootFolder', 'folder']],
+            ['Something', []]
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string[] $singularRelations
+     * @dataProvider singularRelationsDataProvider
+     */
+    public function testSingularRelations($modelName, array $singularRelations)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        static::assertEquals($singularRelations, $modelClass::singularRelations());
+    }
+
 //    /**
 //     * @return array
 //     */

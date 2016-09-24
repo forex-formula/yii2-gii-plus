@@ -54,6 +54,7 @@ class m160209_192728_init extends Migration
         ], 'Файл');
         $this->createUnique(null, 'file', ['folder_id', 'name']);
 
+        $this->addForeignKey(null, 'file', ['root_folder_id'], 'root_folder', ['id']);
         $this->createIndex(null, 'folder', ['id', 'root_folder_id']);
         $this->addForeignKey(null, 'file', ['folder_id', 'root_folder_id'], 'folder', ['id', 'root_folder_id']);
 
