@@ -2,7 +2,6 @@
 
 namespace app\tests;
 
-use ReflectionClass;
 use yii\phpunit\TestCase;
 
 class BaseModelTest extends TestCase
@@ -161,62 +160,64 @@ class BaseModelTest extends TestCase
         static::assertEquals($singularRelations, $modelClass::singularRelations());
     }
 
-//    /**
-//     * @return array
-//     */
-//    public function pluralRelationsDataProvider()
-//    {
-//        return [
-//            ['Type', ['rootFolders']],
-//            ['RootFolder', ['folders']],
-//            ['Folder', ['files']],
-//            ['File', []]
-//        ];
-//    }
-//
-//    /**
-//     * @param string $modelName
-//     * @param string[] $pluralRelations
-//     * @dataProvider pluralRelationsDataProvider
-//     */
-//    public function testMethodPluralRelations($modelName, array $pluralRelations)
-//    {
-//        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
-//        $modelClass = 'app\models\\' . $modelName;
-//        $reflection = new ReflectionClass($modelClass);
-//        static::assertTrue($reflection->hasMethod('pluralRelations'));
-//        static::assertTrue($reflection->getMethod('pluralRelations')->isStatic());
-//        static::assertEquals($pluralRelations, $modelClass::pluralRelations());
-//    }
-//
-//    /**
-//     * @return array
-//     */
-//    public function classShortNameDataProvider()
-//    {
-//        return [
-//            ['Type', 'Type'],
-//            ['RootFolder', 'RootFolder'],
-//            ['Folder', 'Folder'],
-//            ['File', 'File']
-//        ];
-//    }
-//
-//    /**
-//     * @param string $modelName
-//     * @param string $classShortName
-//     * @dataProvider classShortNameDataProvider
-//     */
-//    public function testMethodShortName($modelName, $classShortName)
-//    {
-//        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
-//        $modelClass = 'app\models\\' . $modelName;
-//        $reflection = new ReflectionClass($modelClass);
-//        static::assertTrue($reflection->hasMethod('classShortName'));
-//        static::assertTrue($reflection->getMethod('classShortName')->isStatic());
-//        static::assertEquals($classShortName, $modelClass::classShortName());
-//    }
-//
+    /**
+     * @return array
+     */
+    public function pluralRelationsDataProvider()
+    {
+        return [ // [$modelName, $pluralRelations]
+            ['RootFolderType', ['rootFolders']],
+            ['RootFolder', ['files', 'fileReports', 'folders']],
+            ['Folder', ['files', 'fileReports']],
+            ['File', []],
+            ['FileInfoType', ['fileInfos']],
+            ['FileInfo', []],
+            ['FileReport', []],
+            ['Something', []]
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string[] $pluralRelations
+     * @dataProvider pluralRelationsDataProvider
+     */
+    public function testMethodPluralRelations($modelName, array $pluralRelations)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        static::assertEquals($pluralRelations, $modelClass::pluralRelations());
+    }
+
+    /**
+     * @return array
+     */
+    public function classShortNameDataProvider()
+    {
+        return [ // [$modelName, $classShortName]
+            ['RootFolderType', 'RootFolderType'],
+            ['RootFolder', 'RootFolder'],
+            ['Folder', 'Folder'],
+            ['File', 'File'],
+            ['FileInfoType', 'FileInfoType'],
+            ['FileInfo', 'FileInfo'],
+            ['FileReport', 'FileReport'],
+            ['Something', 'Something']
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string $classShortName
+     * @dataProvider classShortNameDataProvider
+     */
+    public function testClassShortName($modelName, $classShortName)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        static::assertEquals($classShortName, $modelClass::classShortName());
+    }
+
 //    /**
 //     * @return array
 //     */
