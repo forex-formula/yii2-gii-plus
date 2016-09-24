@@ -77,6 +77,17 @@ if (count($backDepends)) {
 }
 
 echo '
+    /*[
+';
+/* @var $columns yii\gii\plus\db\ColumnSchema[] */
+$columns = array_values($tableSchema->columns);
+foreach ($columns as $i => $column) {
+    $comma = ($i < count($columns) - 1) ? ',' : '';
+    echo '        \'', $column->name, '\' => \'\'', $comma, '
+';
+}
+echo '    ]*/
+
     public $dataFile = \'', $dataFile, '\';
 }
 ';
