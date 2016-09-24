@@ -157,12 +157,9 @@ class BaseModelTest extends TestCase
     {
         /* @var $modelClass string|\yii\boost\db\ActiveRecord */
         $modelClass = 'app\models\\' . $modelName;
-        if (count($singularRelations)) {
-            foreach ($singularRelations as $singularRelation) {
-                static::assertContains($singularRelation, $modelClass::singularRelations());
-            }
-        } else {
-            static::assertCount(0, $modelClass::singularRelations());
+        static::assertCount(count($singularRelations), $modelClass::singularRelations());
+        foreach ($singularRelations as $singularRelation) {
+            static::assertContains($singularRelation, $modelClass::singularRelations());
         }
     }
 
@@ -192,12 +189,9 @@ class BaseModelTest extends TestCase
     {
         /* @var $modelClass string|\yii\boost\db\ActiveRecord */
         $modelClass = 'app\models\\' . $modelName;
-        if (count($pluralRelations)) {
-            foreach ($pluralRelations as $pluralRelation) {
-                static::assertContains($pluralRelation, $modelClass::pluralRelations());
-            }
-        } else {
-            static::assertCount(0, $modelClass::pluralRelations());
+        static::assertCount(count($pluralRelations), $modelClass::pluralRelations());
+        foreach ($pluralRelations as $pluralRelation) {
+            static::assertContains($pluralRelation, $modelClass::pluralRelations());
         }
     }
 
