@@ -67,8 +67,8 @@ class FixtureTest extends TestCase
      */
     public function testModelClass($fixtureName)
     {
-        /* @var $fixtureClass string|\yii\boost\test\ActiveFixture */
         $fixtureClass = 'app\fixtures\\' . $fixtureName;
+        /* @var $fixture \yii\boost\test\ActiveFixture */
         $fixture = new $fixtureClass;
         static::assertEquals('app\models\\' . $fixtureName, $fixture->modelClass);
     }
@@ -133,5 +133,33 @@ class FixtureTest extends TestCase
         foreach ($backDepends as $backDepend) {
             static::assertContains($backDepend, $fixture->backDepends);
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function dataFileDataProvider()
+    {
+        return [ // [$fixtureName, $dataFile]
+            ['RootFolder', '@app/tests/data/root_folder.php'],
+            ['Folder', '@app/tests/data/folder.php'],
+            ['File', '@app/tests/data/file.php'],
+            ['FileInfo', '@app/tests/data/file_info.php'],
+            ['Sequence', '@app/tests/data/sequence.php'],
+            ['Something', '@app/tests/data/something.php']
+        ];
+    }
+
+    /**
+     * @param string $fixtureName
+     * @param string $dataFile
+     * @dataProvider dataFileDataProvider
+     */
+    public function testDataFile($fixtureName, $dataFile)
+    {
+        $fixtureClass = 'app\fixtures\\' . $fixtureName;
+        /* @var $fixture \yii\boost\test\ActiveFixture */
+        $fixture = new $fixtureClass;
+        static::assertEquals($dataFile, $fixture->dataFile);
     }
 }
