@@ -79,9 +79,9 @@ class m160209_192728_init extends Migration
         $this->addForeignKey(null, 'file_info', ['file_id'], 'file', ['id']);
         $this->addForeignKey(null, 'file_info', ['file_info_type_id'], 'file_info_type', ['id']);
 
-        // file_view
+        // file_report
         $sql = <<<SQL
-CREATE VIEW `file_view`
+CREATE VIEW `file_report`
 AS SELECT
     f.id,
     f.root_folder_id,
