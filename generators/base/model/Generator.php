@@ -404,7 +404,8 @@ class Generator extends GiiModelGenerator
                     }
                     // via relations
                     if (!$hasMany) {
-                        $subTableName = $nsClassName::getTableSchema()->fullName;
+                        $subTableSchema = $nsClassName::getTableSchema();
+                        $subTableName = $subTableSchema->fullName;
                         if ($subTableName != $tableName) {
                             $viaLink = null;
                             foreach ($tableSchema->foreignKeys as $foreignKey) {
@@ -415,7 +416,7 @@ class Generator extends GiiModelGenerator
                                 }
                             }
                             if (is_null($viaLink)) {
-                                foreach ($nsClassName::getTableSchema()->foreignKeys as $foreignKey) {
+                                foreach ($subTableSchema->foreignKeys as $foreignKey) {
                                     if ($foreignKey[0] == $tableName) {
                                         unset($foreignKey[0]);
                                         $viaLink = $this->generateRelationLink($foreignKey);
