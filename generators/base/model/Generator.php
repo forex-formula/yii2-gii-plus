@@ -432,12 +432,10 @@ class Generator extends GiiModelGenerator
                                         /* @var $subNsClassName string|\yii\boost\db\ActiveRecord */
                                         $subNsClassName = Helper::getModelClassByTableName($tableName2);
                                         if ($subNsClassName && class_exists($subNsClassName)) {
-                                            if (!$subHasMany && ($subRelationName != $className)) {
-                                                if (!array_key_exists($subRelationName, $generatedRelations[$tableName])) {
-                                                    $subCode = preg_replace('~;$~', "\n" . '            ->viaTable(\'' . $subTableName . ' via_' . $subTableName . '\', ' . $viaLink . ');', $subCode);
-                                                    $relations[$tableName][$subRelationName] = [$subCode, $subClassName, $subHasMany];
-                                                    $this->relationUses[$tableName][] = $subNsClassName;
-                                                }
+                                            if (!$subHasMany && !array_key_exists($subRelationName, $generatedRelations[$tableName])) {
+                                                $subCode = preg_replace('~;$~', "\n" . '            ->viaTable(\'' . $subTableName . ' via_' . $subTableName . '\', ' . $viaLink . ');', $subCode);
+                                                $relations[$tableName][$subRelationName] = [$subCode, $subClassName, $subHasMany];
+                                                $this->relationUses[$tableName][] = $subNsClassName;
                                             }
                                         }
                                     }
