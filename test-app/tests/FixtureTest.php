@@ -80,9 +80,9 @@ class FixtureTest extends TestCase
     {
         return [ // [$fixtureName, $depends]
             ['RootFolder', []],
-            ['Folder', []],
-            ['File', []],
-            ['FileInfo', []],
+            ['Folder', ['app\fixtures\RootFolder']],
+            ['File', ['app\fixtures\Folder', 'app\fixtures\RootFolder']],
+            ['FileInfo', ['app\fixtures\File']],
             ['Sequence', []],
             ['Something', []]
         ];
@@ -110,9 +110,9 @@ class FixtureTest extends TestCase
     public function backDependsDataProvider()
     {
         return [ // [$fixtureName, $backDepends]
-            ['RootFolder', []],
-            ['Folder', []],
-            ['File', []],
+            ['RootFolder', ['app\fixtures\File', 'app\fixtures\Folder']],
+            ['Folder', ['app\fixtures\File']],
+            ['File', ['app\fixtures\FileInfo']],
             ['FileInfo', []],
             ['Sequence', []],
             ['Something', []]
