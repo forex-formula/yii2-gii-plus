@@ -140,7 +140,7 @@ class BaseModelTest extends TestCase
             ['RootFolderType', []],
             ['RootFolder', ['rootFolderType']],
             ['Folder', ['rootFolder']],
-            ['File', ['folder', 'rootFolder', 'fileInfo']],
+            ['File', ['rootFolder', 'folder', 'fileInfo']],
             ['FileInfoType', []],
             ['FileInfo', ['file', 'fileInfoType']],
             ['FileReport', ['rootFolder', 'folder']],
@@ -157,7 +157,13 @@ class BaseModelTest extends TestCase
     {
         /* @var $modelClass string|\yii\boost\db\ActiveRecord */
         $modelClass = 'app\models\\' . $modelName;
-        static::assertEquals($singularRelations, $modelClass::singularRelations());
+        if (count($singularRelations)) {
+            foreach ($singularRelations as $singularRelation) {
+                static::assertContains($singularRelation, $modelClass::singularRelations());
+            }
+        } else {
+            static::assertCount(0, $modelClass::singularRelations());
+        }
     }
 
     /**
@@ -167,7 +173,7 @@ class BaseModelTest extends TestCase
     {
         return [ // [$modelName, $pluralRelations]
             ['RootFolderType', ['rootFolders']],
-            ['RootFolder', ['files', 'fileReports', 'folders']],
+            ['RootFolder', ['folders', 'files', 'fileReports']],
             ['Folder', ['files', 'fileReports']],
             ['File', []],
             ['FileInfoType', ['fileInfos']],
@@ -182,11 +188,17 @@ class BaseModelTest extends TestCase
      * @param string[] $pluralRelations
      * @dataProvider pluralRelationsDataProvider
      */
-    public function testMethodPluralRelations($modelName, array $pluralRelations)
+    public function testPluralRelations($modelName, array $pluralRelations)
     {
         /* @var $modelClass string|\yii\boost\db\ActiveRecord */
         $modelClass = 'app\models\\' . $modelName;
-        static::assertEquals($pluralRelations, $modelClass::pluralRelations());
+        if (count($pluralRelations)) {
+            foreach ($pluralRelations as $pluralRelation) {
+                static::assertContains($pluralRelation, $modelClass::pluralRelations());
+            }
+        } else {
+            static::assertCount(0, $modelClass::pluralRelations());
+        }
     }
 
     /**
@@ -218,34 +230,35 @@ class BaseModelTest extends TestCase
         static::assertEquals($classShortName, $modelClass::classShortName());
     }
 
-//    /**
-//     * @return array
-//     */
-//    public function modelTitleDataProvider()
-//    {
-//        return [
-//            ['Type', 'Тип'],
-//            ['RootFolder', 'Корневая папка'],
-//            ['Folder', 'Папка'],
-//            ['File', 'File']
-//        ];
-//    }
-//
-//    /**
-//     * @param string $modelName
-//     * @param string $modelTitle
-//     * @dataProvider modelTitleDataProvider
-//     */
-//    public function testMethodModelTitle($modelName, $modelTitle)
-//    {
-//        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
-//        $modelClass = 'app\models\\' . $modelName;
-//        $reflection = new ReflectionClass($modelClass);
-//        static::assertTrue($reflection->hasMethod('modelTitle'));
-//        static::assertTrue($reflection->getMethod('modelTitle')->isStatic());
-//        static::assertEquals($modelTitle, $modelClass::modelTitle());
-//    }
-//
+    /**
+     * @return array
+     */
+    public function modelTitleDataProvider()
+    {
+        return [ // [$modelName, $modelTitle]
+            ['RootFolderType', 'Тип корневой папки'],
+            ['RootFolder', 'Корневая папка'],
+            ['Folder', 'Папка'],
+            ['File', 'Файл'],
+            ['FileInfoType', 'Тип информации о файле'],
+            ['FileInfo', 'Информация о файле'],
+            ['FileReport', 'File report'],
+            ['Something', 'Something']
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string $modelTitle
+     * @dataProvider modelTitleDataProvider
+     */
+    public function testModelTitle($modelName, $modelTitle)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        static::assertEquals($modelTitle, $modelClass::modelTitle());
+    }
+
 //    /**
 //     * @return array
 //     */
