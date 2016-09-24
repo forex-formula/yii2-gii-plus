@@ -21,10 +21,9 @@ class m160209_192728_init extends Migration
         // root_folder
         $this->createTableWithComment('root_folder', [
             'id' => $this->primaryKey(),
-            'root_folder_type_id' => $this->tinyInteger()->unsigned()->notNull()->comment('Тип'),
-            'name' => $this->string(50)->notNull()->comment('Название')
+            'root_folder_type_id' => $this->tinyInteger()->unsigned()->notNull()->comment('Тип корневой папки'),
+            'name' => $this->string(50)->notNull()->unique()->comment('Название')
         ], 'Корневая папка');
-        $this->createUnique(null, 'root_folder', ['root_folder_type_id', 'name']);
 
         $this->addForeignKey(null, 'root_folder', ['root_folder_type_id'], 'root_folder_type', ['id']);
 
@@ -58,14 +57,27 @@ class m160209_192728_init extends Migration
         $this->createIndex(null, 'folder', ['id', 'root_folder_id']);
         $this->addForeignKey(null, 'file', ['folder_id', 'root_folder_id'], 'folder', ['id', 'root_folder_id']);
 
+        // file_info_type
+        $this->createTableWithComment('file_info_type', [
+            'id' => $this->tinyInteger()->unsigned(),
+            'name' => $this->string(25)->notNull()->unique()->comment('Название'),
+            'code' => $this->string(25)->notNull()->unique()->comment('Код')
+        ], 'Тип информации о файле');
+        $this->addPrimaryKey(null, 'file_info_type', ['id']);
+
+        $this->insert('file_info_type', ['id' => 1, 'name' => 'Музыка', 'code' => 'music']);
+        $this->insert('file_info_type', ['id' => 2, 'name' => 'Видео', 'code' => 'video']);
+
         // file_info
         $this->createTableWithComment('file_info', [
             'file_id' => $this->integer()->unsigned()->notNull(),
+            'file_info_type_id' => $this->tinyInteger()->unsigned()->notNull()->comment('Тип информации о файле'),
             'info' => $this->text()
         ], 'Информация о файле');
         $this->addPrimaryKey(null, 'file_info', ['file_id']);
 
         $this->addForeignKey(null, 'file_info', ['file_id'], 'file', ['id']);
+        $this->addForeignKey(null, 'file_info', ['file_info_type_id'], 'file_info_type', ['id']);
 
         // file_view
         $sql = <<<SQL
