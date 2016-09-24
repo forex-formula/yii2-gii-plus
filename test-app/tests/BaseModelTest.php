@@ -88,7 +88,50 @@ class BaseModelTest extends TestCase
         $modelClass = 'app\models\\' . $modelName;
         static::assertEquals('app\models\query\\' . $modelName . 'Query', get_class($modelClass::find()));
     }
-//
+
+    /**
+     * @return array
+     */
+    public function tableIsViewStaticDataProvider()
+    {
+        return [ // [$modelName, $tableIsView]
+            ['RootFolderType', false, true],
+            ['RootFolder', false, false],
+            ['Folder', false, false],
+            ['File', false, false],
+            ['FileInfoType', false, true],
+            ['FileInfo', false, false],
+            ['FileReport', true, false],
+            ['Something', false, false]
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param bool $tableIsView
+     * @param bool $tableIsStatic
+     * @dataProvider tableIsViewStaticDataProvider
+     */
+    public function testTableIsView($modelName, $tableIsView, $tableIsStatic)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        static::assertEquals($tableIsView, $modelClass::tableIsView());
+    }
+
+    /**
+     * @param string $modelName
+     * @param bool $tableIsView
+     * @param bool $tableIsStatic
+     * @dataProvider tableIsViewStaticDataProvider
+     */
+    public function testTableIsStatic($modelName, $tableIsView, $tableIsStatic)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        static::assertEquals($tableIsStatic, $modelClass::tableIsStatic());
+    }
+
 //    /**
 //     * @return array
 //     */
