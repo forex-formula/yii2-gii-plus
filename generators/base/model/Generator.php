@@ -448,7 +448,7 @@ class Generator extends GiiModelGenerator
     protected function generateRelationName($relations, $table, $key, $multiple)
     {
         if ($table->isView) {
-            $key = preg_replace('~^(?:pk_|fk_|uk_|tk_)?(\w+_id)$~', '$1', $key);
+            $key = preg_replace('~^(?:[pfut]k_)?(\w+_id)$~', '$1', $key);
         }
         return parent::generateRelationName($relations, $table, $key, $multiple);
     }
