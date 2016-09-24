@@ -253,59 +253,64 @@ class BaseModelTest extends TestCase
         static::assertEquals($modelTitle, $modelClass::modelTitle());
     }
 
-//    /**
-//     * @return array
-//     */
-//    public function primaryKeyDataProvider()
-//    {
-//        return [
-//            ['Type', ['id']],
-//            ['RootFolder', ['id']],
-//            ['Folder', ['id']],
-//            ['File', ['id']]
-//        ];
-//    }
-//
-//    /**
-//     * @param string $modelName
-//     * @param string[] $primaryKey
-//     * @dataProvider primaryKeyDataProvider
-//     */
-//    public function testMethodPrimaryKey($modelName, array $primaryKey)
-//    {
-//        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
-//        $modelClass = 'app\models\\' . $modelName;
-//        static::assertEquals($primaryKey, $modelClass::primaryKey());
-//    }
-//
-//    /**
-//     * @return array
-//     */
-//    public function displayFieldDataProvider()
-//    {
-//        return [
-//            ['Type', ['name']],
-//            ['RootFolder', ['type_id', 'name']],
-//            ['Folder', ['root_folder_id', 'name']],
-//            ['File', ['folder_id', 'name']]
-//        ];
-//    }
-//
-//    /**
-//     * @param string $modelName
-//     * @param string[] $displayField
-//     * @dataProvider displayFieldDataProvider
-//     */
-//    public function testMethodDisplayField($modelName, array $displayField)
-//    {
-//        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
-//        $modelClass = 'app\models\\' . $modelName;
-//        $reflection = new ReflectionClass($modelClass);
-//        static::assertTrue($reflection->hasMethod('displayField'));
-//        static::assertTrue($reflection->getMethod('displayField')->isStatic());
-//        static::assertEquals($displayField, $modelClass::displayField());
-//    }
-//
+    /**
+     * @return array
+     */
+    public function primaryKeyDataProvider()
+    {
+        return [ // [$modelName, $primaryKey]
+            ['RootFolderType', ['id']],
+            ['RootFolder', ['id']],
+            ['Folder', ['id']],
+            ['File', ['id']],
+            ['FileInfoType', ['id']],
+            ['FileInfo', ['file_id']],
+            ['FileReport', ['pk_id', 'pk_root_folder_id']],
+            ['Something', ['tiny_id', 'small_id']]
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string[] $primaryKey
+     * @dataProvider primaryKeyDataProvider
+     */
+    public function testPrimaryKey($modelName, array $primaryKey)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        static::assertEquals($primaryKey, $modelClass::primaryKey());
+    }
+
+    /**
+     * @return array
+     */
+    public function titleKeyDataProvider()
+    {
+        return [ // [$modelName, $titleKey]
+            ['RootFolderType', ['name']],
+            ['RootFolder', ['name']],
+            ['Folder', ['root_folder_id', 'name']],
+            ['File', ['folder_id', 'name']],
+            ['FileInfoType', ['name']],
+            ['FileInfo', ['file_id']],
+            ['FileReport', ['uk_folder_id', 'uk_name']],
+            ['Something', ['tiny_id', 'small_id']]
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string[] $titleKey
+     * @dataProvider titleKeyDataProvider
+     */
+    public function testTitleKey($modelName, array $titleKey)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        static::assertEquals($titleKey, $modelClass::titleKey());
+    }
+
 //    /**
 //     * @return array
 //     */

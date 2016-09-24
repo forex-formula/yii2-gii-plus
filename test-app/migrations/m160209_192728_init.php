@@ -84,8 +84,8 @@ class m160209_192728_init extends Migration
         $sql = <<<SQL
 CREATE VIEW `file_report`
 AS SELECT
-    f.id,
-    f.root_folder_id,
+    f.id AS `pk_id`,
+    f.root_folder_id AS `pk_root_folder_id`,
     f.folder_id AS `uk_folder_id`,
     f.name AS `uk_name`,
     f.visible,
