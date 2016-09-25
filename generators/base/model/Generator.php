@@ -404,9 +404,10 @@ class Generator extends GiiModelGenerator
                     }
                     // via relations
                     if (!$hasMany) {
-                        $subTableName = $nsClassName::getTableSchema()->fullName;
+                        $subTableSchema = $nsClassName::getTableSchema();
+                        $subTableName = $subTableSchema->fullName;
                         if ($subTableName != $tableName) {
-                            $viaLink = '[]';
+                            $viaLink = null;
                             foreach ($tableSchema->foreignKeys as $foreignKey) {
                                 if ($foreignKey[0] == $subTableName) {
                                     unset($foreignKey[0]);
@@ -414,15 +415,24 @@ class Generator extends GiiModelGenerator
                                     break;
                                 }
                             }
-                            foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
-                                list ($subCode, $subClassName, $subHasMany) = $subRelation;
-                                $tableName2 = array_search($subClassName, $this->classNames);
-                                if ($tableName2 != $tableName) {
-                                    /* @var $subNsClassName string|\yii\boost\db\ActiveRecord */
-                                    $subNsClassName = Helper::getModelClassByTableName($tableName2);
-                                    if ($subNsClassName && class_exists($subNsClassName)) {
-                                        if (!$subHasMany && ($subRelationName != $className)) {
-                                            if (!array_key_exists($subRelationName, $generatedRelations[$tableName])) {
+                            if (is_null($viaLink)) {
+                                foreach ($subTableSchema->foreignKeys as $foreignKey) {
+                                    if ($foreignKey[0] == $tableName) {
+                                        unset($foreignKey[0]);
+                                        $viaLink = $this->generateRelationLink($foreignKey);
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!is_null($viaLink)) {
+                                foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
+                                    list ($subCode, $subClassName, $subHasMany) = $subRelation;
+                                    $tableName2 = array_search($subClassName, $this->classNames);
+                                    if ($tableName2 != $tableName) {
+                                        /* @var $subNsClassName string|\yii\boost\db\ActiveRecord */
+                                        $subNsClassName = Helper::getModelClassByTableName($tableName2);
+                                        if ($subNsClassName && class_exists($subNsClassName)) {
+                                            if (!$subHasMany && !array_key_exists($subRelationName, $generatedRelations[$tableName])) {
                                                 $subCode = preg_replace('~;$~', "\n" . '            ->viaTable(\'' . $subTableName . ' via_' . $subTableName . '\', ' . $viaLink . ');', $subCode);
                                                 $relations[$tableName][$subRelationName] = [$subCode, $subClassName, $subHasMany];
                                                 $this->relationUses[$tableName][] = $subNsClassName;
@@ -448,7 +458,7 @@ class Generator extends GiiModelGenerator
     protected function generateRelationName($relations, $table, $key, $multiple)
     {
         if ($table->isView) {
-            $key = preg_replace('~^(?:pk_|fk_|uk_|tk_)?(\w+_id)$~', '$1', $key);
+            $key = preg_replace('~^(?:[pfut]k_)?(\w+_id)$~', '$1', $key);
         }
         return parent::generateRelationName($relations, $table, $key, $multiple);
     }
