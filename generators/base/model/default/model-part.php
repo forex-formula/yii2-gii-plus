@@ -282,3 +282,61 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
         }
     }
 }
+
+// primary key
+$primaryKey = $tableSchema->pk;
+if ($primaryKey) {
+    if ($primaryKey->getCount() == 1) {
+        // unique keys
+        foreach ($tableSchema->uks as $uniqueKey) {
+            if ($uniqueKey->getCount() == 1) {
+                $attribute1 = $primaryKey->key[0];
+                $attribute1Type = $tableSchema->getColumn($attribute1)->phpType;
+                $attribute2 = $uniqueKey->key[0];
+                $attribute2Arg = Inflector::variablize($attribute2);
+                $attribute2Type = $tableSchema->getColumn($attribute2)->phpType;
+                $methodName = Inflector::variablize(implode('_', ['pk', 'by', $attribute2]));
+                if (!in_array($methodName, $methods)) {
+                    $methods[] = $methodName;
+                    echo '
+    /**
+     * @param ', $attribute2Type, ' $', $attribute2Arg, '
+     * @return ', $attribute1Type, '
+     */
+    public static function ', $methodName, '($', $attribute2Arg, ')
+    {
+        return static::find()->select([\'', $attribute1, '\'])->', $attribute2Arg, '($', $attribute2Arg, ')->scalar();
+    }
+';
+                }
+                $methodName = Inflector::variablize(implode('_', [$attribute1, 'by', $attribute2]));
+                if (!in_array($methodName, $methods)) {
+                    $methods[] = $methodName;
+                    echo '
+    /**
+     * @param ', $attribute2Type, ' $', $attribute2Arg, '
+     * @return ', $attribute1Type, '
+     */
+    public static function ', $methodName, '($', $attribute2Arg, ')
+    {
+        return static::find()->select([\'', $attribute1, '\'])->', $attribute2Arg, '($', $attribute2Arg, ')->scalar();
+    }
+';
+                }
+            }
+        }
+    }
+}
+
+// unique keys
+foreach ($tableSchema->uks as $uniqueKey) {
+    if ($uniqueKey->getCount() == 1) {
+        // primary key
+        $primaryKey = $tableSchema->pk;
+        if ($primaryKey) {
+            if ($primaryKey->getCount() == 1) {
+
+            }
+        }
+    }
+}
