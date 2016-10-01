@@ -335,7 +335,39 @@ foreach ($tableSchema->uks as $uniqueKey) {
         $primaryKey = $tableSchema->pk;
         if ($primaryKey) {
             if ($primaryKey->getCount() == 1) {
-
+                $attribute1 = $uniqueKey->key[0];
+                $attribute1Type = $tableSchema->getColumn($attribute1)->phpType;
+                $attribute2 = $primaryKey->key[0];
+                $attribute2Arg = Inflector::variablize($attribute2);
+                $attribute2Type = $tableSchema->getColumn($attribute2)->phpType;
+                $methodName = Inflector::variablize(implode('_', [$attribute1, 'by', 'pk']));
+                if (!in_array($methodName, $methods)) {
+                    $methods[] = $methodName;
+                    echo '
+    /**
+     * @param ', $attribute2Type, ' $', $attribute2Arg, '
+     * @return ', $attribute1Type, '
+     */
+    public static function ', $methodName, '($', $attribute2Arg, ')
+    {
+        return static::find()->select([\'', $attribute1, '\'])->pk($', $attribute2Arg, ')->scalar();
+    }
+';
+                }
+                $methodName = Inflector::variablize(implode('_', [$attribute1, 'by', $attribute2]));
+                if (!in_array($methodName, $methods)) {
+                    $methods[] = $methodName;
+                    echo '
+    /**
+     * @param ', $attribute2Type, ' $', $attribute2Arg, '
+     * @return ', $attribute1Type, '
+     */
+    public static function ', $methodName, '($', $attribute2Arg, ')
+    {
+        return static::find()->select([\'', $attribute1, '\'])->', $attribute2Arg, '($', $attribute2Arg, ')->scalar();
+    }
+';
+                }
             }
         }
     }
