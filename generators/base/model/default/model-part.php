@@ -372,3 +372,32 @@ foreach ($tableSchema->uks as $uniqueKey) {
         }
     }
 }
+
+// unique keys
+foreach ($tableSchema->uks as $uniqueKey1) {
+    if ($uniqueKey1->getCount() == 1) {
+        foreach ($tableSchema->uks as $uniqueKey2) {
+            if (($uniqueKey2->getCount() == 1) && ($uniqueKey1->key[0] != $uniqueKey2->key[0])) {
+                $attribute1 = $uniqueKey1->key[0];
+                $attribute1Type = $tableSchema->getColumn($attribute1)->phpType;
+                $attribute2 = $uniqueKey2->key[0];
+                $attribute2Arg = Inflector::variablize($attribute2);
+                $attribute2Type = $tableSchema->getColumn($attribute2)->phpType;
+                $methodName = Inflector::variablize(implode('_', [$attribute1, 'by', $attribute2]));
+                if (!in_array($methodName, $methods)) {
+                    $methods[] = $methodName;
+                    echo '
+    /**
+     * @param ', $attribute2Type, ' $', $attribute2Arg, '
+     * @return ', $attribute1Type, '
+     */
+    public static function ', $methodName, '($', $attribute2Arg, ')
+    {
+        return static::find()->select([\'', $attribute1, '\'])->pk($', $attribute2Arg, ')->scalar();
+    }
+';
+                }
+            }
+        }
+    }
+}
