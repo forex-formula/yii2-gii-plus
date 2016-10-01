@@ -368,6 +368,11 @@ class Generator extends GiiModelGenerator
     /**
      * @var array
      */
+    protected $extendedRelations = [];
+
+    /**
+     * @var array
+     */
     protected $buildRelations = [];
 
     /**
@@ -378,6 +383,7 @@ class Generator extends GiiModelGenerator
         $db = $this->getDbConnection();
         $relations = [];
         $this->relationUses = [];
+        $this->extendedRelations = [];
         $this->buildRelations = [];
         $generatedRelations = parent::generateRelations();
         foreach ($generatedRelations as $tableName => $tableRelations) {
@@ -385,6 +391,7 @@ class Generator extends GiiModelGenerator
             $tableSchema = $db->getTableSchema($tableName);
             $relations[$tableName] = [];
             $this->relationUses[$tableName] = [];
+            $this->extendedRelations[$tableName] = [];
             $this->buildRelations[$tableName] = [];
             foreach ($tableRelations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
@@ -393,6 +400,39 @@ class Generator extends GiiModelGenerator
                 if ($nsClassName && class_exists($nsClassName)) {
                     $relations[$tableName][$relationName] = [$code, $className, $hasMany];
                     $this->relationUses[$tableName][] = $nsClassName;
+                    // extendedRelations
+                    $subTableSchema = $nsClassName::getTableSchema();
+                    $subTableName = $subTableSchema->fullName;
+                    // link
+                    $link = [];
+                    if ($hasMany) {
+                        foreach ($subTableSchema->foreignKeys as $foreignKey) {
+                            if ($foreignKey[0] == $tableName) {
+                                unset($foreignKey[0]);
+                                $link = $foreignKey;
+                                break;
+                            }
+                        }
+                    } else {
+                        foreach ($tableSchema->foreignKeys as $foreignKey) {
+                            if ($foreignKey[0] == $subTableName) {
+                                unset($foreignKey[0]);
+                                $link = array_flip($foreignKey);
+                                break;
+                            }
+                        }
+                        if (!count($link)) {
+                            foreach ($subTableSchema->foreignKeys as $foreignKey) {
+                                if ($foreignKey[0] == $tableName) {
+                                    unset($foreignKey[0]);
+                                    $link = $foreignKey;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    $this->extendedRelations[$tableName][$relationName] = [$code, $nsClassName, $hasMany, $link];
+                    // buildRelations
                     if ($hasMany || ($relationName == $className)) {
                         foreach ($nsClassName::getTableSchema()->foreignKeys as $foreignKey) {
                             if ($foreignKey[0] == $tableName) {
@@ -403,41 +443,19 @@ class Generator extends GiiModelGenerator
                         }
                     }
                     // via relations
-                    if (!$hasMany) {
-                        $subTableSchema = $nsClassName::getTableSchema();
-                        $subTableName = $subTableSchema->fullName;
-                        if ($subTableName != $tableName) {
-                            $viaLink = null;
-                            foreach ($tableSchema->foreignKeys as $foreignKey) {
-                                if ($foreignKey[0] == $subTableName) {
-                                    unset($foreignKey[0]);
-                                    $viaLink = $this->generateRelationLink(array_flip($foreignKey));
-                                    break;
-                                }
-                            }
-                            if (is_null($viaLink)) {
-                                foreach ($subTableSchema->foreignKeys as $foreignKey) {
-                                    if ($foreignKey[0] == $tableName) {
-                                        unset($foreignKey[0]);
-                                        $viaLink = $this->generateRelationLink($foreignKey);
-                                        break;
-                                    }
-                                }
-                            }
-                            if (!is_null($viaLink)) {
-                                foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
-                                    list ($subCode, $subClassName, $subHasMany) = $subRelation;
-                                    $tableName2 = array_search($subClassName, $this->classNames);
-                                    if ($tableName2 != $tableName) {
-                                        /* @var $subNsClassName string|\yii\boost\db\ActiveRecord */
-                                        $subNsClassName = Helper::getModelClassByTableName($tableName2);
-                                        if ($subNsClassName && class_exists($subNsClassName)) {
-                                            if (!$subHasMany && !array_key_exists($subRelationName, $generatedRelations[$tableName])) {
-                                                $subCode = preg_replace('~;$~', "\n" . '            ->viaTable(\'' . $subTableName . ' via_' . $subTableName . '\', ' . $viaLink . ');', $subCode);
-                                                $relations[$tableName][$subRelationName] = [$subCode, $subClassName, $subHasMany];
-                                                $this->relationUses[$tableName][] = $subNsClassName;
-                                            }
-                                        }
+                    if (!$hasMany && ($subTableName != $tableName)) {
+                        foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
+                            list ($subCode, $subClassName, $subHasMany) = $subRelation;
+                            $tableName2 = array_search($subClassName, $this->classNames);
+                            if ($tableName2 != $tableName) {
+                                /* @var $subNsClassName string|\yii\boost\db\ActiveRecord */
+                                $subNsClassName = Helper::getModelClassByTableName($tableName2);
+                                if ($subNsClassName && class_exists($subNsClassName)) {
+                                    if (!$subHasMany && !array_key_exists($subRelationName, $generatedRelations[$tableName])) {
+                                        $viaLink = $this->generateRelationLink($link);
+                                        $subCode = preg_replace('~;$~', "\n" . '            ->viaTable(\'' . $subTableName . ' via_' . $subTableName . '\', ' . $viaLink . ');', $subCode);
+                                        $relations[$tableName][$subRelationName] = [$subCode, $subClassName, $subHasMany];
+                                        $this->relationUses[$tableName][] = $subNsClassName;
                                     }
                                 }
                             }
