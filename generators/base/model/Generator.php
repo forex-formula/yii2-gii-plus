@@ -371,6 +371,16 @@ class Generator extends GiiModelGenerator
     protected $extendedRelations = [];
 
     /**
+     * @var array
+     */
+    protected $singularRelations = [];
+
+    /**
+     * @var array
+     */
+    protected $pluralRelations = [];
+
+    /**
      * @inheritdoc
      */
     protected function generateRelations()
@@ -379,6 +389,8 @@ class Generator extends GiiModelGenerator
         $relations = [];
         $this->relationUses = [];
         $this->extendedRelations = [];
+        $this->singularRelations = [];
+        $this->pluralRelations = [];
         $generatedRelations = parent::generateRelations();
         foreach ($generatedRelations as $tableName => $tableRelations) {
             /* @var $tableSchema \yii\gii\plus\db\TableSchema */
@@ -386,6 +398,8 @@ class Generator extends GiiModelGenerator
             $relations[$tableName] = [];
             $this->relationUses[$tableName] = [];
             $this->extendedRelations[$tableName] = [];
+            $this->singularRelations[$tableName] = [];
+            $this->pluralRelations[$tableName] = [];
             foreach ($tableRelations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
                 /* @var $nsClassName string|\yii\boost\db\ActiveRecord */
@@ -429,10 +443,22 @@ class Generator extends GiiModelGenerator
                         }
                     }
                     $via = false;
+                    $linkCode = $this->generateRelationLink($link);
                     $this->extendedRelations[$tableName][$relationName] = [
                         $code, $className, $hasMany,
-                        $nsClassName, $link, $direct, $via
+                        $nsClassName, $link, $direct, $via, $linkCode
                     ];
+                    if ($hasMany) {
+                        $this->pluralRelations[$tableName][$relationName] = [
+                            $code, $className, $hasMany,
+                            $nsClassName, $link, $direct, $via, $linkCode
+                        ];
+                    } else {
+                        $this->singularRelations[$tableName][$relationName] = [
+                            $code, $className, $hasMany,
+                            $nsClassName, $link, $direct, $via, $linkCode
+                        ];
+                    }
                     // via relations
                     if (!$hasMany && ($subTableName != $tableName)) {
                         foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
@@ -557,6 +583,16 @@ class Generator extends GiiModelGenerator
                     $params['extendedRelations'] = $this->extendedRelations[$tableName];
                 } else {
                     $params['extendedRelations'] = [];
+                }
+                if (array_key_exists($tableName, $this->singularRelations)) {
+                    $params['singularRelations'] = $this->singularRelations[$tableName];
+                } else {
+                    $params['singularRelations'] = [];
+                }
+                if (array_key_exists($tableName, $this->pluralRelations)) {
+                    $params['pluralRelations'] = $this->pluralRelations[$tableName];
+                } else {
+                    $params['pluralRelations'] = [];
                 }
                 $output = preg_replace('~\}(\s*)$~', parent::render('model-part.php', $params) . '}$1', $output);
                 break;

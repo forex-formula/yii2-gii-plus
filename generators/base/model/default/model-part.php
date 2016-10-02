@@ -14,6 +14,8 @@ use yii\helpers\Inflector;
 /* @var $relations array */
 /* @var $relationUses array */
 /* @var $extendedRelations array */
+/* @var $singularRelations array */
+/* @var $pluralRelations array */
 
 $methods = [];
 
@@ -42,18 +44,6 @@ if ($tableSchema->isStatic) {
 }
 
 // singular/plural relations
-$singularRelations = [];
-$pluralRelations = [];
-foreach ($extendedRelations as $relationName => $extendedRelation) {
-    list ($code, $relClassName, $hasMany, $nsClassName, $link, $direct, $via) = $extendedRelation;
-    if (!$via) {
-        if ($hasMany) {
-            $pluralRelations[] = lcfirst($relationName);
-        } else {
-            $singularRelations[] = lcfirst($relationName);
-        }
-    }
-}
 if (count($singularRelations)) {
     echo '
     /**
@@ -61,7 +51,22 @@ if (count($singularRelations)) {
      */
     public static function singularRelations()
     {
-        return ', Helper::implode($singularRelations, 2), ';
+        return [
+';
+    $i = 0;
+    foreach ($singularRelations as $relationName => $singularRelation) {
+        $comma = ($i++ < count($singularRelations) - 1) ? ',' : '';
+        list ($code, $relClassName, $hasMany,
+            $nsClassName, $link, $direct, $via, $linkCode) = $singularRelation;
+        echo '            \'', lcfirst($relationName), '\' => [
+                \'class\' => \'', $nsClassName, '\',
+                \'link\' => ', $linkCode, ',
+                \'direct\' => ', ($direct ? 'true' : 'false'), ',
+                \'via\' => ', ($via ? 'true' : 'false'), '
+            ]', $comma, '
+';
+    }
+    echo '        ];
     }
 ';
 }
@@ -72,7 +77,22 @@ if (count($pluralRelations)) {
      */
     public static function pluralRelations()
     {
-        return ', Helper::implode($pluralRelations, 2), ';
+        return [
+';
+    $i = 0;
+    foreach ($pluralRelations as $relationName => $pluralRelation) {
+        $comma = ($i++ < count($pluralRelations) - 1) ? ',' : '';
+        list ($code, $relClassName, $hasMany,
+            $nsClassName, $link, $direct, $via, $linkCode) = $pluralRelation;
+        echo '            \'', lcfirst($relationName), '\' => [
+                \'class\' => \'', $nsClassName, '\',
+                \'link\' => ', $linkCode, ',
+                \'direct\' => ', ($direct ? 'true' : 'false'), ',
+                \'via\' => ', ($via ? 'true' : 'false'), '
+            ]', $comma, '
+';
+    }
+    echo '        ];
     }
 ';
 }
@@ -184,7 +204,8 @@ if ($titleKey) {
 
 // methods "new"
 foreach ($extendedRelations as $relationName => $extendedRelation) {
-    list ($code, $relClassName, $hasMany, $nsClassName, $link, $direct, $via) = $extendedRelation;
+    list ($code, $relClassName, $hasMany,
+        $nsClassName, $link, $direct, $via, $linkCode) = $extendedRelation;
     if (!$direct && !$via) {
         if ($hasMany) {
             $methodName = 'new' . Inflector::singularize($relationName);
