@@ -444,20 +444,20 @@ class Generator extends GiiModelGenerator
                     }
                     $viaTable = false;
                     $linkCode = $this->generateRelationLink($link);
-                    $this->allRelations[$tableName][$relationName] = [
+                    $this->allRelations[$tableName][$relationName] = compact(
                         $code, $className, $hasMany,
                         $nsClassName, $link, $direct, $viaTable, $linkCode
-                    ];
+                    );
                     if ($hasMany) {
-                        $this->pluralRelations[$tableName][$relationName] = [
+                        $this->pluralRelations[$tableName][$relationName] = compact(
                             $code, $className, $hasMany,
                             $nsClassName, $link, $direct, $viaTable, $linkCode
-                        ];
+                        );
                     } else {
-                        $this->singularRelations[$tableName][$relationName] = [
+                        $this->singularRelations[$tableName][$relationName] = compact(
                             $code, $className, $hasMany,
                             $nsClassName, $link, $direct, $viaTable, $linkCode
-                        ];
+                        );
                     }
                     // via relations
                     if (!$hasMany && ($subTableName != $tableName)) {

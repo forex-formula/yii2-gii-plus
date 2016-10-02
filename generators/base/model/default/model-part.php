@@ -54,13 +54,13 @@ if (count($allRelations)) {
         return [
 ';
     $i = 0;
-    foreach ($allRelations as $relationName => $extendedRelation) {
+    foreach ($allRelations as $relationName => $relation) {
         $comma = ($i++ < count($allRelations) - 1) ? ',' : '';
         list ($code, $relClassName, $hasMany,
-            $nsClassName, $link, $direct, $viaTable, $linkCode) = $extendedRelation;
+            $nsClassName, $link, $direct, $viaTable, $linkCode) = $relation;
         echo '            \'', lcfirst($relationName), '\' => [
-                \'class\' => \'', $nsClassName, '\',
                 \'hasMany\' => ', ($hasMany ? 'true' : 'false'), ',
+                \'class\' => \'', $nsClassName, '\',
                 \'link\' => ', $linkCode, ',
                 \'direct\' => ', ($direct ? 'true' : 'false'), ',
                 \'viaTable\' => ', ($viaTable ? '\'' . $viaTable . '\'' : 'false'), '
@@ -81,10 +81,10 @@ if (count($singularRelations)) {
         return [
 ';
     $i = 0;
-    foreach ($singularRelations as $relationName => $singularRelation) {
+    foreach ($singularRelations as $relationName => $relation) {
         $comma = ($i++ < count($singularRelations) - 1) ? ',' : '';
         list ($code, $relClassName, $hasMany,
-            $nsClassName, $link, $direct, $viaTable, $linkCode) = $singularRelation;
+            $nsClassName, $link, $direct, $viaTable, $linkCode) = $relation;
         echo '            \'', lcfirst($relationName), '\' => [
                 \'class\' => \'', $nsClassName, '\',
                 \'link\' => ', $linkCode, ',
@@ -107,10 +107,10 @@ if (count($pluralRelations)) {
         return [
 ';
     $i = 0;
-    foreach ($pluralRelations as $relationName => $pluralRelation) {
+    foreach ($pluralRelations as $relationName => $relation) {
         $comma = ($i++ < count($pluralRelations) - 1) ? ',' : '';
         list ($code, $relClassName, $hasMany,
-            $nsClassName, $link, $direct, $viaTable, $linkCode) = $pluralRelation;
+            $nsClassName, $link, $direct, $viaTable, $linkCode) = $relation;
         echo '            \'', lcfirst($relationName), '\' => [
                 \'class\' => \'', $nsClassName, '\',
                 \'link\' => ', $linkCode, ',
@@ -230,9 +230,9 @@ if ($titleKey) {
 }
 
 // methods "new"
-foreach ($allRelations as $relationName => $extendedRelation) {
+foreach ($allRelations as $relationName => $relation) {
     list ($code, $relClassName, $hasMany,
-        $nsClassName, $link, $direct, $viaTable, $linkCode) = $extendedRelation;
+        $nsClassName, $link, $direct, $viaTable, $linkCode) = $relation;
     if (!$direct && !$viaTable) {
         if ($hasMany) {
             $methodName = 'new' . Inflector::singularize($relationName);
