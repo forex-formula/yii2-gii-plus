@@ -442,21 +442,21 @@ class Generator extends GiiModelGenerator
                             }
                         }
                     }
-                    $via = false;
+                    $viaTable = false;
                     $linkCode = $this->generateRelationLink($link);
                     $this->extendedRelations[$tableName][$relationName] = [
                         $code, $className, $hasMany,
-                        $nsClassName, $link, $direct, $via, $linkCode
+                        $nsClassName, $link, $direct, $viaTable, $linkCode
                     ];
                     if ($hasMany) {
                         $this->pluralRelations[$tableName][$relationName] = [
                             $code, $className, $hasMany,
-                            $nsClassName, $link, $direct, $via, $linkCode
+                            $nsClassName, $link, $direct, $viaTable, $linkCode
                         ];
                     } else {
                         $this->singularRelations[$tableName][$relationName] = [
                             $code, $className, $hasMany,
-                            $nsClassName, $link, $direct, $via, $linkCode
+                            $nsClassName, $link, $direct, $viaTable, $linkCode
                         ];
                     }
                     // via relations
