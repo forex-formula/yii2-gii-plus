@@ -371,11 +371,6 @@ class Generator extends GiiModelGenerator
     protected $extendedRelations = [];
 
     /**
-     * @var array
-     */
-    protected $buildRelations = [];
-
-    /**
      * @inheritdoc
      */
     protected function generateRelations()
@@ -384,7 +379,6 @@ class Generator extends GiiModelGenerator
         $relations = [];
         $this->relationUses = [];
         $this->extendedRelations = [];
-        $this->buildRelations = [];
         $generatedRelations = parent::generateRelations();
         foreach ($generatedRelations as $tableName => $tableRelations) {
             /* @var $tableSchema \yii\gii\plus\db\TableSchema */
@@ -392,7 +386,6 @@ class Generator extends GiiModelGenerator
             $relations[$tableName] = [];
             $this->relationUses[$tableName] = [];
             $this->extendedRelations[$tableName] = [];
-            $this->buildRelations[$tableName] = [];
             foreach ($tableRelations as $relationName => $relation) {
                 list ($code, $className, $hasMany) = $relation;
                 /* @var $nsClassName string|\yii\boost\db\ActiveRecord */
@@ -400,16 +393,18 @@ class Generator extends GiiModelGenerator
                 if ($nsClassName && class_exists($nsClassName)) {
                     $relations[$tableName][$relationName] = [$code, $className, $hasMany];
                     $this->relationUses[$tableName][] = $nsClassName;
-                    // extendedRelations
+                    // extended relations
                     $subTableSchema = $nsClassName::getTableSchema();
                     $subTableName = $subTableSchema->fullName;
                     // link
                     $link = [];
+                    $directLink = null;
                     if ($hasMany) {
                         foreach ($subTableSchema->foreignKeys as $foreignKey) {
                             if ($foreignKey[0] == $tableName) {
                                 unset($foreignKey[0]);
                                 $link = $foreignKey;
+                                $directLink = false;
                                 break;
                             }
                         }
@@ -418,6 +413,7 @@ class Generator extends GiiModelGenerator
                             if ($foreignKey[0] == $subTableName) {
                                 unset($foreignKey[0]);
                                 $link = array_flip($foreignKey);
+                                $directLink = true;
                                 break;
                             }
                         }
@@ -426,22 +422,16 @@ class Generator extends GiiModelGenerator
                                 if ($foreignKey[0] == $tableName) {
                                     unset($foreignKey[0]);
                                     $link = $foreignKey;
+                                    $directLink = false;
                                     break;
                                 }
                             }
                         }
                     }
-                    $this->extendedRelations[$tableName][$relationName] = [$code, $nsClassName, $hasMany, $link];
-                    // buildRelations
-                    if ($hasMany || ($relationName == $className)) {
-                        foreach ($nsClassName::getTableSchema()->foreignKeys as $foreignKey) {
-                            if ($foreignKey[0] == $tableName) {
-                                unset($foreignKey[0]);
-                                $this->buildRelations[$tableName][$relationName] = [$nsClassName, $className, $foreignKey];
-                                break;
-                            }
-                        }
-                    }
+                    $this->extendedRelations[$tableName][$relationName] = [
+                        $code, $className, $hasMany,
+                        $nsClassName, $link, $directLink
+                    ];
                     // via relations
                     if (!$hasMany && ($subTableName != $tableName)) {
                         foreach ($generatedRelations[$subTableName] as $subRelationName => $subRelation) {
@@ -562,7 +552,7 @@ class Generator extends GiiModelGenerator
                     }, $output);
                 }
                 $params['relationUses'] = $this->relationUses;
-                $params['buildRelations'] = $this->buildRelations;
+                $params['extendedRelations'] = $this->extendedRelations;
                 $output = preg_replace('~\}(\s*)$~', parent::render('model-part.php', $params) . '}$1', $output);
                 break;
             case 'query.php':

@@ -13,7 +13,7 @@ use yii\helpers\Inflector;
 /* @var $rules string[] */
 /* @var $relations array */
 /* @var $relationUses array */
-/* @var $buildRelations array */
+/* @var $extendedRelations array */
 
 $methods = [];
 
@@ -182,14 +182,19 @@ if ($titleKey) {
 ';
 }
 
-// build relations
-if (array_key_exists($tableName, $buildRelations)) {
-    foreach ($buildRelations[$tableName] as $relationName => $buildRelation) {
-        list ($nsClassName, $className, $foreignKey) = $buildRelation;
-        $methodName = 'new' . Inflector::singularize($relationName);
-        if (!in_array($methodName, $methods)) {
-            $methods[] = $methodName;
-            echo '
+// methods "new"
+if (array_key_exists($tableName, $extendedRelations)) {
+    foreach ($extendedRelations[$tableName] as $relationName => $extendedRelation) {
+        list ($code, $className, $hasMany, $nsClassName, $link, $directLink) = $extendedRelation;
+        if (!$directLink) {
+            if ($hasMany) {
+                $methodName = 'new' . Inflector::singularize($relationName);
+            } else {
+                $methodName = 'new' . $relationName;
+            }
+            if (!in_array($methodName, $methods)) {
+                $methods[] = $methodName;
+                echo '
     /**
      * @param array $config
      * @return ', $className, '
@@ -198,13 +203,14 @@ if (array_key_exists($tableName, $buildRelations)) {
     {
         $model = new ', $className, '($config);
 ';
-            foreach ($foreignKey as $key1 => $key2) {
-                echo '        $model->', $key1, ' = $this->', $key2, ';
+                foreach ($link as $key1 => $key2) {
+                    echo '        $model->', $key1, ' = $this->', $key2, ';
 ';
-            }
-            echo '        return $model;
+                }
+                echo '        return $model;
     }
 ';
+            }
         }
     }
 }
@@ -283,7 +289,7 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
     }
 }
 
-// primary key
+// primary key by unique keys
 $primaryKey = $tableSchema->pk;
 if ($primaryKey) {
     if ($primaryKey->getCount() == 1) {
@@ -328,7 +334,7 @@ if ($primaryKey) {
     }
 }
 
-// unique keys
+// unique keys by primary key
 foreach ($tableSchema->uks as $uniqueKey) {
     if ($uniqueKey->getCount() == 1) {
         // primary key
@@ -373,7 +379,7 @@ foreach ($tableSchema->uks as $uniqueKey) {
     }
 }
 
-// unique keys
+// unique keys by unique keys
 foreach ($tableSchema->uks as $uniqueKey1) {
     if ($uniqueKey1->getCount() == 1) {
         foreach ($tableSchema->uks as $uniqueKey2) {
