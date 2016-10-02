@@ -552,7 +552,11 @@ class Generator extends GiiModelGenerator
                     }, $output);
                 }
                 $params['relationUses'] = $this->relationUses;
-                $params['extendedRelations'] = $this->extendedRelations;
+                if (array_key_exists($tableName, $this->extendedRelations)) {
+                    $params['extendedRelations'] = $this->extendedRelations[$tableName];
+                } else {
+                    $params['extendedRelations'] = [];
+                }
                 $output = preg_replace('~\}(\s*)$~', parent::render('model-part.php', $params) . '}$1', $output);
                 break;
             case 'query.php':

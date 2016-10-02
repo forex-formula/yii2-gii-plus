@@ -183,18 +183,17 @@ if ($titleKey) {
 }
 
 // methods "new"
-if (array_key_exists($tableName, $extendedRelations)) {
-    foreach ($extendedRelations[$tableName] as $relationName => $extendedRelation) {
-        list ($code, $className, $hasMany, $nsClassName, $link, $directLink) = $extendedRelation;
-        if (!$directLink) {
-            if ($hasMany) {
-                $methodName = 'new' . Inflector::singularize($relationName);
-            } else {
-                $methodName = 'new' . $relationName;
-            }
-            if (!in_array($methodName, $methods)) {
-                $methods[] = $methodName;
-                echo '
+foreach ($extendedRelations as $relationName => $extendedRelation) {
+    list ($code, $className, $hasMany, $nsClassName, $link, $directLink) = $extendedRelation;
+    if (!$directLink) {
+        if ($hasMany) {
+            $methodName = 'new' . Inflector::singularize($relationName);
+        } else {
+            $methodName = 'new' . $relationName;
+        }
+        if (!in_array($methodName, $methods)) {
+            $methods[] = $methodName;
+            echo '
     /**
      * @param array $config
      * @return ', $className, '
@@ -203,14 +202,13 @@ if (array_key_exists($tableName, $extendedRelations)) {
     {
         $model = new ', $className, '($config);
 ';
-                foreach ($link as $key1 => $key2) {
-                    echo '        $model->', $key1, ' = $this->', $key2, ';
-';
-                }
-                echo '        return $model;
-    }
+            foreach ($link as $key1 => $key2) {
+                echo '        $model->', $key1, ' = $this->', $key2, ';
 ';
             }
+            echo '        return $model;
+    }
+';
         }
     }
 }
