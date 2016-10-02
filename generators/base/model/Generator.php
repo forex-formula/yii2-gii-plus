@@ -398,13 +398,13 @@ class Generator extends GiiModelGenerator
                     $subTableName = $subTableSchema->fullName;
                     // link
                     $link = [];
-                    $directLink = null;
+                    $direct = null;
                     if ($hasMany) {
                         foreach ($subTableSchema->foreignKeys as $foreignKey) {
                             if ($foreignKey[0] == $tableName) {
                                 unset($foreignKey[0]);
                                 $link = $foreignKey;
-                                $directLink = false;
+                                $direct = false;
                                 break;
                             }
                         }
@@ -413,7 +413,7 @@ class Generator extends GiiModelGenerator
                             if ($foreignKey[0] == $subTableName) {
                                 unset($foreignKey[0]);
                                 $link = array_flip($foreignKey);
-                                $directLink = true;
+                                $direct = true;
                                 break;
                             }
                         }
@@ -422,15 +422,16 @@ class Generator extends GiiModelGenerator
                                 if ($foreignKey[0] == $tableName) {
                                     unset($foreignKey[0]);
                                     $link = $foreignKey;
-                                    $directLink = false;
+                                    $direct = false;
                                     break;
                                 }
                             }
                         }
                     }
+                    $via = false;
                     $this->extendedRelations[$tableName][$relationName] = [
                         $code, $className, $hasMany,
-                        $nsClassName, $link, $directLink
+                        $nsClassName, $link, $direct, $via
                     ];
                     // via relations
                     if (!$hasMany && ($subTableName != $tableName)) {

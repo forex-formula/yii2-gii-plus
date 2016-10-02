@@ -44,9 +44,9 @@ if ($tableSchema->isStatic) {
 // singular/plural relations
 $singularRelations = [];
 $pluralRelations = [];
-foreach ($relations as $relationName => $relation) {
-    list ($code, $_className, $hasMany) = $relation;
-    if (strpos($code, '->via') === false) {
+foreach ($extendedRelations as $relationName => $extendedRelation) {
+    list ($code, $relClassName, $hasMany, $nsClassName, $link, $direct, $via) = $extendedRelation;
+    if (!$via) {
         if ($hasMany) {
             $pluralRelations[] = lcfirst($relationName);
         } else {
@@ -184,8 +184,8 @@ if ($titleKey) {
 
 // methods "new"
 foreach ($extendedRelations as $relationName => $extendedRelation) {
-    list ($code, $className, $hasMany, $nsClassName, $link, $directLink) = $extendedRelation;
-    if (!$directLink) {
+    list ($code, $relClassName, $hasMany, $nsClassName, $link, $direct, $via) = $extendedRelation;
+    if (!$direct && !$via) {
         if ($hasMany) {
             $methodName = 'new' . Inflector::singularize($relationName);
         } else {
@@ -196,11 +196,11 @@ foreach ($extendedRelations as $relationName => $extendedRelation) {
             echo '
     /**
      * @param array $config
-     * @return ', $className, '
+     * @return ', $relClassName, '
      */
     public function ', $methodName, '(array $config = [])
     {
-        $model = new ', $className, '($config);
+        $model = new ', $relClassName, '($config);
 ';
             foreach ($link as $key1 => $key2) {
                 echo '        $model->', $key1, ' = $this->', $key2, ';
