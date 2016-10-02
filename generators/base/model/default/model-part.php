@@ -56,14 +56,12 @@ if (count($allRelations)) {
     $i = 0;
     foreach ($allRelations as $relationName => $relation) {
         $comma = ($i++ < count($allRelations) - 1) ? ',' : '';
-        list ($code, $relClassName, $hasMany,
-            $nsClassName, $link, $direct, $viaTable, $linkCode) = $relation;
         echo '            \'', lcfirst($relationName), '\' => [
-                \'hasMany\' => ', ($hasMany ? 'true' : 'false'), ',
-                \'class\' => \'', $nsClassName, '\',
-                \'link\' => ', $linkCode, ',
-                \'direct\' => ', ($direct ? 'true' : 'false'), ',
-                \'viaTable\' => ', ($viaTable ? '\'' . $viaTable . '\'' : 'false'), '
+                \'hasMany\' => ', ($relation['hasMany'] ? 'true' : 'false'), ',
+                \'class\' => \'', $relation['nsClassName'], '\',
+                \'link\' => ', $relation['linkCode'], ',
+                \'direct\' => ', ($relation['direct'] ? 'true' : 'false'), ',
+                \'viaTable\' => ', ($relation['viaTable'] ? '\'' . $relation['viaTable'] . '\'' : 'false'), '
             ]', $comma, '
 ';
     }
@@ -83,13 +81,11 @@ if (count($singularRelations)) {
     $i = 0;
     foreach ($singularRelations as $relationName => $relation) {
         $comma = ($i++ < count($singularRelations) - 1) ? ',' : '';
-        list ($code, $relClassName, $hasMany,
-            $nsClassName, $link, $direct, $viaTable, $linkCode) = $relation;
         echo '            \'', lcfirst($relationName), '\' => [
-                \'class\' => \'', $nsClassName, '\',
-                \'link\' => ', $linkCode, ',
-                \'direct\' => ', ($direct ? 'true' : 'false'), ',
-                \'viaTable\' => ', ($viaTable ? '\'' . $viaTable . '\'' : 'false'), '
+                \'class\' => \'', $relation['nsClassName'], '\',
+                \'link\' => ', $relation['linkCode'], ',
+                \'direct\' => ', ($relation['direct'] ? 'true' : 'false'), ',
+                \'viaTable\' => ', ($relation['viaTable'] ? '\'' . $relation['viaTable'] . '\'' : 'false'), '
             ]', $comma, '
 ';
     }
@@ -109,13 +105,11 @@ if (count($pluralRelations)) {
     $i = 0;
     foreach ($pluralRelations as $relationName => $relation) {
         $comma = ($i++ < count($pluralRelations) - 1) ? ',' : '';
-        list ($code, $relClassName, $hasMany,
-            $nsClassName, $link, $direct, $viaTable, $linkCode) = $relation;
         echo '            \'', lcfirst($relationName), '\' => [
-                \'class\' => \'', $nsClassName, '\',
-                \'link\' => ', $linkCode, ',
-                \'direct\' => ', ($direct ? 'true' : 'false'), ',
-                \'viaTable\' => ', ($viaTable ? '\'' . $viaTable . '\'' : 'false'), '
+                \'class\' => \'', $relation['nsClassName'], '\',
+                \'link\' => ', $relation['linkCode'], ',
+                \'direct\' => ', ($relation['direct'] ? 'true' : 'false'), ',
+                \'viaTable\' => ', ($relation['viaTable'] ? '\'' . $relation['viaTable'] . '\'' : 'false'), '
             ]', $comma, '
 ';
     }
@@ -231,10 +225,8 @@ if ($titleKey) {
 
 // methods "new"
 foreach ($allRelations as $relationName => $relation) {
-    list ($code, $relClassName, $hasMany,
-        $nsClassName, $link, $direct, $viaTable, $linkCode) = $relation;
-    if (!$direct && !$viaTable) {
-        if ($hasMany) {
+    if (!$relation['direct'] && !$relation['viaTable']) {
+        if ($relation['hasMany']) {
             $methodName = 'new' . Inflector::singularize($relationName);
         } else {
             $methodName = 'new' . $relationName;
@@ -244,13 +236,13 @@ foreach ($allRelations as $relationName => $relation) {
             echo '
     /**
      * @param array $config
-     * @return ', $relClassName, '
+     * @return ', $relation['className'], '
      */
     public function ', $methodName, '(array $config = [])
     {
-        $model = new ', $relClassName, '($config);
+        $model = new ', $relation['className'], '($config);
 ';
-            foreach ($link as $key1 => $key2) {
+            foreach ($relation['link'] as $key1 => $key2) {
                 echo '        $model->', $key1, ' = $this->', $key2, ';
 ';
             }
