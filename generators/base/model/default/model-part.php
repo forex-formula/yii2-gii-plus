@@ -13,7 +13,7 @@ use yii\helpers\Inflector;
 /* @var $rules string[] */
 /* @var $relations array */
 /* @var $relationUses array */
-/* @var $extendedRelations array */
+/* @var $allRelations array */
 /* @var $singularRelations array */
 /* @var $pluralRelations array */
 
@@ -43,19 +43,19 @@ if ($tableSchema->isStatic) {
 ';
 }
 
-// extended/singular/plural relations
-if (count($extendedRelations)) {
+// all/singular/plural relations
+if (count($allRelations)) {
     echo '
     /**
      * @inheritdoc
      */
-    public static function extendedRelation()
+    public static function allRelations()
     {
         return [
 ';
     $i = 0;
-    foreach ($extendedRelations as $relationName => $extendedRelation) {
-        $comma = ($i++ < count($extendedRelations) - 1) ? ',' : '';
+    foreach ($allRelations as $relationName => $extendedRelation) {
+        $comma = ($i++ < count($allRelations) - 1) ? ',' : '';
         list ($code, $relClassName, $hasMany,
             $nsClassName, $link, $direct, $viaTable, $linkCode) = $extendedRelation;
         echo '            \'', lcfirst($relationName), '\' => [
@@ -230,7 +230,7 @@ if ($titleKey) {
 }
 
 // methods "new"
-foreach ($extendedRelations as $relationName => $extendedRelation) {
+foreach ($allRelations as $relationName => $extendedRelation) {
     list ($code, $relClassName, $hasMany,
         $nsClassName, $link, $direct, $viaTable, $linkCode) = $extendedRelation;
     if (!$direct && !$viaTable) {

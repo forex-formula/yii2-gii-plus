@@ -368,7 +368,7 @@ class Generator extends GiiModelGenerator
     /**
      * @var array
      */
-    protected $extendedRelations = [];
+    protected $allRelations = [];
 
     /**
      * @var array
@@ -388,7 +388,7 @@ class Generator extends GiiModelGenerator
         $db = $this->getDbConnection();
         $relations = [];
         $this->relationUses = [];
-        $this->extendedRelations = [];
+        $this->allRelations = [];
         $this->singularRelations = [];
         $this->pluralRelations = [];
         $generatedRelations = parent::generateRelations();
@@ -397,7 +397,7 @@ class Generator extends GiiModelGenerator
             $tableSchema = $db->getTableSchema($tableName);
             $relations[$tableName] = [];
             $this->relationUses[$tableName] = [];
-            $this->extendedRelations[$tableName] = [];
+            $this->allRelations[$tableName] = [];
             $this->singularRelations[$tableName] = [];
             $this->pluralRelations[$tableName] = [];
             foreach ($tableRelations as $relationName => $relation) {
@@ -444,7 +444,7 @@ class Generator extends GiiModelGenerator
                     }
                     $viaTable = false;
                     $linkCode = $this->generateRelationLink($link);
-                    $this->extendedRelations[$tableName][$relationName] = [
+                    $this->allRelations[$tableName][$relationName] = [
                         $code, $className, $hasMany,
                         $nsClassName, $link, $direct, $viaTable, $linkCode
                     ];
@@ -579,10 +579,10 @@ class Generator extends GiiModelGenerator
                     }, $output);
                 }
                 $params['relationUses'] = $this->relationUses;
-                if (array_key_exists($tableName, $this->extendedRelations)) {
-                    $params['extendedRelations'] = $this->extendedRelations[$tableName];
+                if (array_key_exists($tableName, $this->allRelations)) {
+                    $params['allRelations'] = $this->allRelations[$tableName];
                 } else {
-                    $params['extendedRelations'] = [];
+                    $params['allRelations'] = [];
                 }
                 if (array_key_exists($tableName, $this->singularRelations)) {
                     $params['singularRelations'] = $this->singularRelations[$tableName];
