@@ -137,6 +137,39 @@ class BaseModelTest extends TestCase
     /**
      * @return array
      */
+    public function allRelationsDataProvider()
+    {
+        return [ // [$modelName, $allRelations]
+            ['RootFolderType', ['rootFolders']],
+            ['RootFolder', ['rootFolderType', 'folders', 'files', 'fileReports']],
+            ['Folder', ['rootFolder', 'files', 'fileReports']],
+            ['File', ['rootFolder', 'folder', 'fileInfo']],
+            ['FileInfoType', ['fileInfos']],
+            ['FileInfo', ['file', 'fileInfoType']],
+            ['FileReport', ['rootFolder', 'folder']],
+            ['Sequence', ['parent', 'sequence']],
+            ['Something', []]
+        ];
+    }
+
+    /**
+     * @param string $modelName
+     * @param string[] $singularRelations
+     * @dataProvider allRelationsDataProvider
+     */
+    public function testAllRelations($modelName, array $allRelations)
+    {
+        /* @var $modelClass string|\yii\boost\db\ActiveRecord */
+        $modelClass = 'app\models\\' . $modelName;
+        static::assertCount(count($allRelations), $modelClass::allRelations());
+        foreach ($allRelations as $allRelation) {
+            static::assertContains($allRelation, array_keys($modelClass::allRelations()));
+        }
+    }
+
+    /**
+     * @return array
+     */
     public function singularRelationsDataProvider()
     {
         return [ // [$modelName, $singularRelations]
@@ -163,7 +196,7 @@ class BaseModelTest extends TestCase
         $modelClass = 'app\models\\' . $modelName;
         static::assertCount(count($singularRelations), $modelClass::singularRelations());
         foreach ($singularRelations as $singularRelation) {
-            static::assertContains($singularRelation, $modelClass::singularRelations());
+            static::assertContains($singularRelation, array_keys($modelClass::singularRelations()));
         }
     }
 
@@ -196,7 +229,7 @@ class BaseModelTest extends TestCase
         $modelClass = 'app\models\\' . $modelName;
         static::assertCount(count($pluralRelations), $modelClass::pluralRelations());
         foreach ($pluralRelations as $pluralRelation) {
-            static::assertContains($pluralRelation, $modelClass::pluralRelations());
+            static::assertContains($pluralRelation, array_keys($modelClass::pluralRelations()));
         }
     }
 
