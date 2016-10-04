@@ -13,7 +13,9 @@ use yii\helpers\Inflector;
 /* @var $rules string[] */
 /* @var $relations array */
 /* @var $relationUses array */
-/* @var $buildRelations array */
+/* @var $allRelations array */
+/* @var $singularRelations array */
+/* @var $pluralRelations array */
 
 $methods = [];
 
@@ -41,18 +43,31 @@ if ($tableSchema->isStatic) {
 ';
 }
 
-// singular/plural relations
-$singularRelations = [];
-$pluralRelations = [];
-foreach ($relations as $relationName => $relation) {
-    list ($code, $_className, $hasMany) = $relation;
-    if (strpos($code, '->via') === false) {
-        if ($hasMany) {
-            $pluralRelations[] = lcfirst($relationName);
-        } else {
-            $singularRelations[] = lcfirst($relationName);
-        }
+// all/singular/plural relations
+if (count($allRelations)) {
+    echo '
+    /**
+     * @inheritdoc
+     */
+    public static function allRelations()
+    {
+        return [
+';
+    $i = 0;
+    foreach ($allRelations as $relationName => $relation) {
+        $comma = ($i++ < count($allRelations) - 1) ? ',' : '';
+        echo '            \'', lcfirst($relationName), '\' => [
+                \'hasMany\' => ', ($relation['hasMany'] ? 'true' : 'false'), ',
+                \'class\' => \'', $relation['nsClassName'], '\',
+                \'link\' => ', $relation['linkCode'], ',
+                \'direct\' => ', ($relation['direct'] ? 'true' : 'false'), ',
+                \'viaTable\' => ', ($relation['viaTable'] ? '\'' . $relation['viaTable'] . '\'' : 'false'), '
+            ]', $comma, '
+';
     }
+    echo '        ];
+    }
+';
 }
 if (count($singularRelations)) {
     echo '
@@ -61,7 +76,20 @@ if (count($singularRelations)) {
      */
     public static function singularRelations()
     {
-        return ', Helper::implode($singularRelations, 2), ';
+        return [
+';
+    $i = 0;
+    foreach ($singularRelations as $relationName => $relation) {
+        $comma = ($i++ < count($singularRelations) - 1) ? ',' : '';
+        echo '            \'', lcfirst($relationName), '\' => [
+                \'class\' => \'', $relation['nsClassName'], '\',
+                \'link\' => ', $relation['linkCode'], ',
+                \'direct\' => ', ($relation['direct'] ? 'true' : 'false'), ',
+                \'viaTable\' => ', ($relation['viaTable'] ? '\'' . $relation['viaTable'] . '\'' : 'false'), '
+            ]', $comma, '
+';
+    }
+    echo '        ];
     }
 ';
 }
@@ -72,7 +100,20 @@ if (count($pluralRelations)) {
      */
     public static function pluralRelations()
     {
-        return ', Helper::implode($pluralRelations, 2), ';
+        return [
+';
+    $i = 0;
+    foreach ($pluralRelations as $relationName => $relation) {
+        $comma = ($i++ < count($pluralRelations) - 1) ? ',' : '';
+        echo '            \'', lcfirst($relationName), '\' => [
+                \'class\' => \'', $relation['nsClassName'], '\',
+                \'link\' => ', $relation['linkCode'], ',
+                \'direct\' => ', ($relation['direct'] ? 'true' : 'false'), ',
+                \'viaTable\' => ', ($relation['viaTable'] ? '\'' . $relation['viaTable'] . '\'' : 'false'), '
+            ]', $comma, '
+';
+    }
+    echo '        ];
     }
 ';
 }
@@ -182,23 +223,26 @@ if ($titleKey) {
 ';
 }
 
-// build relations
-if (array_key_exists($tableName, $buildRelations)) {
-    foreach ($buildRelations[$tableName] as $relationName => $buildRelation) {
-        list ($nsClassName, $className, $foreignKey) = $buildRelation;
-        $methodName = 'new' . Inflector::singularize($relationName);
+// methods "new"
+foreach ($allRelations as $relationName => $relation) {
+    if (!$relation['direct'] && !$relation['viaTable']) {
+        if ($relation['hasMany']) {
+            $methodName = 'new' . Inflector::singularize($relationName);
+        } else {
+            $methodName = 'new' . $relationName;
+        }
         if (!in_array($methodName, $methods)) {
             $methods[] = $methodName;
             echo '
     /**
      * @param array $config
-     * @return ', $className, '
+     * @return ', $relation['className'], '
      */
     public function ', $methodName, '(array $config = [])
     {
-        $model = new ', $className, '($config);
+        $model = new ', $relation['className'], '($config);
 ';
-            foreach ($foreignKey as $key1 => $key2) {
+            foreach ($relation['link'] as $key1 => $key2) {
                 echo '        $model->', $key1, ' = $this->', $key2, ';
 ';
             }
@@ -278,6 +322,125 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
                 echo '        return ', $foreignModelClass::classShortName(), '::findFilterListItems($condition, $orderBy);
     }
 ';
+            }
+        }
+    }
+}
+
+// primary key by unique keys
+$primaryKey = $tableSchema->pk;
+if ($primaryKey) {
+    if ($primaryKey->getCount() == 1) {
+        // unique keys
+        foreach ($tableSchema->uks as $uniqueKey) {
+            if ($uniqueKey->getCount() == 1) {
+                $attribute1 = $primaryKey->key[0];
+                $attribute1Type = $tableSchema->getColumn($attribute1)->phpType;
+                $attribute2 = $uniqueKey->key[0];
+                $attribute2Arg = Inflector::variablize($attribute2);
+                $attribute2Type = $tableSchema->getColumn($attribute2)->phpType;
+                $methodName = Inflector::variablize(implode('_', ['pk', 'by', $attribute2]));
+                if (!in_array($methodName, $methods)) {
+                    $methods[] = $methodName;
+                    echo '
+    /**
+     * @param ', $attribute2Type, ' $', $attribute2Arg, '
+     * @return ', $attribute1Type, '
+     */
+    public static function ', $methodName, '($', $attribute2Arg, ')
+    {
+        return static::find()->select([\'', $attribute1, '\'])->', $attribute2Arg, '($', $attribute2Arg, ')->scalar();
+    }
+';
+                }
+                $methodName = Inflector::variablize(implode('_', [$attribute1, 'by', $attribute2]));
+                if (!in_array($methodName, $methods)) {
+                    $methods[] = $methodName;
+                    echo '
+    /**
+     * @param ', $attribute2Type, ' $', $attribute2Arg, '
+     * @return ', $attribute1Type, '
+     */
+    public static function ', $methodName, '($', $attribute2Arg, ')
+    {
+        return static::find()->select([\'', $attribute1, '\'])->', $attribute2Arg, '($', $attribute2Arg, ')->scalar();
+    }
+';
+                }
+            }
+        }
+    }
+}
+
+// unique keys by primary key
+foreach ($tableSchema->uks as $uniqueKey) {
+    if ($uniqueKey->getCount() == 1) {
+        // primary key
+        $primaryKey = $tableSchema->pk;
+        if ($primaryKey) {
+            if ($primaryKey->getCount() == 1) {
+                $attribute1 = $uniqueKey->key[0];
+                $attribute1Type = $tableSchema->getColumn($attribute1)->phpType;
+                $attribute2 = $primaryKey->key[0];
+                $attribute2Arg = Inflector::variablize($attribute2);
+                $attribute2Type = $tableSchema->getColumn($attribute2)->phpType;
+                $methodName = Inflector::variablize(implode('_', [$attribute1, 'by', 'pk']));
+                if (!in_array($methodName, $methods)) {
+                    $methods[] = $methodName;
+                    echo '
+    /**
+     * @param ', $attribute2Type, ' $', $attribute2Arg, '
+     * @return ', $attribute1Type, '
+     */
+    public static function ', $methodName, '($', $attribute2Arg, ')
+    {
+        return static::find()->select([\'', $attribute1, '\'])->pk($', $attribute2Arg, ')->scalar();
+    }
+';
+                }
+                $methodName = Inflector::variablize(implode('_', [$attribute1, 'by', $attribute2]));
+                if (!in_array($methodName, $methods)) {
+                    $methods[] = $methodName;
+                    echo '
+    /**
+     * @param ', $attribute2Type, ' $', $attribute2Arg, '
+     * @return ', $attribute1Type, '
+     */
+    public static function ', $methodName, '($', $attribute2Arg, ')
+    {
+        return static::find()->select([\'', $attribute1, '\'])->', $attribute2Arg, '($', $attribute2Arg, ')->scalar();
+    }
+';
+                }
+            }
+        }
+    }
+}
+
+// unique keys by unique keys
+foreach ($tableSchema->uks as $uniqueKey1) {
+    if ($uniqueKey1->getCount() == 1) {
+        foreach ($tableSchema->uks as $uniqueKey2) {
+            if (($uniqueKey2->getCount() == 1) && ($uniqueKey1->key[0] != $uniqueKey2->key[0])) {
+                $attribute1 = $uniqueKey1->key[0];
+                $attribute1Type = $tableSchema->getColumn($attribute1)->phpType;
+                $attribute2 = $uniqueKey2->key[0];
+                $attribute2Arg = Inflector::variablize($attribute2);
+                $attribute2Type = $tableSchema->getColumn($attribute2)->phpType;
+                $methodName = Inflector::variablize(implode('_', [$attribute1, 'by', $attribute2]));
+                if (!in_array($methodName, $methods)) {
+                    $methods[] = $methodName;
+                    echo '
+    /**
+     * @param ', $attribute2Type, ' $', $attribute2Arg, '
+     * @return ', $attribute1Type, '
+     */
+    public static function ', $methodName, '($', $attribute2Arg, ')
+    {
+        return static::find()->select([\'', $attribute1, '\'])->pk($', $attribute2Arg, ')->scalar();
+    }
+';
+                }
             }
         }
     }

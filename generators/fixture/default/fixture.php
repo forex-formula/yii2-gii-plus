@@ -43,7 +43,7 @@ $model = new $modelClass;
 // depends/backDepends
 $depends = [];
 $backDepends = [];
-foreach ($modelClass::singularRelations() as $relationName) {
+foreach ($modelClass::singularRelations() as $relationName => $relation) {
     /* @var $relationClass string|yii\boost\db\ActiveRecord */
     $relationClass = $model->getRelationClass($relationName);
     /* @var $relationFixtureClass string|yii\boost\test\ActiveFixture */
@@ -56,7 +56,7 @@ foreach ($modelClass::singularRelations() as $relationName) {
         }
     }
 }
-foreach ($modelClass::pluralRelations() as $relationName) {
+foreach ($modelClass::pluralRelations() as $relationName => $relation) {
     /* @var $relationClass string|yii\boost\db\ActiveRecord */
     $relationClass = $model->getRelationClass($relationName);
     /* @var $relationFixtureClass string|yii\boost\test\ActiveFixture */
