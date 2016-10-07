@@ -36,6 +36,21 @@ class Generator extends GiiModelGenerator
     /**
      * @inheritdoc
      */
+    protected function getDbConnection()
+    {
+        $db = parent::getDbConnection();
+        if (in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
+            $db->schemaMap = array_merge($db->schemaMap, [
+                'mysql' => 'yii\gii\plus\db\mysql\Schema',
+                'mysqli' => 'yii\gii\plus\db\mysql\Schema'
+            ]);
+        }
+        return $db;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function init()
     {
         parent::init();
