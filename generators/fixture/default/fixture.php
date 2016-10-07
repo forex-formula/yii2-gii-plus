@@ -44,6 +44,7 @@ $model = new $modelClass;
 $depends = [];
 $backDepends = [];
 foreach ($modelClass::singularRelations() as $relationName => $relation) {
+    if (!$relation['viaTable']) {
     /* @var $relationClass string|yii\boost\db\ActiveRecord */
     $relationClass = $model->getRelationClass($relationName);
     /* @var $relationFixtureClass string|yii\boost\test\ActiveFixture */
@@ -55,14 +56,17 @@ foreach ($modelClass::singularRelations() as $relationName => $relation) {
             $backDepends[] = $relationFixtureClass;
         }
     }
+    }
 }
 foreach ($modelClass::pluralRelations() as $relationName => $relation) {
+    if (!$relation['viaTable']) {
     /* @var $relationClass string|yii\boost\db\ActiveRecord */
     $relationClass = $model->getRelationClass($relationName);
     /* @var $relationFixtureClass string|yii\boost\test\ActiveFixture */
     $relationFixtureClass = $fixtureNs . '\\' . $relationClass::classShortName();
     if (($relationFixtureClass != $fixtureClass) && class_exists($relationFixtureClass)) {
         $backDepends[] = $relationFixtureClass;
+    }
     }
 }
 if (count($depends)) {
