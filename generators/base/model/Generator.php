@@ -443,6 +443,9 @@ class Generator extends GiiModelGenerator
                         }
                     }
                     $viaTable = false;
+if (preg_match('~\-\>viaTable\(\'(\w+)(?:\'| )~', $code, $match)) {
+                        $viaTable = $match[1];
+                    }
                     $linkCode = $this->generateRelationLink($link);
                     $this->allRelations[$tableName][$relationName] = compact(
                         'code', 'className', 'hasMany',
