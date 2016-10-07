@@ -63,7 +63,7 @@ class BaseHelper
                 if ($appPath) {
                     static::$modelNamespaces[] = $appNs . '\models';
                     foreach (glob($appPath . '/modules/*', GLOB_ONLYDIR) as $modulePath) {
-                        static::$modelNamespaces[] = $appNs . '\modules\\' . basename($modulePath) . '\models';
+                        //static::$modelNamespaces[] = $appNs . '\modules\\' . basename($modulePath) . '\models';
                     }
                 }
             }
