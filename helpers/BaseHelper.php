@@ -74,6 +74,21 @@ class BaseHelper
     protected static $modelDeepNamespaces;
 
     /**
+     * @return string[]
+     */
+    public static function getModelDeepNamespaces()
+    {
+        if (is_null(static::$modelDeepNamespaces)) {
+            static::$modelDeepNamespaces = [];
+            foreach (static::getModelNamespaces() as $modelNs) {
+                static::$modelDeepNamespaces[] = $modelNs;
+                static::$modelDeepNamespaces = array_merge(static::$modelDeepNamespaces, static::getModelSubNamespaces($modelNs));
+            }
+        }
+        return static::$modelDeepNamespaces;
+    }
+
+    /**
      * @param string $modelNs
      * @return string[]
      */
@@ -89,21 +104,6 @@ class BaseHelper
             }
         }
         return $modelSubNamespaces;
-    }
-
-    /**
-     * @return string[]
-     */
-    public static function getModelDeepNamespaces()
-    {
-        if (is_null(static::$modelDeepNamespaces)) {
-            static::$modelDeepNamespaces = [];
-            foreach (static::getModelNamespaces() as $modelNs) {
-                static::$modelDeepNamespaces[] = $modelNs;
-                static::$modelDeepNamespaces = array_merge(static::$modelDeepNamespaces, static::getModelSubNamespaces($modelNs));
-            }
-        }
-        return static::$modelDeepNamespaces;
     }
 
     /**
