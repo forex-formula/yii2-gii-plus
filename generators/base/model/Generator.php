@@ -22,7 +22,7 @@ class Generator extends GiiModelGenerator
     /**
      * @var string
      */
-    public $excludeFilter = 'migration|cache|source_message|message|log|auth_\w+';
+    public $excludeFilter = '(?:\w+\.)?(?:migration|cache|source_message|message|log|auth_\w+)';
 
     public $ns = 'app\models\base';
     public $tableName = '*';
@@ -32,21 +32,6 @@ class Generator extends GiiModelGenerator
     public $generateQuery = true;
     public $queryNs;
     public $queryBaseClass = 'yii\boost\db\ActiveQuery';
-
-    /**
-     * @inheritdoc
-     */
-    protected function getDbConnection()
-    {
-        $db = parent::getDbConnection();
-        if (in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
-            $db->schemaMap = array_merge($db->schemaMap, [
-                'mysql' => 'yii\gii\plus\db\mysql\Schema',
-                'mysqli' => 'yii\gii\plus\db\mysql\Schema'
-            ]);
-        }
-        return $db;
-    }
 
     /**
      * @inheritdoc
@@ -458,7 +443,7 @@ class Generator extends GiiModelGenerator
                         }
                     }
                     $viaTable = false;
-if (preg_match('~\-\>viaTable\(\'(\w+)(?:\'| )~', $code, $match)) {
+                    if (preg_match('~\-\>viaTable\(\'(\w+)(?:\'| )~', $code, $match)) {
                         $viaTable = $match[1];
                     }
                     $linkCode = $this->generateRelationLink($link);
