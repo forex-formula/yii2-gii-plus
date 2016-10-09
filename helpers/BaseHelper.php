@@ -22,9 +22,11 @@ class BaseHelper
         if (is_null(static::$dbConnections)) {
             static::$dbConnections = [];
             foreach (Yii::$app->getComponents() as $id => $definition) {
-                $db = Yii::$app->get($id);
-                if ($db instanceof Connection) {
-                    static::$dbConnections[$id] = $db;
+                if (class_exists($definition['class']) && (($definition['class'] == 'yii\db\Connection') || is_subclass_of($definition['class'], 'yii\db\Connection'))) {
+                    $db = Yii::$app->get($id);
+                    if ($db instanceof Connection) {
+                        static::$dbConnections[$id] = $db;
+                    }
                 }
             }
         }
@@ -62,9 +64,6 @@ class BaseHelper
                 $appPath = Yii::getAlias('@' . $appNs, false);
                 if ($appPath) {
                     static::$modelNamespaces[] = $appNs . '\models';
-                    foreach (glob($appPath . '/modules/*', GLOB_ONLYDIR) as $modulePath) {
-                        //static::$modelNamespaces[] = $appNs . '\modules\\' . basename($modulePath) . '\models';
-                    }
                 }
             }
         }
@@ -75,24 +74,6 @@ class BaseHelper
      * @var string[]
      */
     protected static $modelDeepNamespaces;
-
-    /**
-     * @param string $modelNs
-     * @return string[]
-     */
-    protected static function getModelSubNamespaces($modelNs)
-    {
-        $modelSubNamespaces = [];
-        foreach (glob(Yii::getAlias('@' . str_replace('\\', '/', $modelNs)) . '/*', GLOB_ONLYDIR) as $path) {
-            $basename = basename($path);
-            if (($basename != 'base') && ($basename != 'query')) {
-                $modelSubNs = $modelNs . '\\' . $basename;
-                $modelSubNamespaces[] = $modelSubNs;
-                $modelSubNamespaces = array_merge($modelSubNamespaces, static::getModelSubNamespaces($modelSubNs));
-            }
-        }
-        return $modelSubNamespaces;
-    }
 
     /**
      * @return string[]
@@ -110,6 +91,24 @@ class BaseHelper
     }
 
     /**
+     * @param string $modelNs
+     * @return string[]
+     */
+    protected static function getModelSubNamespaces($modelNs)
+    {
+        $modelSubNamespaces = [];
+        foreach (glob(Yii::getAlias('@' . str_replace('\\', '/', $modelNs)) . '/*', GLOB_ONLYDIR) as $path) {
+            $basename = basename($path);
+            if (($basename != 'base') && ($basename != 'query') && ($basename != 'search')) {
+                $modelSubNs = $modelNs . '\\' . $basename;
+                $modelSubNamespaces[] = $modelSubNs;
+                $modelSubNamespaces = array_merge($modelSubNamespaces, static::getModelSubNamespaces($modelSubNs));
+            }
+        }
+        return $modelSubNamespaces;
+    }
+
+    /**
      * @var string[]
      */
     protected static $modelClasses;
@@ -124,7 +123,7 @@ class BaseHelper
             foreach (static::getModelDeepNamespaces() as $modelNs) {
                 foreach (glob(Yii::getAlias('@' . str_replace('\\', '/', $modelNs)) . '/*.php') as $modelPath) {
                     $modelClass = $modelNs . '\\' . basename($modelPath, '.php');
-                    if (class_exists($modelClass) && is_subclass_of($modelClass, 'yii\boost\db\ActiveRecord') && !in_array('search', get_class_methods($modelClass))) {
+                    if (class_exists($modelClass) && is_subclass_of($modelClass, 'yii\boost\db\ActiveRecord')) {
                         static::$modelClasses[] = $modelClass;
                     }
                 }

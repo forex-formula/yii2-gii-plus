@@ -43,32 +43,7 @@ if ($tableSchema->isStatic) {
 ';
 }
 
-// all/singular/plural relations
-if (count($allRelations)) {
-    echo '
-    /**
-     * @inheritdoc
-     */
-    public static function allRelations()
-    {
-        return [
-';
-    $i = 0;
-    foreach ($allRelations as $relationName => $relation) {
-        $comma = ($i++ < count($allRelations) - 1) ? ',' : '';
-        echo '            \'', lcfirst($relationName), '\' => [
-                \'hasMany\' => ', ($relation['hasMany'] ? 'true' : 'false'), ',
-                \'class\' => \'', $relation['nsClassName'], '\',
-                \'link\' => ', $relation['linkCode'], ',
-                \'direct\' => ', ($relation['direct'] ? 'true' : 'false'), ',
-                \'viaTable\' => ', ($relation['viaTable'] ? '\'' . $relation['viaTable'] . '\'' : 'false'), '
-            ]', $comma, '
-';
-    }
-    echo '        ];
-    }
-';
-}
+// singular/plural relations
 if (count($singularRelations)) {
     echo '
     /**
@@ -82,6 +57,7 @@ if (count($singularRelations)) {
     foreach ($singularRelations as $relationName => $relation) {
         $comma = ($i++ < count($singularRelations) - 1) ? ',' : '';
         echo '            \'', lcfirst($relationName), '\' => [
+                \'hasMany\' => ', ($relation['hasMany'] ? 'true' : 'false'), ',
                 \'class\' => \'', $relation['nsClassName'], '\',
                 \'link\' => ', $relation['linkCode'], ',
                 \'direct\' => ', ($relation['direct'] ? 'true' : 'false'), ',
@@ -106,6 +82,7 @@ if (count($pluralRelations)) {
     foreach ($pluralRelations as $relationName => $relation) {
         $comma = ($i++ < count($pluralRelations) - 1) ? ',' : '';
         echo '            \'', lcfirst($relationName), '\' => [
+                \'hasMany\' => ', ($relation['hasMany'] ? 'true' : 'false'), ',
                 \'class\' => \'', $relation['nsClassName'], '\',
                 \'link\' => ', $relation['linkCode'], ',
                 \'direct\' => ', ($relation['direct'] ? 'true' : 'false'), ',
