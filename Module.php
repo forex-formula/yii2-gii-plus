@@ -3,6 +3,7 @@
 namespace yii\gii\plus;
 
 use yii\gii\Module as GiiModule;
+use yii\gii\plus\helpers\Helper;
 use yii\web\Application as WebApplication;
 use Yii;
 
@@ -15,12 +16,13 @@ class Module extends GiiModule
     public function bootstrap($app)
     {
         parent::bootstrap($app);
-        $db = $app->getDb();
-        if (in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
-            $db->schemaMap = array_merge($db->schemaMap, [
-                'mysql' => 'yii\gii\plus\db\mysql\Schema',
-                'mysqli' => 'yii\gii\plus\db\mysql\Schema'
-            ]);
+        foreach (Helper::getDbConnections() as $db) {
+            if (in_array($db->getDriverName(), ['mysql', 'mysqli'])) {
+                $db->schemaMap = array_merge($db->schemaMap, [
+                    'mysql' => 'yii\gii\plus\db\mysql\Schema',
+                    'mysqli' => 'yii\gii\plus\db\mysql\Schema'
+                ]);
+            }
         }
         if ($app instanceof WebApplication) {
             $this->setViewPath(Yii::getAlias('@yii/gii/views'));
