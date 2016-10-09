@@ -22,9 +22,11 @@ class BaseHelper
         if (is_null(static::$dbConnections)) {
             static::$dbConnections = [];
             foreach (Yii::$app->getComponents() as $id => $definition) {
-                $db = Yii::$app->get($id);
-                if ($db instanceof Connection) {
-                    static::$dbConnections[$id] = $db;
+                if (class_exists($definition['class']) && (($definition['class'] == 'yii\db\Connection') || is_subclass_of($definition['class'], 'yii\db\Connection'))) {
+                    $db = Yii::$app->get($id);
+                    if ($db instanceof Connection) {
+                        static::$dbConnections[$id] = $db;
+                    }
                 }
             }
         }
