@@ -22,8 +22,12 @@ class BaseHelper
         if (is_null(static::$dbConnections)) {
             static::$dbConnections = [];
             foreach (Yii::$app->getComponents() as $id => $definition) {
-                if (is_array($definition) && array_key_exists('class', $definition)
-                    && class_exists($definition['class']) && (($definition['class'] == 'yii\db\Connection') || is_subclass_of($definition['class'], 'yii\db\Connection'))
+                if (is_array($definition)
+                    && array_key_exists('class', $definition)
+                    && class_exists($definition['class'])
+                    && (($definition['class'] == 'yii\db\Connection')
+                        || is_subclass_of($definition['class'], 'yii\db\Connection')
+                    )
                 ) {
                     $db = Yii::$app->get($id);
                     if ($db instanceof Connection) {
@@ -86,7 +90,10 @@ class BaseHelper
             static::$modelDeepNamespaces = [];
             foreach (static::getModelNamespaces() as $modelNs) {
                 static::$modelDeepNamespaces[] = $modelNs;
-                static::$modelDeepNamespaces = array_merge(static::$modelDeepNamespaces, static::getModelSubNamespaces($modelNs));
+                static::$modelDeepNamespaces = array_merge(
+                    static::$modelDeepNamespaces,
+                    static::getModelSubNamespaces($modelNs)
+                );
             }
         }
         return static::$modelDeepNamespaces;
