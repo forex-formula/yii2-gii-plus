@@ -337,6 +337,11 @@ class Generator extends GiiModelGenerator
             $rules[] = '[' . Helper::implode($uNumberAttributes, 3) . ', \'number\', \'min\' => 0]';
         }
         foreach ($dateFormats as $dateFormat => $attributes) {
+            $rules[] = '[' . Helper::implode($attributes, 3) . ', \'filter\', \'filter\' => function ($value) {
+                return is_int($value) ? date(\'' . substr($dateFormat, 4) . '\', $value) : $value;
+            }]';
+        }
+        foreach ($dateFormats as $dateFormat => $attributes) {
             $rules[] = '[' . Helper::implode($attributes, 3) . ', \'date\', \'format\' => \'' . $dateFormat . '\']';
         }
         foreach ($matchPatterns as $matchPattern => $attributes) {
