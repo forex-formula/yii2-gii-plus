@@ -422,3 +422,40 @@ foreach ($tableSchema->uks as $uniqueKey1) {
         }
     }
 }
+
+// ...expires_at
+foreach ($tableSchema->columns as $column) {
+    $attribute = $column->name;
+    if (preg_match('~(?:^|_)expires_at$~', $attribute) && ($column->getIsDate() || $column->getIsDatetime())) {
+        $attributeArg = Inflector::variablize(str_replace('expires_at', 'not_expired', $attribute));
+        $methodName = 'getIs' . ucfirst($attributeArg);
+        if (!in_array($methodName, $methods)) {
+            $methods[] = $methodName;
+            echo '
+    /**
+     * @param bool $', $attributeArg, '
+     * @return bool
+     */
+    public function ', $methodName, '($', $attributeArg, ' = true)
+    {
+';
+            if ($column->allowNull) {
+                echo '        if ($', $attributeArg, ') {
+            return is_null($this->', $attribute, ') || strtotime($this->', $attribute, ') > time();
+        } else {
+            return !is_null($this->', $attribute, ') && strtotime($this->', $attribute, ') <= time();
+        }
+';
+            } else {
+                echo '        if ($', $attributeArg, ') {
+            return strtotime($this->', $attribute, ') > time();
+        } else {
+            return strtotime($this->', $attribute, ') <= time();
+        }
+';
+            }
+            echo '    }
+';
+        }
+    }
+}
