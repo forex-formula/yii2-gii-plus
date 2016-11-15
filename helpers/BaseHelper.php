@@ -132,7 +132,10 @@ class BaseHelper
             foreach (static::getModelDeepNamespaces() as $modelNs) {
                 foreach (glob(Yii::getAlias('@' . str_replace('\\', '/', $modelNs)) . '/*.php') as $modelPath) {
                     $modelClass = $modelNs . '\\' . basename($modelPath, '.php');
-                    if (class_exists($modelClass) && is_subclass_of($modelClass, 'yii\boost\db\ActiveRecord')) {
+                    if (class_exists($modelClass)
+                        && is_subclass_of($modelClass, 'yii\boost\db\ActiveRecord')
+                        && !in_array('search', get_class_methods($modelClass))
+                    ) {
                         static::$modelClasses[] = $modelClass;
                     }
                 }
