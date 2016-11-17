@@ -479,7 +479,7 @@ class Generator extends GiiModelGenerator
                                     if (!$subHasMany && !array_key_exists($subRelationName, $generatedRelations[$tableName])) {
                                         $viaLink = $this->generateRelationLink($link);
                                         $subCode = preg_replace('~;$~', "\n" . '            ->viaTable(\'' . $subTableName . ' via_' . $subTableName . '\', ' . $viaLink . ');', $subCode);
-                                        if (!array_key_exists($subRelationName, $relations[$tableName]) || !$direct) {
+                                        if (!array_key_exists($subRelationName, $relations[$tableName]) || $direct) {
                                             $relations[$tableName][$subRelationName] = [$subCode, $subClassName, $subHasMany];
                                             $this->relationUses[$tableName][] = $subNsClassName;
                                         }

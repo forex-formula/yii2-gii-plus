@@ -46,7 +46,7 @@ if ($primaryKey) {
             $methods[] = $methodName;
             echo '
     /**
-     * @param ', $attributeType, ' $', $attributeArg, '
+     * @param ', $attributeType, '|', $attributeType, '[] $', $attributeArg, '
      * @return $this
      */
     public function ', $methodName, '($', $attributeArg, ')
@@ -60,7 +60,7 @@ if ($primaryKey) {
             $methods[] = $methodName;
             echo '
     /**
-     * @param ', $attributeType, ' $', $attributeArg, '
+     * @param ', $attributeType, '|', $attributeType, '[] $', $attributeArg, '
      * @return $this
      */
     public function ', $methodName, '($', $attributeArg, ')
@@ -83,7 +83,7 @@ if ($primaryKey) {
     /**
 ';
             foreach ($primaryKey->key as $i => $attribute) {
-                echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
+                echo '     * @param ', $attributeTypes[$i], '|', $attributeTypes[$i], '[] $', $attributeArgs[$i], '
 ';
             }
             echo '     * @return $this
@@ -108,7 +108,7 @@ if ($primaryKey) {
     /**
 ';
             foreach ($primaryKey->key as $i => $attribute) {
-                echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
+                echo '     * @param ', $attributeTypes[$i], '|', $attributeTypes[$i], '[] $', $attributeArgs[$i], '
 ';
             }
             echo '     * @return $this
@@ -141,7 +141,7 @@ foreach ($tableSchema->fks as $foreignKey) {
             $methods[] = $methodName;
             echo '
     /**
-     * @param ', $attributeType, ' $', $attributeArg, '
+     * @param ', $attributeType, '|', $attributeType, '[] $', $attributeArg, '
      * @return $this
      */
     public function ', $methodName, '($', $attributeArg, ')
@@ -164,7 +164,7 @@ foreach ($tableSchema->fks as $foreignKey) {
     /**
 ';
             foreach ($foreignKey->key as $i => $attribute) {
-                echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
+                echo '     * @param ', $attributeTypes[$i], '|', $attributeTypes[$i], '[] $', $attributeArgs[$i], '
 ';
             }
             echo '     * @return $this
@@ -197,7 +197,7 @@ foreach ($tableSchema->uks as $uniqueKey) {
             $methods[] = $methodName;
             echo '
     /**
-     * @param ', $attributeType, ' $', $attributeArg, '
+     * @param ', $attributeType, '|', $attributeType, '[] $', $attributeArg, '
      * @return $this
      */
     public function ', $methodName, '($', $attributeArg, ')
@@ -220,7 +220,7 @@ foreach ($tableSchema->uks as $uniqueKey) {
     /**
 ';
             foreach ($uniqueKey->key as $i => $attribute) {
-                echo '     * @param ', $attributeTypes[$i], ' $', $attributeArgs[$i], '
+                echo '     * @param ', $attributeTypes[$i], '|', $attributeTypes[$i], '[] $', $attributeArgs[$i], '
 ';
             }
             echo '     * @return $this
@@ -250,7 +250,7 @@ foreach ($keyAttributes as $attribute) {
         $methods[] = $methodName;
         echo '
     /**
-     * @param ', $attributeType, ' $', $attributeArg, '
+     * @param ', $attributeType, '|', $attributeType, '[] $', $attributeArg, '
      * @return $this
      */
     public function ', $methodName, '($', $attributeArg, ')
