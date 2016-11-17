@@ -270,7 +270,7 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
      * @param string|array|', $dbExpression, ' $orderBy
      * @return array
      */
-    public function ', $attributeArg, 'ListItems($condition = null, $params = [], $orderBy = null)
+    public static function ', $attributeArg, 'ListItems($condition = null, $params = [], $orderBy = null)
     {
 ';
                 if ($listItemConditions) {
@@ -287,7 +287,7 @@ foreach ($tableSchema->foreignKeys as $foreignKey) {
      * @param string|array|', $dbExpression, ' $orderBy
      * @return array
      */
-    public function ', $attributeArg, 'FilterListItems(array $condition = [], $orderBy = null)
+    public static function ', $attributeArg, 'FilterListItems(array $condition = [], $orderBy = null)
     {
 ';
                 if ($listItemConditions) {
