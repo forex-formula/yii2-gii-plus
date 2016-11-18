@@ -198,6 +198,7 @@ class BaseHelper
     public static function implode(array $pieces, $multiplier)
     {
         if (count($pieces)) {
+            $pieces = array_unique($pieces);
             if (count($pieces) == 1) {
                 return '[\'' . $pieces[0] . '\']';
             } else {

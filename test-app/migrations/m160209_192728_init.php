@@ -21,14 +21,17 @@ class m160209_192728_init extends Migration
         $this->createTableWithComment('root_folder', [
             'id' => $this->primaryKey(),
             'root_folder_type_id' => $this->tinyInteger()->unsigned()->notNull()->comment('Тип корневой папки'),
+            'alt_type_id' => $this->tinyInteger()->unsigned()->notNull()->comment('Тип корневой папки'),
             'name' => $this->string(50)->notNull()->unique()->comment('Название')
         ], 'Корневая папка');
         $this->addForeignKey(null, 'root_folder', ['root_folder_type_id'], 'root_folder_type', ['id']);
+        $this->addForeignKey(null, 'root_folder', ['alt_type_id'], 'root_folder_type', ['id']);
 
         // folder
         $this->createTableWithComment('folder', [
             'id' => $this->primaryKey(),
             'root_folder_id' => $this->integer()->unsigned()->notNull()->comment('Корневая папка'),
+            'alt_folder_id' => $this->integer()->unsigned()->notNull()->comment('Корневая папка'),
             'name' => $this->string(50)->notNull()->comment('Название'),
             'visible' => $this->boolean()->notNull()->defaultValue(1)->comment('Видимый'),
             'created_at' => $this->createdAtShortcut()->comment('Создано в'),
@@ -37,6 +40,7 @@ class m160209_192728_init extends Migration
         ], 'Папка');
         $this->createUnique(null, 'folder', ['root_folder_id', 'name']);
         $this->addForeignKey(null, 'folder', ['root_folder_id'], 'root_folder', ['id']);
+        $this->addForeignKey(null, 'folder', ['alt_folder_id'], 'root_folder', ['id']);
 
         // file
         $this->createTableWithComment('file', [
