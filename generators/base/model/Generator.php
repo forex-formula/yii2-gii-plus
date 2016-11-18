@@ -422,27 +422,36 @@ class Generator extends GiiModelGenerator
                         foreach ($subTableSchema->foreignKeys as $foreignKey) {
                             if ($foreignKey[0] == $tableName) {
                                 unset($foreignKey[0]);
-                                $link = $foreignKey;
-                                $direct = false;
-                                break;
+                                $refs = $foreignKey;
+                                if (strpos($code, $this->generateRelationLink($refs)) != false) {
+                                    $link = $refs;
+                                    $direct = false;
+                                    break;
+                                }
                             }
                         }
                     } else {
                         foreach ($tableSchema->foreignKeys as $foreignKey) {
                             if ($foreignKey[0] == $subTableName) {
                                 unset($foreignKey[0]);
-                                $link = array_flip($foreignKey);
-                                $direct = true;
-                                break;
+                                $refs = array_flip($foreignKey);
+                                if (strpos($code, $this->generateRelationLink($refs)) != false) {
+                                    $link = $refs;
+                                    $direct = true;
+                                    break;
+                                }
                             }
                         }
                         if (!count($link)) {
                             foreach ($subTableSchema->foreignKeys as $foreignKey) {
                                 if ($foreignKey[0] == $tableName) {
                                     unset($foreignKey[0]);
-                                    $link = $foreignKey;
-                                    $direct = false;
-                                    break;
+                                    $refs = $foreignKey;
+                                    if (strpos($code, $this->generateRelationLink($refs)) != false) {
+                                        $link = $refs;
+                                        $direct = false;
+                                        break;
+                                    }
                                 }
                             }
                         }

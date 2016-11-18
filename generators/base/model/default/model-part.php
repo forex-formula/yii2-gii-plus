@@ -193,10 +193,10 @@ if ($titleKey) {
     /**
      * @inheritdoc
      */
-    public function getTitleText()
-    {
-        return $this->', implode(' . static::TITLE_SEPARATOR . $this->', $titleKey->key), ';
-    }
+    // public function getTitleText()
+    // {
+    //     return $this->', implode(' . static::TITLE_SEPARATOR . $this->', $titleKey->key), ';
+    // }
 ';
 }
 
@@ -204,7 +204,11 @@ if ($titleKey) {
 foreach ($allRelations as $relationName => $relation) {
     if (!$relation['direct'] && !$relation['viaTable']) {
         if ($relation['hasMany']) {
-            $methodName = 'new' . Inflector::singularize($relationName);
+            if (preg_match('~^(.*\D)(\d+)$~', $relationName, $match)) {
+                $methodName = 'new' . Inflector::singularize($match[1]) . $match[2];
+            } else {
+                $methodName = 'new' . Inflector::singularize($relationName);
+            }
         } else {
             $methodName = 'new' . $relationName;
         }

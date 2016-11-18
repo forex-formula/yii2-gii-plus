@@ -20,11 +20,11 @@ class m160209_192728_init extends Migration
         // root_folder
         $this->createTableWithComment('root_folder', [
             'id' => $this->primaryKey(),
-            'type_id' => $this->tinyInteger()->unsigned()->notNull()->comment('Тип корневой папки'),
+            'root_folder_type_id' => $this->tinyInteger()->unsigned()->notNull()->comment('Тип корневой папки'),
             'alt_type_id' => $this->tinyInteger()->unsigned()->notNull()->comment('Тип корневой папки'),
             'name' => $this->string(50)->notNull()->unique()->comment('Название')
         ], 'Корневая папка');
-        $this->addForeignKey(null, 'root_folder', ['type_id'], 'root_folder_type', ['id']);
+        $this->addForeignKey(null, 'root_folder', ['root_folder_type_id'], 'root_folder_type', ['id']);
         $this->addForeignKey(null, 'root_folder', ['alt_type_id'], 'root_folder_type', ['id']);
 
         // folder
