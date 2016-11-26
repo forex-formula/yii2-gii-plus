@@ -386,6 +386,33 @@ class Generator extends GiiModelGenerator
     protected $pluralRelations = [];
 
     /**
+     * @param array $generatedRelations
+     * @return array
+     */
+    protected function fixGeneratedRelations(array $generatedRelations)
+    {
+        foreach ($generatedRelations as $tableName => $tableRelations) {
+            $fixRelationNames = [];
+            foreach ($tableRelations as $relationName => $relation) {
+                if (preg_match('~^(\D+)\d+$~', $relationName, $match)) {
+                    $fixRelationNames[] = $match[1];
+                }
+            }
+            foreach ($fixRelationNames as $fixRelationName) {
+                foreach ($tableRelations as $relationName => $relation) {
+                    if (($relationName == $fixRelationName)
+                        || (preg_match('~^(\D+)\d+$~', $relationName, $match) && ($match[1] == $fixRelationName))
+                    ) {
+//list ($code, $className, $hasMany) = $relation;
+//var_dump($relationName);
+                    }
+                }
+            }
+        }
+        return $generatedRelations;
+    }
+
+    /**
      * @inheritdoc
      */
     protected function generateRelations()
@@ -396,7 +423,7 @@ class Generator extends GiiModelGenerator
         $this->allRelations = [];
         $this->singularRelations = [];
         $this->pluralRelations = [];
-        $generatedRelations = parent::generateRelations();
+        $generatedRelations = $this->fixGeneratedRelations(parent::generateRelations());
         foreach ($generatedRelations as $tableName => $tableRelations) {
             /* @var $tableSchema \yii\gii\plus\db\TableSchema */
             $tableSchema = $db->getTableSchema($tableName);
