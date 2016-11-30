@@ -7,6 +7,7 @@ use yii\db\Expression;
 use yii\gii\generators\model\Generator as GiiModelGenerator;
 use yii\gii\plus\helpers\Helper;
 use yii\helpers\Html;
+use yii\helpers\Inflector;
 use yii\web\JsExpression;
 use yii\helpers\Json;
 use Yii;
@@ -389,7 +390,7 @@ class Generator extends GiiModelGenerator
      * @param array $generatedRelations
      * @return array
      */
-    protected function fixGeneratedRelations(array $generatedRelations)
+    protected function fixRelations(array $generatedRelations)
     {
         foreach ($generatedRelations as $tableName => $tableRelations) {
             $fixRelationNames = [];
@@ -400,11 +401,68 @@ class Generator extends GiiModelGenerator
             }
             foreach ($fixRelationNames as $fixRelationName) {
                 foreach ($tableRelations as $relationName => $relation) {
-                    if (($relationName == $fixRelationName)
-                        || (preg_match('~^(\D+)\d+$~', $relationName, $match) && ($match[1] == $fixRelationName))
-                    ) {
-//list ($code, $className, $hasMany) = $relation;
-//var_dump($relationName);
+                    if ($relationName == $fixRelationName) {
+                        if (isset($tableRelations[$relationName])) {
+                            $tableRelations[$relationName . '99'] = $tableRelations[$relationName];
+                            unset($tableRelations[$relationName]);
+                        }
+                        if (isset($generatedRelations[$tableName][$relationName])) {
+                            $generatedRelations[$tableName][$relationName . '99'] = $generatedRelations[$tableName][$relationName];
+                            unset($generatedRelations[$tableName][$relationName]);
+                        }
+                        if (isset($this->allRelations[$tableName][$relationName])) {
+                            $this->allRelations[$tableName][$relationName . '99'] = $this->allRelations[$tableName][$relationName];
+                            unset($this->allRelations[$tableName][$relationName]);
+                        }
+                        if (isset($this->singularRelations[$tableName][$relationName])) {
+                            $this->singularRelations[$tableName][$relationName . '99'] = $this->singularRelations[$tableName][$relationName];
+                            unset($this->singularRelations[$tableName][$relationName]);
+                        }
+                        if (isset($this->pluralRelations[$tableName][$relationName])) {
+                            $this->pluralRelations[$tableName][$relationName . '99'] = $this->pluralRelations[$tableName][$relationName];
+                            unset($this->pluralRelations[$tableName][$relationName]);
+                        }
+                    }
+                }
+            }
+            foreach ($fixRelationNames as $fixRelationName) {
+                foreach ($tableRelations as $relationName => $relation) {
+                    if (preg_match('~^(\D+)\d+$~', $relationName, $match) && ($match[1] == $fixRelationName)) {
+                        $relation = $this->allRelations[$tableName][$relationName];
+                        if ($relation['hasMany']) {
+                            $linkKeys = array_keys($relation['link']);
+                            if (count($linkKeys) == 1) {
+                                $linkKey = preg_replace('~_id$~', '', $linkKeys[0]);
+                                if ($tableName == $linkKey) {
+                                    $relationName2 = $fixRelationName;
+                                } else {
+                                    $relationName2 = Inflector::classify($linkKey);
+                                    $relationName2 = str_replace(Inflector::singularize($fixRelationName), '', $relationName2);
+                                    $relationName2 .= $fixRelationName;
+                                }
+                                echo $relationName, ' -> ', $relationName2, "\n";
+                                if (isset($tableRelations[$relationName])) {
+                                    $tableRelations[$relationName2] = $tableRelations[$relationName];
+                                    unset($tableRelations[$relationName]);
+                                }
+                                if (isset($generatedRelations[$tableName][$relationName])) {
+                                    $generatedRelations[$tableName][$relationName2] = $generatedRelations[$tableName][$relationName];
+                                    unset($generatedRelations[$tableName][$relationName]);
+                                }
+                                if (isset($this->allRelations[$tableName][$relationName])) {
+                                    $this->allRelations[$tableName][$relationName2] = $this->allRelations[$tableName][$relationName];
+                                    unset($this->allRelations[$tableName][$relationName]);
+                                }
+                                if (isset($this->singularRelations[$tableName][$relationName])) {
+                                    $this->singularRelations[$tableName][$relationName2] = $this->singularRelations[$tableName][$relationName];
+                                    unset($this->singularRelations[$tableName][$relationName]);
+                                }
+                                if (isset($this->pluralRelations[$tableName][$relationName])) {
+                                    $this->pluralRelations[$tableName][$relationName2] = $this->pluralRelations[$tableName][$relationName];
+                                    unset($this->pluralRelations[$tableName][$relationName]);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -423,7 +481,7 @@ class Generator extends GiiModelGenerator
         $this->allRelations = [];
         $this->singularRelations = [];
         $this->pluralRelations = [];
-        $generatedRelations = $this->fixGeneratedRelations(parent::generateRelations());
+        $generatedRelations = parent::generateRelations();
         foreach ($generatedRelations as $tableName => $tableRelations) {
             /* @var $tableSchema \yii\gii\plus\db\TableSchema */
             $tableSchema = $db->getTableSchema($tableName);
@@ -529,7 +587,7 @@ class Generator extends GiiModelGenerator
         }
         $this->relationsDone = true;
         $this->classNames = [];
-        return $relations;
+        return $this->fixRelations($relations);
     }
 
     /**
