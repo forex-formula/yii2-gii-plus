@@ -19,6 +19,10 @@ use yii\db\Schema;
  */
 class ColumnSchema extends BaseColumnSchema
 {
+    /**
+     * @var bool
+     */
+    public $disableJsonSupport = false;
 
     /**
      * @var bool
