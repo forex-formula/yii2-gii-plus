@@ -43,6 +43,7 @@ class ColumnSchema extends BaseColumnSchema
     public function getIsInteger()
     {
         return in_array($this->type, [
+            Schema::TYPE_TINYINT,
             Schema::TYPE_SMALLINT,
             Schema::TYPE_INTEGER,
             Schema::TYPE_BIGINT
